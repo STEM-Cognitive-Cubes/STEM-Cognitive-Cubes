@@ -1,6 +1,18 @@
-# STEM-Cognitive-Cubes
-A companion mobile app that analyzes play patterns and provides insights into a child's cognitive development.
+# BlokC Mobile App
 
-## Modules
-- android-app: Mobile interface
-- docs: Research, design, and progress
+## Requirements
+
+- Node 18+
+- Expo CLI (via npx)
+- Android Studio or Xcode
+
+## Setup
+
+```bash
+npm install
+cp .env.example .env
+npm run start
+npm run typecheck
+npm run lint
+
+```
