@@ -1,9 +1,26 @@
 import { View, Text, StyleSheet } from "react-native";
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 
 import Blob from "./src/components/Blob";
 import { blobPresets, colors } from "./src/config/theme";
+import { fontFamilies } from "./src/config/typography";
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <Blob
@@ -44,10 +61,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: colors.blue,
+    fontFamily: fontFamilies.bold,
   },
   subTitle: {
     marginTop: 8,
     fontSize: 16,
     color: colors.blue,
+    fontFamily: fontFamilies.regular,
   },
 });
