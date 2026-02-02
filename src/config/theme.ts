@@ -28,3 +28,9 @@ export const blobPresets = {
     borderRadius: 220,
   },
 };
+
+export const dots = {
+  color: "rgba(184,96,255,0.35)",
+  size: 6,
+  spacing: 12,
+};
