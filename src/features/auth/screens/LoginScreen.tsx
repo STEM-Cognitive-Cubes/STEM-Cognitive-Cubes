@@ -7,6 +7,7 @@ import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
 import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import type { RootStackParamList } from "../../../navigation/types";
 
 type LoginScreenProps = {
@@ -15,70 +16,79 @@ type LoginScreenProps = {
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [isForgotOpen, setIsForgotOpen] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <AuthBackground />
-      <View style={styles.headerRow}>
-        <Image
-          source={require("../../../assets/mascot/mascot.png")}
-          style={styles.mascot}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>Hi, Welcome to{"\n"}BlokC</Text>
-      </View>
-
-      <View style={styles.form}>
-        <AuthTextInput
-          label="Email"
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        <AuthTextInput
-          label="Password"
-          placeholder="Enter your password"
-          secureTextEntry={isPasswordHidden}
-          rightElement={
-            <Feather
-              name={isPasswordHidden ? "eye" : "eye-off"}
-              size={18}
-              color="black"
-            />
-          }
-          onRightPress={() => setIsPasswordHidden((prev) => !prev)}
-        />
-
-        <Pressable style={styles.forgotButton} onPress={() => {}}>
-          <Text style={styles.forgotText}>Forgot password?</Text>
-        </Pressable>
-
-        <Pressable style={styles.primaryButton} onPress={() => {}}>
-          <Text style={styles.primaryButtonText}>Login</Text>
-        </Pressable>
-
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or Login with Google</Text>
-          <View style={styles.dividerLine} />
+    <>
+      <View style={styles.container}>
+        <AuthBackground />
+        <View style={styles.headerRow}>
+          <Image
+            source={require("../../../assets/mascot/mascot.png")}
+            style={styles.mascot}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Hi, Welcome to{"\n"}BlokC</Text>
         </View>
 
-        <Pressable style={styles.googleButton} onPress={() => {}}>
-          <View style={styles.googleIcon}>
-            <FontAwesome name="google" size={14} color="black" />
-          </View>
-          <Text style={styles.googleButtonText}>Login with Google</Text>
-        </Pressable>
+        <View style={styles.form}>
+          <AuthTextInput
+            label="Email"
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-        <View style={styles.footerRow}>
-          <Text style={styles.footerText}>Not registered yet? </Text>
-          <Pressable onPress={() => navigation.navigate("Signup")}>
-            <Text style={styles.footerLink}>Create an account</Text>
+          <AuthTextInput
+            label="Password"
+            placeholder="Enter your password"
+            secureTextEntry={isPasswordHidden}
+            rightElement={
+              <Feather
+                name={isPasswordHidden ? "eye" : "eye-off"}
+                size={18}
+                color="black"
+              />
+            }
+            onRightPress={() => setIsPasswordHidden((prev) => !prev)}
+          />
+
+          <Pressable
+            style={styles.forgotButton}
+            onPress={() => setIsForgotOpen(true)}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
           </Pressable>
+
+          <Pressable style={styles.primaryButton} onPress={() => {}}>
+            <Text style={styles.primaryButtonText}>Login</Text>
+          </Pressable>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or Login with Google</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <Pressable style={styles.googleButton} onPress={() => {}}>
+            <View style={styles.googleIcon}>
+              <FontAwesome name="google" size={14} color="black" />
+            </View>
+            <Text style={styles.googleButtonText}>Login with Google</Text>
+          </Pressable>
+
+          <View style={styles.footerRow}>
+            <Text style={styles.footerText}>Not registered yet? </Text>
+            <Pressable onPress={() => navigation.navigate("Signup")}>
+              <Text style={styles.footerLink}>Create an account</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
+      {isForgotOpen ? (
+        <ForgotPasswordModal onClose={() => setIsForgotOpen(false)} />
+      ) : null}
+    </>
   );
 }
 
