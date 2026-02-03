@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 
@@ -6,11 +6,54 @@ import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
 import AuthTextInput from "../components/AuthTextInput";
 
+const dotPositions = [
+  { top: 70, left: 36, size: 15, opacity: 0.7 },
+  { top: 90, left: 130, size: 15, opacity: 0.4 },
+  { top: 60, left: 220, size: 15, opacity: 0.6 },
+  { top: 120, left: 350, size: 15, opacity: 0.5 },
+  { top: 150, left: 90, size: 15, opacity: 0.65 },
+  { top: 180, left: 260, size: 15, opacity: 0.4 },
+  { top: 210, left: 180, size: 15, opacity: 0.35 },
+  { top: 240, left: 350, size: 15, opacity: 0.45 },
+  { top: 260, left: 28, size: 15, opacity: 0.7 },
+  { top: 300, left: 230, size: 15, opacity: 0.35 },
+  { top: 140, left: 240, size: 15, opacity: 0.75 },
+  { top: 190, left: 240, size: 15, opacity: 0.7 },
+  { top: 320, left: 320, size: 15, opacity: 0.65 },
+];
+
 export default function LoginScreen() {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../../../assets/blobs/blob-light.png")}
+        style={styles.topLeftBlob}
+        resizeMode="contain"
+      />
+      <Image
+        source={require("../../../assets/blobs/blob-dark.png")}
+        style={styles.bottomBlob}
+        resizeMode="contain"
+      />
+      {dotPositions.map((dot, index) => (
+        <Image
+          key={`${dot.top}-${dot.left}-${index}`}
+          source={require("../../../assets/dots/dot.png")}
+          style={[
+            styles.dot,
+            {
+              width: dot.size,
+              height: dot.size,
+              top: dot.top,
+              left: dot.left,
+              opacity: dot.opacity,
+            },
+          ]}
+          resizeMode="contain"
+        />
+      ))}
       <View style={styles.headerRow}>
         <View style={styles.mascotSpacer} />
         <Text style={styles.title}>Hi, Welcome</Text>
@@ -24,19 +67,19 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
 
-      <AuthTextInput
-        label="Password"
-        placeholder="Enter your password"
-        secureTextEntry={isPasswordHidden}
-        rightElement={
-          <Feather
-            name={isPasswordHidden ? "eye" : "eye-off"}
-            size={18}
-            color="black"
-          />
-        }
-        onRightPress={() => setIsPasswordHidden((prev) => !prev)}
-      />
+        <AuthTextInput
+          label="Password"
+          placeholder="Enter your password"
+          secureTextEntry={isPasswordHidden}
+          rightElement={
+            <Feather
+              name={isPasswordHidden ? "eye" : "eye-off"}
+              size={18}
+              color="black"
+            />
+          }
+          onRightPress={() => setIsPasswordHidden((prev) => !prev)}
+        />
 
         <Pressable style={styles.forgotButton} onPress={() => {}}>
           <Text style={styles.forgotText}>Forgot password?</Text>
@@ -86,6 +129,25 @@ const styles = StyleSheet.create({
   },
   form: {
     marginTop: 150,
+  },
+  topLeftBlob: {
+    position: "absolute",
+    width: 800,
+    height: 800,
+    top: -230,
+    left: -330,
+    transform: [{ rotate: "20deg" }],
+  },
+  bottomBlob: {
+    position: "absolute",
+    width: 800,
+    height: 800,
+    bottom: -120,
+    left: -150,
+    transform: [{ rotate: "-10deg" }],
+  },
+  dot: {
+    position: "absolute",
   },
   mascotSpacer: {
     width: 148,
