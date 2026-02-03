@@ -4,58 +4,21 @@ import { Feather } from "@expo/vector-icons";
 
 import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
+import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
-
-const dotPositions = [
-  { top: 70, left: 36, size: 15, opacity: 0.7 },
-  { top: 90, left: 130, size: 15, opacity: 0.4 },
-  { top: 60, left: 220, size: 15, opacity: 0.6 },
-  { top: 120, left: 350, size: 15, opacity: 0.5 },
-  { top: 150, left: 90, size: 15, opacity: 0.65 },
-  { top: 180, left: 260, size: 15, opacity: 0.4 },
-  { top: 210, left: 180, size: 15, opacity: 0.35 },
-  { top: 240, left: 350, size: 15, opacity: 0.45 },
-  { top: 260, left: 28, size: 15, opacity: 0.7 },
-  { top: 300, left: 230, size: 15, opacity: 0.35 },
-  { top: 140, left: 240, size: 15, opacity: 0.75 },
-  { top: 190, left: 240, size: 15, opacity: 0.7 },
-  { top: 320, left: 320, size: 15, opacity: 0.65 },
-];
 
 export default function LoginScreen() {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../../assets/blobs/blob-light.png")}
-        style={styles.topLeftBlob}
-        resizeMode="contain"
-      />
-      <Image
-        source={require("../../../assets/blobs/blob-dark.png")}
-        style={styles.bottomBlob}
-        resizeMode="contain"
-      />
-      {dotPositions.map((dot, index) => (
+      <AuthBackground />
+      <View style={styles.headerRow}>
         <Image
-          key={`${dot.top}-${dot.left}-${index}`}
-          source={require("../../../assets/dots/dot.png")}
-          style={[
-            styles.dot,
-            {
-              width: dot.size,
-              height: dot.size,
-              top: dot.top,
-              left: dot.left,
-              opacity: dot.opacity,
-            },
-          ]}
+          source={require("../../../assets/mascot/mascot.png")}
+          style={styles.mascot}
           resizeMode="contain"
         />
-      ))}
-      <View style={styles.headerRow}>
-        <View style={styles.mascotSpacer} />
         <Text style={styles.title}>Hi, Welcome</Text>
       </View>
 
@@ -124,35 +87,22 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    height: 40,
+    paddingLeft: 150,
     marginBottom: 32,
     marginTop: 20,
   },
   form: {
-    marginTop: 150,
+    marginTop: 210,
   },
-  topLeftBlob: {
+  mascot: {
     position: "absolute",
-    width: 800,
-    height: 800,
-    top: -230,
-    left: -330,
-    transform: [{ rotate: "20deg" }],
-  },
-  bottomBlob: {
-    position: "absolute",
-    width: 800,
-    height: 800,
-    bottom: -120,
     left: -150,
-    transform: [{ rotate: "-10deg" }],
-  },
-  dot: {
-    position: "absolute",
-  },
-  mascotSpacer: {
-    width: 148,
-    height: 72,
-    marginRight: 8,
+    top: -180,
+    width: 504,
+    height: 414,
   },
   title: {
     color: "black",
