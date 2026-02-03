@@ -6,7 +6,8 @@ import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
 
 type AuthTextInputProps = TextInputProps & {
-  label: string;
+  label?: string;
+  leftElement?: ReactNode;
   rightText?: string;
   rightElement?: ReactNode;
   onRightPress?: () => void;
@@ -14,6 +15,7 @@ type AuthTextInputProps = TextInputProps & {
 
 export default function AuthTextInput({
   label,
+  leftElement,
   rightText,
   rightElement,
   onRightPress,
@@ -22,13 +24,20 @@ export default function AuthTextInput({
 }: AuthTextInputProps) {
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.label}>{label}</Text>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
       <View style={styles.inputContainer}>
         <TextInput
           placeholderTextColor="rgba(0,0,0,0.45)"
-          style={[styles.input, style]}
+          style={[
+            styles.input,
+            leftElement ? styles.inputWithLeft : null,
+            style,
+          ]}
           {...props}
         />
+        {leftElement ? (
+          <View style={styles.leftAction}>{leftElement}</View>
+        ) : null}
         {rightText || rightElement ? (
           <Pressable onPress={onRightPress} style={styles.rightAction}>
             {rightElement ?? <Text style={styles.rightText}>{rightText}</Text>}
@@ -61,6 +70,15 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 14,
     fontFamily: fontFamilies.regular,
+  },
+  inputWithLeft: {
+    paddingLeft: 44,
+  },
+  leftAction: {
+    position: "absolute",
+    left: 16,
+    height: "100%",
+    justifyContent: "center",
   },
   rightAction: {
     position: "absolute",

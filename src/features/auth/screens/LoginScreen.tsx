@@ -1,13 +1,19 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
-import { Feather } from "@expo/vector-icons";
+import { Feather, FontAwesome } from "@expo/vector-icons";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
 import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
+import type { RootStackParamList } from "../../../navigation/types";
 
-export default function LoginScreen() {
+type LoginScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+};
+
+export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   return (
@@ -60,14 +66,14 @@ export default function LoginScreen() {
 
         <Pressable style={styles.googleButton} onPress={() => {}}>
           <View style={styles.googleIcon}>
-            <Text style={styles.googleIconText}>G</Text>
+            <FontAwesome name="google" size={14} color="black" />
           </View>
           <Text style={styles.googleButtonText}>Login with Google</Text>
         </Pressable>
 
         <View style={styles.footerRow}>
           <Text style={styles.footerText}>Not registered yet? </Text>
-          <Pressable onPress={() => {}}>
+          <Pressable onPress={() => navigation.navigate("Signup")}>
             <Text style={styles.footerLink}>Create an account</Text>
           </Pressable>
         </View>
@@ -123,14 +129,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.regular,
   },
   primaryButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.lightYellow,
     borderRadius: 22,
     paddingVertical: 12,
     alignItems: "center",
     marginBottom: 20,
   },
   primaryButtonText: {
-    color: colors.white,
+    color: "black",
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
   },
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.blue,
+    backgroundColor: colors.lightYellow,
     borderRadius: 22,
     paddingVertical: 12,
     marginBottom: 18,
@@ -168,13 +174,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 8,
   },
-  googleIconText: {
-    fontSize: 12,
-    color: colors.blue,
-    fontFamily: fontFamilies.semiBold,
-  },
   googleButtonText: {
-    color: colors.white,
+    color: "black",
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
   },
