@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 120,
     paddingBottom: 40,
   },
   title: {
     color: "black",
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: fontFamilies.bold,
     marginBottom: 8,
   },
