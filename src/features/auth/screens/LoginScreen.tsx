@@ -19,7 +19,7 @@ export default function LoginScreen() {
           style={styles.mascot}
           resizeMode="contain"
         />
-        <Text style={styles.title}>Hi, Welcome</Text>
+        <Text style={styles.title}>Hi, Welcome to{"\n"}BlokC</Text>
       </View>
 
       <View style={styles.form}>
@@ -86,28 +86,32 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
     position: "relative",
-    height: 40,
     paddingLeft: 150,
     marginBottom: 32,
-    marginTop: 20,
+    marginTop: 80,
   },
   form: {
-    marginTop: 210,
+    marginTop: 190,
   },
   mascot: {
     position: "absolute",
-    left: -150,
-    top: -180,
-    width: 504,
-    height: 414,
+    left: -40,
+    top: -160,
+    width: 588,
+    height: 483,
   },
   title: {
     color: "black",
-    fontSize: 24,
+    fontSize: 32,
     fontFamily: fontFamilies.bold,
+    flexShrink: 1,
+    flexWrap: "wrap",
+    lineHeight: 30,
+    marginTop: -130,
+    marginLeft: -150,
   },
   forgotButton: {
     alignSelf: "flex-end",
