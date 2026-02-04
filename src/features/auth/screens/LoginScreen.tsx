@@ -74,7 +74,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         setAuthError("Google Play Services unavailable.");
         return;
       }
-      setAuthError("Google sign-in failed. Try again.");
+      const errorMessage =
+        error?.message ?? (typeof error === "string" ? error : "Unknown error");
+      setAuthError(`Google sign-in failed: ${error?.code ?? ""} ${errorMessage}`.trim());
     }
   };
 
