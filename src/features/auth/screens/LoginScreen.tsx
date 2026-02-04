@@ -35,7 +35,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     GoogleSignin.configure({
       webClientId:
         "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
-      scopes: ["profile", "email"],
+      scopes: ["profile", "email", "openid"],
     });
   }, []);
 
@@ -54,11 +54,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const userInfo = await GoogleSignin.signIn();
-      if (!userInfo.idToken) {
+      const tokens = await GoogleSignin.getTokens();
+      const idToken = userInfo.idToken ?? tokens.idToken;
+      if (!idToken) {
         setAuthError("Google sign-in failed. Missing token.");
         return;
       }
-      const credential = GoogleAuthProvider.credential(userInfo.idToken);
+      const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
       setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
       setIsLoginSuccess(true);

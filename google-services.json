@@ -12,7 +12,20 @@
           "package_name": "com.blokc.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "897405902939-phcvdati5ppbope7m046b2m7sfs59984.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blokc.app",
+            "certificate_hash": "2246b6d03966f20dfd1d35e1d86cc04c093e9a28"
+          }
+        },
+        {
+          "client_id": "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDSieSAUmnMkUOfAnidwwpKLG0fdtt38Lc"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "897405902939-nufp2q3k87kvtac1ikuen21lbeak68oh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.blokc.app"
+              }
+            }
+          ]
         }
       }
     }
