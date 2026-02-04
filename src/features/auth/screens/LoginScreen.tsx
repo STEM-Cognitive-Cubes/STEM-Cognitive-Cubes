@@ -7,9 +7,7 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import * as WebBrowser from "expo-web-browser";
-import { ResponseType } from "expo-auth-session";
-import * as Google from "expo-auth-session/providers/google";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
@@ -19,8 +17,6 @@ import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import type { RootStackParamList } from "../../../navigation/types";
 import { auth } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
-
-WebBrowser.maybeCompleteAuthSession();
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -35,40 +31,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const [googleName, setGoogleName] = useState<string | null>(null);
 
-  const redirectUri = "https://auth.expo.io/@steamables7/blokc";
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId:
-      "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
-    webClientId:
-      "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
-    redirectUri,
-    scopes: ["profile", "email"],
-    responseType: ResponseType.IdToken,
-    prompt: "select_account",
-  });
-
   useEffect(() => {
-    const signInWithGoogle = async () => {
-      if (response?.type !== "success") {
-        return;
-      }
-      const idToken =
-        response.authentication?.idToken ?? response.params?.id_token;
-      if (!idToken) {
-        return;
-      }
-      try {
-        const credential = GoogleAuthProvider.credential(idToken);
-        const result = await signInWithCredential(auth, credential);
-        setGoogleName(result.user.displayName ?? "User");
-        setIsLoginSuccess(true);
-      } catch (error) {
-        setAuthError("Google sign-in failed. Try again.");
-      }
-    };
-    signInWithGoogle();
-  }, [response]);
+    GoogleSignin.configure({
+      webClientId:
+        "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
+      scopes: ["profile", "email"],
+    });
+  }, []);
 
   const handleLogin = async () => {
     setAuthError("");
@@ -77,6 +46,35 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       setIsLoginSuccess(true);
     } catch (error) {
       setAuthError("Login failed. Check your email and password.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setAuthError("");
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const userInfo = await GoogleSignin.signIn();
+      if (!userInfo.idToken) {
+        setAuthError("Google sign-in failed. Missing token.");
+        return;
+      }
+      const credential = GoogleAuthProvider.credential(userInfo.idToken);
+      const result = await signInWithCredential(auth, credential);
+      setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
+      setIsLoginSuccess(true);
+    } catch (error) {
+      if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+        return;
+      }
+      if (error?.code === statusCodes.IN_PROGRESS) {
+        setAuthError("Google sign-in already in progress.");
+        return;
+      }
+      if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        setAuthError("Google Play Services unavailable.");
+        return;
+      }
+      setAuthError("Google sign-in failed. Try again.");
     }
   };
 
@@ -137,11 +135,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             <View style={styles.dividerLine} />
           </View>
 
-        <Pressable
-          style={styles.googleButton}
-          onPress={() => promptAsync({ useProxy: true })}
-          disabled={!request}
-        >
+        <Pressable style={styles.googleButton} onPress={handleGoogleLogin}>
           <View style={styles.googleIcon}>
             <FontAwesome name="google" size={14} color="black" />
           </View>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897405902939",
+    "project_id": "blokc-13a99",
+    "storage_bucket": "blokc-13a99.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897405902939:android:7585e34316637ca1d1df7e",
+        "android_client_info": {
+          "package_name": "com.blokc.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSieSAUmnMkUOfAnidwwpKLG0fdtt38Lc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
