@@ -5,7 +5,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -14,6 +14,13 @@ import SignupScreen from "./src/features/auth/screens/SignupScreen";
 import type { RootStackParamList } from "./src/navigation/types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "#B860FF",
+  },
+};
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,8 +36,13 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <NavigationContainer theme={navigationTheme}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#B860FF" },
+          }}
+        >
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen
               name="Signup"
