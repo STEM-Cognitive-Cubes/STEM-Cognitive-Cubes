@@ -8,7 +8,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import * as WebBrowser from "expo-web-browser";
-import * as AuthSession from "expo-auth-session";
+import { ResponseType } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 
 import { colors } from "../../../config/theme";
@@ -35,28 +35,31 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const [googleName, setGoogleName] = useState<string | null>(null);
 
-  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+  const redirectUri = "https://auth.expo.io/@steamables7/blokc";
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId:
+    clientId:
       "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
-    androidClientId:
+    webClientId:
       "897405902939-n2u19hv6777iuphnsose5dj27ukjbv1c.apps.googleusercontent.com",
     redirectUri,
     scopes: ["profile", "email"],
-    responseType: "id_token",
+    responseType: ResponseType.IdToken,
     prompt: "select_account",
   });
 
   useEffect(() => {
     const signInWithGoogle = async () => {
-      if (response?.type !== "success" || !response.authentication?.idToken) {
+      if (response?.type !== "success") {
+        return;
+      }
+      const idToken =
+        response.authentication?.idToken ?? response.params?.id_token;
+      if (!idToken) {
         return;
       }
       try {
-        const credential = GoogleAuthProvider.credential(
-          response.authentication.idToken,
-        );
+        const credential = GoogleAuthProvider.credential(idToken);
         const result = await signInWithCredential(auth, credential);
         setGoogleName(result.user.displayName ?? "User");
         setIsLoginSuccess(true);
