@@ -1,0 +1,9 @@
+node_modules/
+android/
+ios/
+dist/
+build/
+
+.eslintrc.js
+app.config.js
+babel.config.js

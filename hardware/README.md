@@ -1,1 +1,0 @@
-# Hardware CAD and schematics

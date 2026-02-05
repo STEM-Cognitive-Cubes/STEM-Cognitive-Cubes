@@ -1,9 +1,18 @@
-# STEM-Cognitive-Cubes
-An IoT educational toy featuring smart magnetic cubes that stream play data via BLE. A companion mobile app uses an on device ML model to analyze play patterns and provide insights into a child's cognitive development.
+# BlokC Mobile App
 
-## Modules
-- android-app: Mobile interface
-- firmware: Embedded software for cubes
-- hardware: 3D and electronic design
-- ml-analysis: Data science and ML models
-- docs: Research, design, and progress
+## Requirements
+
+- Node 18+
+- Expo CLI (via npx)
+- Android Studio or Xcode
+
+## Setup
+
+```bash
+npm install
+cp .env.example .env
+npm run start
+npm run typecheck
+npm run lint
+
+```
