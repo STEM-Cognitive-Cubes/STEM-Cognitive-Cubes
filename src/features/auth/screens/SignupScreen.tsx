@@ -1,7 +1,8 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
@@ -39,6 +40,19 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       setIsSuccessOpen(true);
     } catch (error) {
       setAuthError("Sign up failed. Try again.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      try {
+        await GoogleSignin.signOut();
+      } catch {
+        // Ignore Google sign-out errors for now.
+      }
+    } finally {
+      navigation.navigate("Login");
     }
   };
 
@@ -89,6 +103,9 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
           {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
           <Pressable style={styles.button} onPress={handleSignup}>
             <Text style={styles.buttonText}>Sign up</Text>
+          </Pressable>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Log out</Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -144,6 +161,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
+    color: "black",
+    fontSize: 14,
+    fontFamily: fontFamilies.semiBold,
+  },
+  logoutButton: {
+    marginTop: 16,
+    backgroundColor: "transparent",
+    borderRadius: 24,
+    paddingVertical: 12,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.3)",
+  },
+  logoutButtonText: {
     color: "black",
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
