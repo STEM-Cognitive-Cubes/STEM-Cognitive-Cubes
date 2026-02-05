@@ -3,9 +3,9 @@
 ## Summary of work completed
 - Auth UI: Login + Signup screens built in `src/features/auth/screens`.
 - Shared auth UI: `AuthBackground`, `AuthTextInput`, success/fail modals.
-- Forgot password flow: modal + “check your email” success state.
+- Forgot password flow: modal + "check your email" success state.
 - Firebase email/password wired for login + signup.
-- Google sign‑in wired (Expo Go + AuthSession).
+- Google sign-in wired using native `@react-native-google-signin/google-signin` (EAS dev build required).
 - Navigation stack configured for Login/Signup.
 - Assets in `src/assets` (blobs, dots, mascot).
 
@@ -24,7 +24,8 @@
 
 ## Dependencies added
 - `firebase`
-- `expo-auth-session`
+- `expo-dev-client`
+- `@react-native-google-signin/google-signin`
 - `@react-navigation/native`
 - `@react-navigation/native-stack`
 - `react-native-screens`
@@ -33,28 +34,10 @@
 - `@expo-google-fonts/inter`
 - `expo-linear-gradient` (older blob setup; currently using image blobs)
 
-## Setup for new developers
-1) Install dependencies:
-```
-npm install
-```
-
-2) Start the app:
-```
-npx expo start
-```
-
-3) Firebase config:
-- `src/services/firebase.ts` contains Firebase Web config.
-- Email/password auth must be enabled in Firebase Console.
-
-4) Google sign‑in (Expo Go):
-- Enable Google provider in Firebase Auth.
-- Configure Google OAuth consent screen.
-- Add your Expo redirect URI in Google Cloud:
-  `https://auth.expo.io/@YOUR_EXPO_USERNAME/blokc`
+## Setup
+See `docs/setup.md` for complete Windows/macOS setup, EAS dev build commands,
+Firebase config files, and SHA-1 instructions.
 
 ## Notes
-- For Expo Go, native config files (`GoogleService-Info.plist`, `google-services.json`)
-  are not used.
-- For production/dev builds, those files will be needed.
+- Expo Go is not supported for native Google sign-in.
+- Dev builds require `google-services.json` (Android) and `GoogleService-Info.plist` (iOS).

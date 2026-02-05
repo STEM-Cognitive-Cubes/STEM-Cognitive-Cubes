@@ -18,3 +18,6 @@ If bundling errors occur after installing, clear Metro cache:
 ```bash
 npx expo start -c
 ```
+
+For full setup (Windows/macOS), EAS dev build steps, and Firebase auth
+configuration, see `docs/setup.md`.
