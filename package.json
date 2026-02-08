@@ -26,12 +26,17 @@
     "expo-auth-session": "^7.0.10",
     "expo-dev-client": "~6.0.20",
     "expo-font": "^14.0.11",
-    "expo-linear-gradient": "^15.0.8",
+    "expo-linear-gradient": "~15.0.8",
     "firebase": "^12.8.0",
     "lottie-react-native": "~7.3.1",
+    "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-native": "0.81.5",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
+    "react-native-svg": "15.12.1",
     "react-native-web": "^0.21.0"
-  }
+  },
+  "name": "STEM-Cognitive-Cubes",
+  "version": "1.0.0"
 }

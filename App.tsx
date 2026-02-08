@@ -14,7 +14,7 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 import type { RootStackParamList } from "./src/navigation/types";
-
+import HomeScreen from "@/features/home/screens/HomeScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const navigationTheme = {
   ...DefaultTheme,
@@ -74,6 +74,7 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
+            <Stack.Screen name="Home" component={HomeScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
