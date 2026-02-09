@@ -5,11 +5,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
+import { ScrollView } from "react-native";
+
 
 export default function HomeScreen() {
   return (
     <SafeAreaProvider style={styles.safe}>
       <View style={styles.root}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         {/*Hero*/}
         <LinearGradient
             colors={["#cf92fe", "#A24BFF", "#B860FF"]}
@@ -167,7 +173,7 @@ export default function HomeScreen() {
             resizeMode="contain"
           />
         </View>
-
+      </ScrollView>
     </View>
     </SafeAreaProvider>
   );
@@ -176,6 +182,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     safe: {flex: 1, backgroundColor: "#fff"},
     root: { flex: 1 },
+
+    scrollContent: {
+  paddingBottom: 40, // space for the tab bar (tweak 90–130)
+},
+
 
     hero: {
     height: 420,
@@ -357,14 +368,14 @@ quickRow: {
 
 
 cardTitle: {
-  fontSize: 16,
+  fontSize: 25,
   fontWeight: "900",
   color: "#FFFFFF",
 },
 
 cardSubtitle: {
   marginTop: 2,
-  fontSize: 12,
+  fontSize: 16,
   fontWeight: "700",
   color: "rgba(255,255,255,0.85)",
 },
@@ -389,7 +400,7 @@ overlayIcon: {
   height: 64,
   opacity: 0.95,
   position: "absolute",
-  top: 16,
+  top: 8,
   left: 16,
 },
 
@@ -398,7 +409,7 @@ overlayIconLarge: {
   height: 102,
   opacity: 0.95,
   position: "absolute",
-  top: -5,
+  top: -14,
   left: 14,
 },
 
