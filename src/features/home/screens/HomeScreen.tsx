@@ -1,8 +1,10 @@
 import React from 'react';
-import {Text, StyleSheet, View, Image} from 'react-native';
+import {Pressable,Text, StyleSheet, View, Image} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';  
 import Svg, { Path } from 'react-native-svg';
+import HistoryCardSvg from "@/assets/cards/historyCard.svg";
+import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
 
 export default function HomeScreen() {
   return (
@@ -92,14 +94,80 @@ export default function HomeScreen() {
                 </Svg>
             </View>
 
-
         </LinearGradient>
 
         {/*Content*/}
         <View style={styles.content}>
           <Text style={styles.quickActionsTitle}>Quick Actions</Text>
         </View>
-        
+
+        <View style={styles.quickRow}>
+          <Pressable style={styles.svgCardWrap} onPress={() => {}}>
+            <HistoryCardSvg width="100%" height="100%" />
+            <View style={styles.cardOverlay}>
+              <Image
+                source={require("../../../assets/icons/history.png")}
+                style={styles.overlayIcon}
+                resizeMode="contain"
+              />
+
+              <View style={styles.cardTextBlock}>
+                <Text style={styles.cardTitle}>History</Text>
+                <Text style={styles.cardSubtitle}>View past builds</Text>
+              </View>
+            </View>
+
+          </Pressable>
+
+
+          <Pressable style={styles.svgCardWrap} onPress={() => {}}>
+            <InsightsCardSvg width="100%" height="100%" />
+            <View style={styles.cardOverlay}>
+              <Image
+                source={require("../../../assets/icons/insights.png")} // update path if needed
+                style={styles.overlayIconLarge}
+                resizeMode="contain"
+              />
+
+              <View style={styles.cardTextBlock}>
+                <Text style={styles.cardTitle}>Insights</Text>
+                <Text style={styles.cardSubtitle}>New suggestions</Text>
+              </View>
+            </View>
+          </Pressable>
+
+
+
+          
+        </View>
+
+        {/* Start Session Card */}
+        <View style={styles.sessionCard}>
+          {/* Status pill */}
+          <View style={styles.statusPill}>
+            <View style={styles.statusDot} />
+            <Text style={styles.statusText}>Hive active</Text>
+          </View>
+
+          {/* Text content */}
+          <Text style={styles.sessionTitle}>Start a session</Text>
+          <Text style={styles.sessionDesc}>
+            Connects blocks to generate real-time 3D models and insights
+          </Text>
+
+          {/* CTA button */}
+          <Pressable style={styles.sessionBtn} onPress={() => {}}>
+            <Text style={styles.sessionBtnText}>Track Now</Text>
+          </Pressable>
+
+          {/* Bottom-right mascot (optional image) */}
+          <Image
+            source={require("../../../assets/mascot/session_mascot.png")}
+            style={styles.sessionMascot}
+            resizeMode="contain"
+          />
+        </View>
+
     </View>
     </SafeAreaProvider>
   );
@@ -153,7 +221,6 @@ const styles = StyleSheet.create({
     },
 
   content: {
-    flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 18,
     paddingTop: 16,
@@ -163,8 +230,9 @@ const styles = StyleSheet.create({
   fontSize: 25,
   fontWeight: "900",
   color: "#5064AC", // matches your yellow card vibe
-  marginTop: 2,
-  marginBottom: 20,
+  marginTop: -30,
+  marginBottom: 10,
+  zIndex: 5,
 },
 
 
@@ -276,6 +344,161 @@ sparkleSmall: {
   textShadowColor: "rgba(255,255,255,0.5)",
   textShadowOffset: { width: 0, height: 0 },
   textShadowRadius: 6,
+},
+
+quickRow: {
+  flexDirection: "row",
+  gap: 25,
+  marginTop: 2,
+  marginBottom: 24,
+  marginLeft: 20,
+  marginRight: 20,
+},
+
+
+cardTitle: {
+  fontSize: 16,
+  fontWeight: "900",
+  color: "#FFFFFF",
+},
+
+cardSubtitle: {
+  marginTop: 2,
+  fontSize: 12,
+  fontWeight: "700",
+  color: "rgba(255,255,255,0.85)",
+},
+
+
+svgCardWrap: {
+  flex: 1,
+  height: 140,
+},
+
+
+cardOverlay: {
+  position: "absolute",
+  inset: 0,
+  padding: 20,
+  justifyContent: "space-between",
+},
+
+
+overlayIcon: {
+  width: 64,
+  height: 64,
+  opacity: 0.95,
+  position: "absolute",
+  top: 16,
+  left: 16,
+},
+
+overlayIconLarge: {
+  width: 102,
+  height: 102,
+  opacity: 0.95,
+  position: "absolute",
+  top: -5,
+  left: 14,
+},
+
+
+cardTextBlock: {
+  marginTop: "auto",
+},
+
+cardShadowWrap: {
+  flex: 1,
+  height: 140,
+  borderRadius: 22,   // must roughly match SVG corners
+  backgroundColor: "transparent",
+
+  // iOS shadow
+  shadowColor: "#000",
+  shadowOpacity: 0.18,
+  shadowRadius: 16,
+  shadowOffset: { width: 0, height: 10 },
+
+  // Android shadow
+  elevation: 10,
+},
+
+sessionCard: {
+  marginTop: -16,
+  marginHorizontal: 20,
+  borderRadius: 22,
+  backgroundColor: "#7E89B8", // tweak to match your design
+  padding: 24,
+  overflow: "hidden",
+
+  shadowColor: "#000",
+  shadowOpacity: 0.12,
+  shadowRadius: 12,
+  shadowOffset: { width: 0, height: 8 },
+  elevation: 6,
+},
+
+statusPill: {
+  alignSelf: "flex-start",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  backgroundColor: "rgba(255,255,255,0.25)",
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  borderRadius: 999,
+},
+
+statusDot: {
+  width: 12,
+  height: 12,
+  borderRadius: 99,
+  backgroundColor: "#35E06F",
+},
+
+statusText: {
+  color: "#FFFFFF",
+  fontWeight: "800",
+  fontSize: 16,
+},
+
+sessionTitle: {
+  marginTop: 12,
+  color: "#FFFFFF",
+  fontSize: 20,
+  fontWeight: "900",
+},
+
+sessionDesc: {
+  marginTop: 6,
+  color: "rgba(255,255,255,0.9)",
+  fontSize: 17,
+  fontWeight: "600",
+  maxWidth: "78%",
+},
+
+sessionBtn: {
+  marginTop: 14,
+  alignSelf: "flex-start",
+  backgroundColor: "#FFFFFF",
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+  borderRadius: 14,
+},
+
+sessionBtnText: {
+  color: "#5064AC",
+  fontWeight: "900",
+  fontSize: 20,
+},
+
+sessionMascot: {
+  position: "absolute",
+  right: -90,
+  bottom: -60,
+  width: 300,
+  height: 300,
+  opacity: 0.95,
 },
 
 
