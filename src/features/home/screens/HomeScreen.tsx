@@ -55,15 +55,20 @@ export default function HomeScreen() {
 
                 {/* Bubble */}
                 <View style={styles.bubbleWrapper}>
-                    <View style={styles.bubble}>
-                        <Text style={[styles.bubbleText, styles.bubbleHeadline]}>
-                            Your child enjoys complex builds.
-                        </Text>
-                        <Text style={[styles.bubbleText, styles.bubbleBody]}>
-                            Encourage this with drawing play.
-                        </Text>
-                    </View>
+                  {/* Glow layer */}
+                  <View style={styles.bubbleGlow} />
+
+                  {/* Actual bubble */}
+                  <View style={styles.bubble}>
+                    <Text style={[styles.bubbleText, styles.bubbleHeadline]}>
+                      Your child enjoys complex builds.
+                    </Text>
+                    <Text style={[styles.bubbleText, styles.bubbleBody]}>
+                      Encourage this with drawing play.
+                    </Text>
+                  </View>
                 </View>
+
 
             </View>
 
@@ -297,7 +302,7 @@ bubble: {
 bubbleText: {
   fontSize: 15,          // bigger
   lineHeight: 20,
-  color: "#5F5F5F",
+  color: "#5064AC",
   textAlign: "center",
   fontWeight: "700",     // stronger
 },
@@ -309,6 +314,27 @@ bubbleHeadline: {
 
 bubbleBody: {
   marginTop: 10,
+},
+
+bubbleGlow: {
+  position: "absolute",
+  top: -6,
+  bottom: -6,
+  left: 15,
+  right: -5,
+  borderRadius: 28,
+
+  // soft fairy glow color
+  backgroundColor: "rgba(255,255,255,0.35)",
+
+  // iOS glow
+  shadowColor: "#FFFFFF",
+  shadowOpacity: 0.9,
+  shadowRadius: 22,
+  shadowOffset: { width: 0, height: 0 },
+
+  // Android glow
+  elevation: 10,
 },
 
 waveContainer: {
