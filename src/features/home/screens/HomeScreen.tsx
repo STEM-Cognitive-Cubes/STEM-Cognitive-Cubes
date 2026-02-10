@@ -1,21 +1,88 @@
-import React from 'react';
-import {Pressable,Text, StyleSheet, View, Image} from 'react-native';
+import React, { useMemo, useRef } from "react";
+import { Animated, Pressable, Text, StyleSheet, View, Image } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';  
 import Svg, { Path } from 'react-native-svg';
 import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
 import { ScrollView } from "react-native";
+import BotBubbleFab from "@/components/BotBubbleFab";
 
 
 export default function HomeScreen() {
+  const fabOpacity = useRef(new Animated.Value(1)).current;
+const fabTranslateY = useRef(new Animated.Value(0)).current;
+
+const lastScrollY = useRef(0);
+const isHidden = useRef(false);
+
+const hideFab = () => {
+  if (isHidden.current) return;
+  isHidden.current = true;
+
+  Animated.parallel([
+    Animated.timing(fabOpacity, {
+      toValue: 0,
+      duration: 180,
+      useNativeDriver: true,
+    }),
+    Animated.timing(fabTranslateY, {
+      toValue: 26,
+      duration: 180,
+      useNativeDriver: true,
+    }),
+  ]).start();
+};
+
+const showFab = () => {
+  if (!isHidden.current) return;
+  isHidden.current = false;
+
+  Animated.parallel([
+    Animated.timing(fabOpacity, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: true,
+    }),
+    Animated.timing(fabTranslateY, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }),
+  ]).start();
+};
+
+const handleScroll = (e: any) => {
+  const y = e.nativeEvent.contentOffset.y;
+  const prevY = lastScrollY.current;
+
+  const goingDown = y > prevY;
+  const goingUp = y < prevY;
+
+  const hideAfter = 40;
+  const showNearTop = 20;
+
+  if (y <= showNearTop) {
+    showFab();
+  } else if (goingDown && y > hideAfter) {
+    hideFab();
+  } else if (goingUp) {
+    showFab();
+  }
+
+  lastScrollY.current = y;
+};
+
   return (
     <SafeAreaProvider style={styles.safe}>
       <View style={styles.root}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
         >
+
         {/*Hero*/}
         <LinearGradient
             colors={["#cf92fe", "#A24BFF", "#B860FF"]}
@@ -179,6 +246,22 @@ export default function HomeScreen() {
           />
         </View>
       </ScrollView>
+
+      <Animated.View
+        pointerEvents="box-none"
+        style={[
+          styles.fabHost,
+          { opacity: fabOpacity, transform: [{ translateY: fabTranslateY }] },
+        ]}
+      >
+        <BotBubbleFab
+          size={66}
+          onPress={() => {
+            console.log("Bot tapped");
+          }}
+        />
+      </Animated.View>
+
     </View>
     </SafeAreaProvider>
   );
@@ -536,6 +619,13 @@ sessionMascot: {
   width: 300,
   height: 300,
   opacity: 0.95,
+},
+
+fabHost: {
+  position: "absolute",
+  right: 18,
+  bottom: -30, // adjust so it sits above your tab bar
+  zIndex: 999,
 },
 
 
