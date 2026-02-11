@@ -17,6 +17,7 @@ import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import type { RootStackParamList } from "../../../navigation/types";
 import { auth } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
+import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -45,7 +46,15 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       setIsLoginSuccess(true);
     } catch (error) {
-      setAuthError("Login failed. Check your email and password.");
+      setAuthError(
+        getFirebaseAuthErrorMessage(
+          error,
+          "Login failed. Check your email and password."
+        )
+      );
+      // Keep a console trail for debugging (device logs / Metro).
+      // eslint-disable-next-line no-console
+      console.warn("Email login failed:", error);
     }
   };
 
@@ -53,7 +62,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     setAuthError("");
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      const userInfo = await GoogleSignin.signIn();
+      const userInfo = (await GoogleSignin.signIn()) as unknown as {
+        idToken?: string | null;
+        user?: { name?: string | null } | null;
+      };
       const tokens = await GoogleSignin.getTokens();
       const idToken = userInfo.idToken ?? tokens.idToken;
       if (!idToken) {
@@ -64,7 +76,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       const result = await signInWithCredential(auth, credential);
       setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
       setIsLoginSuccess(true);
-    } catch (error) {
+    } catch (rawError) {
+      const error = rawError as { code?: string; message?: string } | undefined;
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
         return;
       }
