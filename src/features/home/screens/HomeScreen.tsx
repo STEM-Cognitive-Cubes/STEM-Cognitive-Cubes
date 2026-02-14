@@ -7,9 +7,9 @@ import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
 import { ScrollView } from "react-native";
 import BotBubbleFab from "@/components/BotBubbleFab";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: any) {
   const fabOpacity = useRef(new Animated.Value(1)).current;
 const fabTranslateY = useRef(new Animated.Value(0)).current;
 
@@ -72,6 +72,22 @@ const handleScroll = (e: any) => {
 
   lastScrollY.current = y;
 };
+
+const openBot = async () => {
+  try {
+    const seen = await AsyncStorage.getItem("bot_intro_seen");
+
+    if (seen === "true") {
+      navigation.navigate("BotChat");
+    } else {
+      navigation.navigate("BotIntro1");
+    }
+  } catch (e) {
+    // fallback: still open intro
+    navigation.navigate("BotIntro1");
+  }
+};
+
 
   return (
     <SafeAreaProvider style={styles.safe}>
@@ -254,12 +270,7 @@ const handleScroll = (e: any) => {
           { opacity: fabOpacity, transform: [{ translateY: fabTranslateY }] },
         ]}
       >
-        <BotBubbleFab
-          size={66}
-          onPress={() => {
-            console.log("Bot tapped");
-          }}
-        />
+        <BotBubbleFab size={66} onPress={openBot} />
       </Animated.View>
 
     </View>
