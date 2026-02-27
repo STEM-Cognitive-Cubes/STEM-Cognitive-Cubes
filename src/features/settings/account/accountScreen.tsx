@@ -112,3 +112,41 @@ return (
           >
             <Text style={styles.editProfileButtonText}>Edit profile</Text>
           </TouchableOpacity>
+
+          <View style={styles.securitySection}>
+            <Text style={styles.sectionTitle}>SECURITY</Text>
+
+            <TouchableOpacity
+              style={styles.securityItem}
+              onPress={handleChangePassword}
+              activeOpacity={0.7}
+            >
+              <View style={styles.securityLeft}>
+                <View style={styles.securityIconContainer}>
+                  <Ionicons name="lock-closed" size={20} color="#9333EA" />
+                </View>
+                <Text style={styles.securityText}>Change Password</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            {/* Delete Account */}
+            <TouchableOpacity
+              style={[styles.securityItem, { borderBottomWidth: 0 }]}
+              onPress={handleDeleteAccount}
+              activeOpacity={0.7}
+            >
+              <View style={styles.securityLeft}>
+                <View style={styles.securityIconContainer}>
+                  <Ionicons name="trash" size={20} color="#EF4444" />
+                </View>
+                <Text style={styles.securityText}>Delete Account</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
