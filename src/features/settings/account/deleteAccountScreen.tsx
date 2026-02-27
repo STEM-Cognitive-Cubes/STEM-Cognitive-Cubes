@@ -75,3 +75,19 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
   const handleCancel = () => {
     navigation?.goBack();
   };
+ return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation?.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Delete Account</Text>
+        <View style={{ width: 40 }} />
+      </View>
