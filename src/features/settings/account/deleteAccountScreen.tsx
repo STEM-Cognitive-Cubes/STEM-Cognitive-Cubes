@@ -91,3 +91,32 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
         <Text style={styles.headerTitle}>Delete Account</Text>
         <View style={{ width: 40 }} />
       </View>
+
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Warning Icon */}
+        <View style={styles.iconContainer}>
+          <View style={styles.warningCircle}>
+            <Ionicons name="warning" size={60} color="#EF4444" />
+          </View>
+        </View>
+
+        {/* Warning Title */}
+        <Text style={styles.warningTitle}>Warning! Permanent Action</Text>
+
+        {/* Warning Message */}
+        <View style={styles.warningBox}>
+          <Text style={styles.warningBoxTitle}>What you will lose:</Text>
+          <View style={styles.warningItem}>
+            <Ionicons name="close-circle" size={20} color="#EF4444" />
+            <Text style={styles.warningItemText}>All your personal data</Text>
+          </View>
+          <View style={styles.warningItem}>
+            <Ionicons name="close-circle" size={20} color="#EF4444" />
+            <Text style={styles.warningItemText}>Game progress and achievements</Text>
+          </View>
+          <View style={styles.warningItem}>
+            <Ionicons name="close-circle" size={20} color="#EF4444" />
+            <Text style={styles.warningItemText}>Access to your account</Text>
+          </View>
+        </View>
