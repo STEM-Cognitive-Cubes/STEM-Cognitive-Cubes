@@ -32,3 +32,35 @@ const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => 
   const handleCancel = () => {
     navigation?.goBack();
   };
+  const handleSaveChanges = async () => {
+    // Validation
+    if (!fullName.trim()) {
+      Alert.alert('Error', 'Full name is required');
+      return;
+    }
+
+    if (!email.trim()) {
+      Alert.alert('Error', 'Email is required');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      Alert.alert(
+        'Success',
+        'Profile updated successfully.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              console.log('Profile updated');
+              // navigation?.goBack();
+            },
+          },
+        ]
+      );
+    }, 1500);
+  };
