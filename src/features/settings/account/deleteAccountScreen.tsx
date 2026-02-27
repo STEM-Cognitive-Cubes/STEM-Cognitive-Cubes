@@ -170,3 +170,154 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
     </SafeAreaView>
   );
 };
+
+//styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: '#9333EA',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    paddingTop: 32,
+    paddingBottom: 20,
+  },
+  warningCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FEE2E2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  warningTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#EF4444',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  warningBox: {
+    backgroundColor: '#FEF2F2',
+    marginHorizontal: 20,
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#FEE2E2',
+    marginBottom: 24,
+  },
+  warningBoxTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#991B1B',
+    marginBottom: 16,
+  },
+  warningItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  warningItemText: {
+    fontSize: 14,
+    color: '#7F1D1D',
+    marginLeft: 12,
+    flex: 1,
+  },
+  confirmSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  confirmTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  confirmInput: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    color: '#1F2937',
+    fontWeight: '600',
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  deleteButton: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+    elevation: 3,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.84,
+  },
+  deleteButtonDisabled: {
+    backgroundColor: '#FCA5A5',
+    opacity: 0.6,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  cancelButton: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    paddingHorizontal: 40,
+    marginBottom: 32,
+    lineHeight: 18,
+  },
+});
+
+export default DeleteAccountScreen;
+
