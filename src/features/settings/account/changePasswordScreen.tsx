@@ -103,3 +103,223 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation 
   const handleCancel = () => {
     navigation?.goBack();
   };
+
+return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation?.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Change Password</Text>
+        <View style={{ width: 40 }} />
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Icon */}
+        <View style={styles.iconContainer}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="shield-checkmark" size={60} color="#9333EA" />
+          </View>
+        </View>
+
+        {/* Description */}
+        <Text style={styles.description}>
+          Your new password must be different from{'\n'}previously used passwords.
+        </Text>
+
+        {/* Form Section */}
+        <View style={styles.formContainer}>
+          {/* Current Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Current Password</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                placeholder="Enter current password"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showCurrentPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={showCurrentPassword ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#6B7280"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* New Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>New Password</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Enter new password"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showNewPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setShowNewPassword(!showNewPassword)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={showNewPassword ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#6B7280"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Confirm Password */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Re-enter new password"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#6B7280"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Password Requirements */}
+          {newPassword.length > 0 && (
+            <View style={styles.requirementsContainer}>
+              <Text style={styles.requirementsTitle}>Password requirements:</Text>
+
+              <View style={styles.requirementItem}>
+                <Ionicons
+                  name={passwordValidation.hasMinLength ? 'checkmark-circle' : 'close-circle'}
+                  size={16}
+                  color={passwordValidation.hasMinLength ? '#10B981' : '#EF4444'}
+                />
+                <Text style={[
+                  styles.requirementText,
+                  passwordValidation.hasMinLength && styles.requirementMet
+                ]}>
+                  At least 8 characters
+                </Text>
+              </View>
+
+              <View style={styles.requirementItem}>
+                <Ionicons
+                  name={passwordValidation.hasUpperCase ? 'checkmark-circle' : 'close-circle'}
+                  size={16}
+                  color={passwordValidation.hasUpperCase ? '#10B981' : '#EF4444'}
+                />
+                <Text style={[
+                  styles.requirementText,
+                  passwordValidation.hasUpperCase && styles.requirementMet
+                ]}>
+                  One uppercase letter
+                </Text>
+              </View>
+
+              <View style={styles.requirementItem}>
+                <Ionicons
+                  name={passwordValidation.hasLowerCase ? 'checkmark-circle' : 'close-circle'}
+                  size={16}
+                  color={passwordValidation.hasLowerCase ? '#10B981' : '#EF4444'}
+                />
+                <Text style={[
+                  styles.requirementText,
+                  passwordValidation.hasLowerCase && styles.requirementMet
+                ]}>
+                  One lowercase letter
+                </Text>
+              </View>
+
+              <View style={styles.requirementItem}>
+                <Ionicons
+                  name={passwordValidation.hasNumber ? 'checkmark-circle' : 'close-circle'}
+                  size={16}
+                  color={passwordValidation.hasNumber ? '#10B981' : '#EF4444'}
+                />
+                <Text style={[
+                  styles.requirementText,
+                  passwordValidation.hasNumber && styles.requirementMet
+                ]}>
+                  One number
+                </Text>
+              </View>
+
+              <View style={styles.requirementItem}>
+                <Ionicons
+                  name={passwordValidation.hasSpecialChar ? 'checkmark-circle' : 'close-circle'}
+                  size={16}
+                  color={passwordValidation.hasSpecialChar ? '#10B981' : '#EF4444'}
+                />
+                <Text style={[
+                  styles.requirementText,
+                  passwordValidation.hasSpecialChar && styles.requirementMet
+                ]}>
+                  One special character
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.updateButton}
+            onPress={handleUpdatePassword}
+            activeOpacity={0.8}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Text style={styles.updateButtonText}>Updating...</Text>
+            ) : (
+              <Text style={styles.updateButtonText}>Update Password</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancel}
+            activeOpacity={0.7}
+            disabled={isLoading}
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
