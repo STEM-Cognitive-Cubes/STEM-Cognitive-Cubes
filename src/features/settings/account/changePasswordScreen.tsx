@@ -51,3 +51,55 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation 
   };
 
   const passwordValidation = validatePassword(newPassword);
+//logic for update password
+  const handleUpdatePassword = async () => {
+    // Validation
+    if (!currentPassword) {
+      Alert.alert('Error', 'Please enter your current password');
+      return;
+    }
+
+    if (!newPassword) {
+      Alert.alert('Error', 'Please enter a new password');
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      Alert.alert('Error', 'New password does not meet all requirements');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'New password and confirm password do not match');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      Alert.alert('Error', 'New password must be different from current password');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      Alert.alert(
+        'Success',
+        'Password updated successfully.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              console.log('Password updated');
+              navigation?.goBack();
+            },
+          },
+        ]
+      );
+    }, 1500);
+  };
+
+  const handleCancel = () => {
+    navigation?.goBack();
+  };
