@@ -60,3 +60,55 @@ return (
           </View>
 
           <Text style={styles.userName}>{userData.name}</Text>
+
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>PERSONAL INFO</Text>
+
+            <View style={styles.infoItem}>
+              <View style={styles.infoIconContainer}>
+                <Ionicons name="person" size={20} color="#9333EA" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>Full Name</Text>
+                <Text style={styles.infoValue}>{userData.name}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoItem}>
+              <View style={styles.infoIconContainer}>
+                <MaterialIcons name="email" size={20} color="#9333EA" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>Email</Text>
+                <Text style={styles.infoValue}>{userData.email}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoItem}>
+              <View style={styles.infoIconContainer}>
+                <Ionicons name="call" size={20} color="#9333EA" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>Phone</Text>
+                <Text style={styles.infoValue}>{userData.phone}</Text>
+              </View>
+            </View>
+
+            <View style={[styles.infoItem, { borderBottomWidth: 0 }]}>
+              <View style={styles.infoIconContainer}>
+                <Ionicons name="calendar" size={20} color="#9333EA" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>Date of Birth</Text>
+                <Text style={styles.infoValue}>{userData.dob}</Text>
+              </View>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.editProfileButton}
+            onPress={handleEditProfile}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.editProfileButtonText}>Edit profile</Text>
+          </TouchableOpacity>
