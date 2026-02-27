@@ -64,3 +64,30 @@ const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => 
       );
     }, 1500);
   };
+ return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation?.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <View style={{ width: 40 }} />
+      </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Avatar Section */}
+        <View style={styles.avatarSection}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>DJ</Text>
+          </View>
+          <TouchableOpacity style={styles.editAvatarButton} activeOpacity={0.8}>
+            <Ionicons name="camera" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
