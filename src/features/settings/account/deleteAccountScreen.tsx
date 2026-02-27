@@ -94,14 +94,14 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
 
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Warning Icon */}
+        {/* Warning image */}
         <View style={styles.iconContainer}>
           <View style={styles.warningCircle}>
             <Ionicons name="warning" size={60} color="#EF4444" />
           </View>
         </View>
 
-        {/* Warning Title */}
+        {/* Warning header */}
         <Text style={styles.warningTitle}>Warning! Permanent Action</Text>
 
         {/* Warning Message */}
@@ -120,3 +120,53 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
             <Text style={styles.warningItemText}>Access to your account</Text>
           </View>
         </View>
+
+        {/* Confirmation Section */}
+        <View style={styles.confirmSection}>
+          <Text style={styles.confirmTitle}>Type "DELETE" to confirm</Text>
+          <TextInput
+            style={styles.confirmInput}
+            value={confirmText}
+            onChangeText={setConfirmText}
+            placeholder="Type DELETE here"
+            placeholderTextColor="#9CA3AF"
+            autoCapitalize="characters"
+          />
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.deleteButton,
+              confirmText.toUpperCase() !== 'DELETE' && styles.deleteButtonDisabled,
+            ]}
+            onPress={handlePermanentlyDelete}
+            activeOpacity={0.8}
+            disabled={isLoading || confirmText.toUpperCase() !== 'DELETE'}
+          >
+            {isLoading ? (
+              <Text style={styles.deleteButtonText}>Deleting...</Text>
+            ) : (
+              <Text style={styles.deleteButtonText}>Yes, Delete Permanently</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancel}
+            activeOpacity={0.7}
+            disabled={isLoading}
+          >
+            <Text style={styles.cancelButtonText}>Cancel, keep my account</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Additional Info */}
+        <Text style={styles.footerText}>
+          This action is irreversible. Once deleted, your account cannot be recovered.
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
