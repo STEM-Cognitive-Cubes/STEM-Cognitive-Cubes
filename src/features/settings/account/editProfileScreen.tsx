@@ -91,3 +91,54 @@ const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => 
             <Ionicons name="camera" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
+
+  {/* Form Section */}
+        <View style={styles.formContainer}>
+          {/* Full Name */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Full Name</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="person-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder="Enter your full name"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </View>
+
+          {/* Email */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputContainer}>
+              <MaterialIcons name="email" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter your email"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+
+          {/* Phone */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Phone</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="call-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Enter your phone number"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="phone-pad"
+              />
+            </View>
+          </View>
+        </View>
