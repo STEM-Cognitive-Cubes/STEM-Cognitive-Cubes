@@ -21,11 +21,11 @@ type RootStackParamList = {
 const AccountScreen = ({ navigation }) => {
   // Dummy data for now until we connect the backend
   const [userData] = useState({
-    name: 'Diseni Jayawardhana',
-    email: 'diseni.jayawardhana@gmail.com',
-    phone: '+94 77 123 4567',
-    dob: '15/03/2005',
-    initials: 'DJ',
+    name: 'Example User',
+    email: 'user@example.com',
+    phone: '+1 555 0100 000',
+    dob: '01/01/1990',
+    initials: 'EU',
   });
 
   const handleEditProfile = () => navigation?.navigate('EditProfile');
