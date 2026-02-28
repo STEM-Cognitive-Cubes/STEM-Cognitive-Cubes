@@ -6,3 +6,7 @@ node_modules/
 venv/
 .idea/
 
+android/
+ios/
+.DS_Store
+assets/.DS_Store
