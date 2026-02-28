@@ -1,12 +1,18 @@
 import { Image, View } from "react-native";
 import React, { useState } from "react";
+
 import {
   useFonts,
   Inter_400Regular,
   Inter_600SemiBold,
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+
+import {
+  NavigationContainer,
+  DefaultTheme,
+} from "@react-navigation/native";
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -14,8 +20,35 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 import type { RootStackParamList } from "./src/navigation/types";
+import HomeScreen from "@/features/home/screens/HomeScreen";
+import AppTabs from "@/navigation/AppTabs";
+
+/* ---------------- SETTINGS IMPORTS ---------------- */
+
+import SettingsScreen from "./src/features/settings/settingsScreen";
+import AccountScreen from "./src/features/settings/account/accountScreen";
+import EditProfileScreen from "./src/features/settings/account/editProfileScreen";
+import ChangePasswordScreen from "./src/features/settings/account/changePasswordScreen";
+import DeleteAccountScreen from "./src/features/settings/account/deleteAccountScreen";
+import AppearanceScreen from "./src/features/settings/appearanceScreen";
+import NotificationPreferencesScreen from "./src/features/settings/notificationScreen";
+import PrivacyControlsScreen from "./src/features/settings/privacyScreen";
+import DataSharingScreen from "./src/features/settings/dataSharingScreen";
+import HelpSupportScreen from "./src/features/settings/helpAndSupport/helpScreen";
+import CommunityScreen from "./src/features/settings/helpAndSupport/community/communityScreen";
+import EmailScreen from "./src/features/settings/helpAndSupport/emailSupport/emailScreen";
+import ChatScreen from "./src/features/settings/helpAndSupport/liveChat/chatScreen";
+import UserGuideScreen from "./src/features/settings/helpAndSupport/userGuide/userGuideScreen";
+import AppFeaturesScreen from "./src/features/settings/helpAndSupport/userGuide/appFeatures";
+import OperateScreen from "./src/features/settings/helpAndSupport/userGuide/operateScreen";
+import ProductIntroScreen from "./src/features/settings/helpAndSupport/userGuide/productIntro";
+import FaqsScreen from "./src/features/settings/faqsScreen";
+import ContactSupportScreen from "./src/features/settings/contactSupportScreen";
+
+/* --------------------------------------------------- */
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
 const navigationTheme = {
   ...DefaultTheme,
   colors: {
@@ -26,6 +59,7 @@ const navigationTheme = {
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
@@ -46,6 +80,7 @@ export default function App() {
               contentStyle: { backgroundColor: "#B860FF" },
             }}
           >
+            {/* AUTH */}
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen
               name="Signup"
@@ -73,6 +108,57 @@ export default function App() {
                 headerTintColor: "black",
                 headerShadowVisible: false,
               }}
+            />
+
+            {/* HOME (direct) */}
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
+            {/* HOME TABS */}
+            <Stack.Screen name="Home" component={AppTabs} />
+
+            {/* SETTINGS FLOW */}
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Account" component={AccountScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen
+              name="NotificationPreferencesScreen"
+              component={NotificationPreferencesScreen}
+            />
+            <Stack.Screen
+              name="PrivacyControlsScreen"
+              component={PrivacyControlsScreen}
+            />
+            <Stack.Screen
+              name="DataSharingScreen"
+              component={DataSharingScreen}
+            />
+            <Stack.Screen
+              name="HelpSupportScreen"
+              component={HelpSupportScreen}
+            />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen
+              name="AppFeaturesScreen"
+              component={AppFeaturesScreen}
+            />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen
+              name="ProductIntroScreen"
+              component={ProductIntroScreen}
+            />
+            <Stack.Screen
+              name="UserGuideScreen"
+              component={UserGuideScreen}
+            />
+            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
+            <Stack.Screen
+              name="ContactSupport"
+              component={ContactSupportScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>
