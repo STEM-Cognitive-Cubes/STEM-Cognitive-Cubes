@@ -57,7 +57,7 @@ const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => 
             text: 'OK',
             onPress: () => {
               console.log('Profile updated');
-              // navigation?.goBack();
+              navigation?.goBack();
             },
           },
         ]
