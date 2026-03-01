@@ -40,9 +40,7 @@ import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
-import HomeScreen from "@/features/home/screens/HomeScreen";
 import AppTabs from "@/navigation/AppTabs";
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -63,7 +61,6 @@ export default function App() {
     Inter_700Bold,
   });
 
-  // Show splash screen while fonts load
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
@@ -79,7 +76,6 @@ export default function App() {
             }}
           >
             <Stack.Screen name="Login" component={LoginScreen} />
-
             <Stack.Screen
               name="Signup"
               component={SignupScreen}
@@ -126,52 +122,6 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </View>
-    </SafeAreaProvider>
-  );
-}
-  }
-
-  return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1 }}>
-        <NavigationContainer theme={navigationTheme}>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "#B860FF" },
-            }}
-          >
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen
-              name="Signup"
-              component={SignupScreen}
-              options={{
-                headerShown: true,
-                title: "Create Account",
-                headerStyle: { backgroundColor: "transparent" },
-                headerBackground: () => (
-                  <View style={{ flex: 1, backgroundColor: "#B860FF" }}>
-                    <Image
-                      source={require("./src/assets/blobs/blob-light.png")}
-                      style={{
-                        position: "absolute",
-                        width: 260,
-                        height: 260,
-                        top: -120,
-                        left: -80,
-                        transform: [{ rotate: "18deg" }],
-                      }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                ),
-                headerTintColor: "black",
-                headerShadowVisible: false,
-              }}
-            />
             <Stack.Screen name="Home" component={AppTabs} />
           </Stack.Navigator>
         </NavigationContainer>
@@ -179,4 +129,3 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
-
