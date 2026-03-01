@@ -12,6 +12,7 @@ import { auth } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../navigation/types";
+import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
 
 type SignupScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
@@ -39,7 +40,9 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       await createUserWithEmailAndPassword(auth, email.trim(), password);
       setIsSuccessOpen(true);
     } catch (error) {
-      setAuthError("Sign up failed. Try again.");
+      setAuthError(getFirebaseAuthErrorMessage(error, "Sign up failed. Try again."));
+      // eslint-disable-next-line no-console
+      console.warn("Email signup failed:", error);
     }
   };
 

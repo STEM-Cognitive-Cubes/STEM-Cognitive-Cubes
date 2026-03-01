@@ -3,6 +3,9 @@ export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Home: undefined;
+  // Settings feature
+  Account: undefined;
+  Settings: undefined;
   // History feature
   History: undefined;
   SessionHistory: undefined;
