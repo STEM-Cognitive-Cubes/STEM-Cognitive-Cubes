@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  FlatList,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,10 +7,8 @@ import {
   View,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../navigation/types";
-import { colors } from "@/config/theme";
 import { fontFamilies } from "@/config/typography";
 import HistoryStatCard from "../components/HistoryStatCard";
 import SessionItemComponent from "../components/SessionItem";
