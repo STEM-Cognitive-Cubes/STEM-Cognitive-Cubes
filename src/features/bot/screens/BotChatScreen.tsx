@@ -83,7 +83,6 @@ export default function BotChatScreen() {
               disabled              // 👈 not clickable in header
               containerStyle={styles.heroBotExtra}
             />
-            <View style={styles.orbShadow} />
           </View>
 
           {/* Quick chips */}
