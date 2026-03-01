@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BotBubbleFab from "@/components/BotBubbleFab";
 
 type Message = {
   id: string;
@@ -19,41 +20,41 @@ type Message = {
 };
 
 export default function BotChatScreen() {
-    const quickChips = useMemo(() => [
-        "How do I connect to Hive?",
-        "What are insights?",
-        "How do I track rewards?"
-    ], []);
+  const quickChips = useMemo(
+    () => ["How do I connect to Hive?", "What are insights?", "How do I track rewards?"],
+    []
+  );
 
-    const [messages, setMessages] = useState<Message[]>([
-        { id: "1", text: "Hi there! I'm your BlokC assistant. How can I help you today?", sender: "bot" },
-    ]);
-    const [inputText, setInputText] = useState("");
-    const [typing, setTyping] = useState(false);
-    const flatListRef = useRef<FlatList<Message>>(null);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: "1", text: "Hi there! I'm your BlokC assistant. How can I help you today?", sender: "bot" },
+  ]);
+  const [inputText, setInputText] = useState("");
+  const [typing, setTyping] = useState(false);
+  const flatListRef = useRef<FlatList<Message>>(null);
 
-    const sendMessage = (text: string) => {
-        if (!text.trim()) return;
-        const newMessage: Message = {
-            id: Date.now().toString(),
-            text,
-            sender: "user",
-        };
-        setMessages(prev => [...prev, newMessage]);
-        setInputText("");
-        setTyping(true);
-        setTimeout(() => {
-            setTyping(false);
-            const botResponse: Message = {
-                id: Date.now().toString(),
-                text: "Thanks for your message! I'm still learning, but I'll do my best to help you.",
-                sender: "bot",
-            };
-            setMessages(prev => [...prev, botResponse]);
-        }, 1000);
+  const sendMessage = (text: string) => {
+    if (!text.trim()) return;
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      sender: "user",
     };
+    setMessages((prev) => [newMessage, ...prev]); // keep inverted list behavior
+    setInputText("");
+    setTyping(true);
 
-      const renderItem = ({ item }: { item: Message }) => {
+    setTimeout(() => {
+      setTyping(false);
+      const botResponse: Message = {
+        id: Date.now().toString(),
+        text: "Thanks for your message! I'm still learning, but I'll do my best to help you.",
+        sender: "bot",
+      };
+      setMessages((prev) => [botResponse, ...prev]);
+    }, 1000);
+  };
+
+  const renderItem = ({ item }: { item: Message }) => {
     const isUser = item.sender === "user";
     return (
       <View style={[styles.row, isUser ? styles.rowRight : styles.rowLeft]}>
@@ -74,18 +75,14 @@ export default function BotChatScreen() {
           <Text style={styles.headerTitle}>BlokC Assistant</Text>
           <Text style={styles.headerSub}>Ask anything about your sessions & insights</Text>
 
-          {/* Glowy bot orb */}
+          {/* ✅ SAME floating bot as HomeScreen, but bigger */}
           <View style={styles.orbWrap}>
-            <View style={styles.orbGlowOuter} />
-            <LinearGradient
-              colors={["rgba(255,255,255,0.35)", "rgba(255,255,255,0.10)"]}
-              style={styles.orb}
-            >
-              <View style={styles.eyeRow}>
-                <View style={styles.eye} />
-                <View style={styles.eye} />
-              </View>
-            </LinearGradient>
+            <BotBubbleFab
+              size={140}            // 👈 bigger hero bot
+              mode="inline"         // 👈 IMPORTANT so it's not absolute
+              disabled              // 👈 not clickable in header
+              containerStyle={styles.heroBotExtra}
+            />
             <View style={styles.orbShadow} />
           </View>
 
@@ -168,51 +165,22 @@ const styles = StyleSheet.create({
     marginTop: 14,
     alignItems: "center",
     justifyContent: "center",
-    height: 160,
+    height: 170,
   },
-  orbGlowOuter: {
-    position: "absolute",
-    width: 140,
-    height: 140,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    shadowColor: "#fff",
-    shadowOpacity: 0.85,
-    shadowRadius: 24,
+
+  // extra gentle glow feel around the hero bot
+  heroBotExtra: {
+    shadowColor: "#FFFFFF",
+    shadowOpacity: 0.25,
+    shadowRadius: 22,
     shadowOffset: { width: 0, height: 0 },
-    elevation: 12,
-  },
-  orb: {
-    width: 112,
-    height: 112,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.45)",
-    backgroundColor: "rgba(255,255,255,0.10)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  orbShadow: {
-    position: "absolute",
-    bottom: 22,
-    width: 90,
-    height: 16,
-    borderRadius: 999,
-    backgroundColor: "rgba(0,0,0,0.18)",
-    transform: [{ scaleX: 1.1 }],
-  },
-  eyeRow: { flexDirection: "row", gap: 14 },
-  eye: {
-    width: 10,
-    height: 22,
-    borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.9)",
+    elevation: 10,
   },
 
   chipsRow: {
     flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
+    gap: 8,
+    marginTop: 20,
   },
   chip: {
     backgroundColor: "rgba(255,255,255,0.22)",
@@ -279,7 +247,7 @@ const styles = StyleSheet.create({
     maxHeight: 110,
     borderRadius: 16,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 20,
     backgroundColor: "rgba(80,100,172,0.08)",
     color: "rgba(80,100,172,0.95)",
     fontWeight: "700",

@@ -2,22 +2,26 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BotBubbleFab from "@/components/BotBubbleFab";
 
 export default function BotIntroScreen1({ navigation }: any) {
   return (
     <SafeAreaView style={styles.safe}>
-      <LinearGradient colors={["#cf92fe", "#A24BFF", "#B860FF"]} style={styles.container}>
-        
-        {/* Glowing Orb */}
+      <LinearGradient
+        colors={["#cf92fe", "#A24BFF", "#B860FF"]}
+        style={styles.container}
+      >
+        {/* ONLY the floating bot — no background circle */}
         <View style={styles.orbWrap}>
-          <View style={styles.glow} />
-          <View style={styles.orb}>
-            <View style={styles.eye} />
-            <View style={styles.eye} />
-          </View>
+          <BotBubbleFab
+            size={130}       // adjust if you want slightly bigger/smaller
+            mode="inline"
+            disabled
+          />
         </View>
 
         <Text style={styles.title}>Meet Your BlokC Assistant ✨</Text>
+
         <Text style={styles.desc}>
           I help you understand sessions, insights, and everything about your child’s creativity journey.
         </Text>
@@ -36,36 +40,18 @@ export default function BotIntroScreen1({ navigation }: any) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
 
-  orbWrap: { marginBottom: 40, alignItems: "center", justifyContent: "center" },
-  glow: {
-    position: "absolute",
-    width: 160,
-    height: 160,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    shadowColor: "#fff",
-    shadowOpacity: 0.9,
-    shadowRadius: 30,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 20,
-  },
-  orb: {
-    width: 120,
-    height: 120,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.15)",
+  container: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
-    gap: 14,
+    padding: 24,
   },
-  eye: {
-    width: 10,
-    height: 22,
-    borderRadius: 8,
-    backgroundColor: "#fff",
+
+  orbWrap: {
+    marginBottom: 50,  // slight spacing
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   title: {
@@ -74,6 +60,7 @@ const styles = StyleSheet.create({
     color: "#FFE572",
     textAlign: "center",
   },
+
   desc: {
     marginTop: 14,
     fontSize: 15,
@@ -89,6 +76,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 20,
   },
+
   btnText: {
     fontWeight: "900",
     color: "#A24BFF",

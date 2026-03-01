@@ -7,7 +7,6 @@ import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
 import { ScrollView } from "react-native";
 import BotBubbleFab from "@/components/BotBubbleFab";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen({ navigation }: any) {
   const fabOpacity = useRef(new Animated.Value(1)).current;
@@ -74,18 +73,7 @@ const handleScroll = (e: any) => {
 };
 
 const openBot = async () => {
-  try {
-    const seen = await AsyncStorage.getItem("bot_intro_seen");
-
-    if (seen === "true") {
-      navigation.navigate("BotChat");
-    } else {
-      navigation.navigate("BotIntro1");
-    }
-  } catch (e) {
-    // fallback: still open intro
-    navigation.navigate("BotIntro1");
-  }
+  navigation.navigate("Bot" as any);
 };
 
 
