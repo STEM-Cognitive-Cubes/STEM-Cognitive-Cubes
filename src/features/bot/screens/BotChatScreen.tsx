@@ -53,8 +53,8 @@ export default function BotChatScreen() {
         }, 1000);
     };
 
-      const renderItem = ({ item }: { item: Msg }) => {
-    const isUser = item.role === "user";
+      const renderItem = ({ item }: { item: Message }) => {
+    const isUser = item.sender === "user";
     return (
       <View style={[styles.row, isUser ? styles.rowRight : styles.rowLeft]}>
         <View style={[styles.bubble, isUser ? styles.userBubble : styles.botBubble]}>
@@ -92,7 +92,7 @@ export default function BotChatScreen() {
           {/* Quick chips */}
           <View style={styles.chipsRow}>
             {quickChips.slice(0, 3).map((c) => (
-              <Pressable key={c} style={styles.chip} onPress={() => send(c)}>
+              <Pressable key={c} style={styles.chip} onPress={() => sendMessage(c)}>
                 <Text style={styles.chipText}>{c}</Text>
               </Pressable>
             ))}
@@ -102,7 +102,7 @@ export default function BotChatScreen() {
         {/* Chat area */}
         <View style={styles.sheet}>
           <FlatList
-            ref={listRef}
+            ref={flatListRef}
             data={messages}
             keyExtractor={(m) => m.id}
             renderItem={renderItem}
@@ -125,14 +125,14 @@ export default function BotChatScreen() {
           >
             <View style={styles.inputRow}>
               <TextInput
-                value={input}
-                onChangeText={setInput}
+                value={inputText}
+                onChangeText={setInputText}
                 placeholder="Ask me anything…"
                 placeholderTextColor="rgba(80,100,172,0.55)"
                 style={styles.input}
                 multiline
               />
-              <Pressable style={styles.sendBtn} onPress={() => send(input)}>
+              <Pressable style={styles.sendBtn} onPress={() => sendMessage(inputText)}>
                 <Text style={styles.sendText}>Send</Text>
               </Pressable>
             </View>
