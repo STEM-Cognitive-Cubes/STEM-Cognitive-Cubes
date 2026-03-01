@@ -24,9 +24,9 @@ interface EditProfileScreenProps {
 }
 
 const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => {
-  const [fullName, setFullName] = useState('Diseni Jayawardhana');
-  const [email, setEmail] = useState('diseni.jayawardhana@gmail.com');
-  const [phone, setPhone] = useState('+94 77 123 4567');
+  const [fullName, setFullName] = useState('John Doe');
+  const [email, setEmail] = useState('john.doe@example.com');
+  const [phone, setPhone] = useState('+1 (555) 123-4567');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCancel = () => {
