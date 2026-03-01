@@ -3,6 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "@/features/home/screens/HomeScreen";
 import HistoryScreen from "@/features/history/screens/HistoryScreen";
 import InsightsScreen from "@/features/insights/InsightsScreen";
+import SettingsScreen from "@/features/settings/settingsScreen";
+
+// TEMP screens (replace later with your real ones)
 import { View, Text } from "react-native";
 
 function TempScreen({ title }: { title: string }) {
