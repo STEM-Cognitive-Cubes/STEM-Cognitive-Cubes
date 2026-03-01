@@ -42,6 +42,8 @@ import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 import type { RootStackParamList } from "./src/navigation/types";
 import HomeScreen from "@/features/home/screens/HomeScreen";
 import AppTabs from "@/navigation/AppTabs";
+import AddChildScreen from "./src/features/childProfile/screens/AddChildScreen";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
