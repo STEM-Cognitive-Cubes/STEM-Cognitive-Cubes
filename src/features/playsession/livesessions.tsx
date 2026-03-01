@@ -154,4 +154,19 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(125, 103, 210, 0.2)',
     alignSelf: 'center',
     transform: [{ rotateX: '60deg' }] // Mimics 3D perspective
-  }
+  },
+  block3d: { 
+    position: 'absolute', 
+    width: 45, 
+    height: 45, 
+    borderRadius: 8, 
+    borderWidth: 1, 
+    borderColor: 'rgba(255,255,255,0.3)',
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 5
+  },
+  timelineRow: { flexDirection: 'row', alignItems: 'center', marginTop: 25 },
+  timelineLabel: { fontSize: 15, color: '#666', fontWeight: '800' },
+  slider: { flex: 1, height: 40, marginLeft: 15 }
+});
