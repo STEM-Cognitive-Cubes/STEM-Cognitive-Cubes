@@ -34,7 +34,7 @@ Do NOT edit it unless Firebase config changes. If it changes, update the file in
 
 5) Build the Android dev client (APK)
 ```
-powershell -ExecutionPolicy Bypass -Command "eas build -p android --profile development"
+npx eas-cli build -p android --profile development
 ```
 
 6) Install the APK
