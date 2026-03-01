@@ -39,6 +39,18 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       scopes: ["profile", "email", "openid"],
     });
   }, []);
+  useEffect(() => {
+  if (!isLoginSuccess) {
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    setIsLoginSuccess(false);
+    navigation.replace("Home");
+  }, 1500); // delay to show home screen after success modal
+
+  return () => clearTimeout(timer);
+}, [isLoginSuccess, navigation]);
 
   const handleLogin = async () => {
     setAuthError("");

@@ -40,6 +40,9 @@ import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
+import HomeScreen from "@/features/home/screens/HomeScreen";
+import AppTabs from "@/navigation/AppTabs";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -123,9 +126,12 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="Home" component={AppTabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
     </SafeAreaProvider>
   );
 }
+  
+
