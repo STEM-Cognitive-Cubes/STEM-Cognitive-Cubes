@@ -21,3 +21,21 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 interface NotificationPreferencesScreenProps {
   navigation: NavigationProp;
 }
+
+const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps> = ({ navigation }) => {
+  const [enableAll, setEnableAll] = useState(true);
+  const [batteryAlerts, setBatteryAlerts] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState(false);
+  const [milestoneMoments, setMilestoneMoments] = useState(true);
+  const [parentingTips, setParentingTips] = useState(false);
+
+  const handleEnableAll = (value: boolean) => {
+    setEnableAll(value);
+    if (!value) {
+      setBatteryAlerts(false);
+      setConnectionStatus(false);
+      setMilestoneMoments(false);
+      setParentingTips(false);
+    }
+  };
+
