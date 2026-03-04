@@ -7,4 +7,6 @@ export type RootStackParamList = {
   EditProfile: undefined;
   ChangePassword: undefined;
   DeleteAccount: undefined;
+  StartSession: undefined;
+  LiveSession: undefined;
 };
