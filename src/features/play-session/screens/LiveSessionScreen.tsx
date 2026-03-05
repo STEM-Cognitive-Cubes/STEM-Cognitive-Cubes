@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import Slider from '@react-native-community/slider';
 
 export default function LiveSessionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -16,9 +15,7 @@ export default function LiveSessionScreen() {
   useEffect(() => {
     let interval: any = null;
     if (isActive) {
-      interval = setInterval(() => {
-        setSeconds((prev) => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setSeconds((prev) => prev + 1), 1000);
     } else {
       clearInterval(interval);
     }
@@ -41,27 +38,19 @@ export default function LiveSessionScreen() {
             <View style={styles.redDot} />
             <Text style={styles.liveText}>Live Session</Text>
           </View>
-          <TouchableOpacity
-            style={styles.endBtn}
-            onPress={() => navigation.navigate('Home')}
-          >
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.endBtn}>
             <Text style={styles.endBtnText}>End session</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.timerContainer}>
           <Text style={styles.timerText}>{formatTime(seconds)}</Text>
-          <Text style={styles.timerSub}>Session duration</Text>
-
           <View style={styles.controlRow}>
             <TouchableOpacity style={styles.controlBtn} onPress={() => setIsActive(!isActive)}>
               <Ionicons name={isActive ? "pause" : "play"} size={28} color="white" />
-              <Text style={styles.btnLabel}>{isActive ? "Pause" : "Resume"}</Text>
             </TouchableOpacity>
-
             <TouchableOpacity style={styles.controlBtn} onPress={() => setSeconds(0)}>
               <Ionicons name="refresh" size={28} color="white" />
-              <Text style={styles.btnLabel}>Reset</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -78,18 +67,13 @@ export default function LiveSessionScreen() {
           </View>
         </View>
 
-        <View style={styles.timelineRow}>
-          <Text style={styles.timelineLabel}>Timeline:</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={3}
-            step={1}
-            onValueChange={(val) => setBuildStep(val)}
-            minimumTrackTintColor="#6D5AAE"
-            thumbTintColor="#6D5AAE"
-          />
-        </View>
+        {/* Temporary replacement for the Slider to avoid the crash */}
+        <TouchableOpacity
+          style={styles.stepBtn}
+          onPress={() => setBuildStep((prev) => (prev + 1) % 4)}
+        >
+          <Text style={styles.stepBtnText}>Next Building Step ({buildStep}/3)</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -97,14 +81,7 @@ export default function LiveSessionScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F8F9FB' },
-  topSection: {
-    backgroundColor: '#6D5AAE',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40
-  },
+  topSection: { backgroundColor: '#6D5AAE', paddingTop: 60, paddingHorizontal: 20, paddingBottom: 30, borderBottomLeftRadius: 40, borderBottomRightRadius: 40 },
   liveHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   liveIndicator: { flexDirection: 'row', alignItems: 'center' },
   redDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#FF5C5C', marginRight: 8 },
@@ -113,17 +90,14 @@ const styles = StyleSheet.create({
   endBtnText: { color: 'white', fontWeight: '600' },
   timerContainer: { alignItems: 'center', marginTop: 20 },
   timerText: { fontSize: 54, fontWeight: 'bold', color: 'white' },
-  timerSub: { color: 'rgba(255,255,255,0.7)', marginTop: 5 },
   controlRow: { flexDirection: 'row', marginTop: 25 },
   controlBtn: { alignItems: 'center', marginHorizontal: 25 },
-  btnLabel: { color: 'white', fontSize: 12, fontWeight: 'bold', marginTop: 5 },
   viewportCard: { backgroundColor: 'white', marginHorizontal: 20, marginTop: 30, borderRadius: 30, padding: 20, elevation: 5 },
   viewportTitle: { fontSize: 18, fontWeight: 'bold', color: '#4A4A8E', marginBottom: 15 },
   blackScreen: { height: 240, backgroundColor: '#0A0A10', borderRadius: 25, overflow: 'hidden' },
   buildArea: { flex: 1, position: 'relative' },
   gridFloor: { position: 'absolute', bottom: 20, width: '100%', height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
   block: { position: 'absolute', width: 45, height: 45, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
-  timelineRow: { flexDirection: 'row', alignItems: 'center', marginTop: 20 },
-  timelineLabel: { fontSize: 14, color: '#666', fontWeight: 'bold' },
-  slider: { flex: 1, height: 40, marginLeft: 10 }
+  stepBtn: { backgroundColor: '#F2F2F2', padding: 15, borderRadius: 15, marginTop: 20, alignItems: 'center' },
+  stepBtnText: { color: '#6D5AAE', fontWeight: 'bold' }
 });
