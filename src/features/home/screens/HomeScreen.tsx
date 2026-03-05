@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import { Animated, Pressable, Text, StyleSheet, View, Image } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';  
+import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
@@ -106,7 +106,7 @@ const handleScroll = (e: any) => {
                 </View>
 
             </View>
-            
+
             <View style={styles.heroContentRow}>
                 {/* Mascot */}
                 <View style={styles.mascotContainer}>
@@ -167,7 +167,7 @@ const handleScroll = (e: any) => {
                     strokeWidth={4}
                     strokeLinecap="round"
                     />
-                    
+
                     {/* WAVE FILL (the actual white section) */}
                     <Path
                     d="M0,50 C70,90 140,10 200,45 C260,80 320,30 375,50 L375,110 L0,110 Z"
@@ -220,7 +220,7 @@ const handleScroll = (e: any) => {
 
 
 
-          
+
         </View>
 
         {/* Start Session Card */}
@@ -238,9 +238,12 @@ const handleScroll = (e: any) => {
           </Text>
 
           {/* CTA button */}
-          <Pressable style={styles.sessionBtn} onPress={() => {}}>
-            <Text style={styles.sessionBtnText}>Track Now</Text>
-          </Pressable>
+         <Pressable
+         style={styles.sessionBtn}
+         onPress={() => navigation.navigate('StartSession')}
+         >
+         <Text style={styles.sessionBtnText}>Track Now</Text>
+         </Pressable>
 
           {/* Bottom-right mascot (optional image) */}
           <Image
