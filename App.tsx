@@ -24,6 +24,10 @@ import EditProfileScreen from './src/features/settings/account/editProfileScreen
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
 
+//session
+import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
+import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
+
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
