@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types'; //
+import { RootStackParamList } from '@/navigation/types';
 import Slider from '@react-native-community/slider';
 
 export default function LiveSessionScreen() {
@@ -31,12 +31,14 @@ export default function LiveSessionScreen() {
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
+      {/* Immersive Header using team purple */}
       <View style={styles.topSection}>
         <View style={styles.liveHeader}>
           <Text style={styles.liveText}>Live Session</Text>
           <TouchableOpacity
             style={styles.endBtn}
-            onPress={() => navigation.navigate('Home')} // Return to home or summary
+            onPress={() => navigation.navigate('Home')}
           >
             <Text style={styles.endBtnText}>End session</Text>
           </TouchableOpacity>
@@ -58,18 +60,24 @@ export default function LiveSessionScreen() {
       <View style={styles.viewportCard}>
         <Text style={styles.viewportTitle}>3D Structure View</Text>
         <View style={styles.blackScreen}>
-             {/* Simulated 3D logic based on slider */}
-             {buildStep >= 1 && <View style={[styles.block, { bottom: 40, left: '40%', backgroundColor: '#6D5AAE' }]} />}
-             {buildStep >= 2 && <View style={[styles.block, { bottom: 40, left: '55%', backgroundColor: '#A24BFF' }]} />}
+             {/* 3D Simulation Area */}
+             <View style={styles.gridPlane} />
+             {buildStep >= 1 && <View style={[styles.block, { bottom: 60, left: '40%', backgroundColor: '#6D5AAE' }]} />}
+             {buildStep >= 2 && <View style={[styles.block, { bottom: 60, left: '55%', backgroundColor: '#A24BFF' }]} />}
         </View>
-        <Slider
-          style={{width: '100%', height: 40}}
-          minimumValue={0}
-          maximumValue={2}
-          step={1}
-          onValueChange={(v) => setBuildStep(v)}
-          minimumTrackTintColor="#6D5AAE"
-        />
+
+        <View style={styles.timelineRow}>
+          <Text style={styles.label}>Timeline:</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={2}
+            step={1}
+            onValueChange={(v) => setBuildStep(v)}
+            minimumTrackTintColor="#6D5AAE"
+            thumbTintColor="#6D5AAE"
+          />
+        </View>
       </View>
     </View>
   );
@@ -83,11 +91,15 @@ const styles = StyleSheet.create({
   endBtn: { backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20 },
   endBtnText: { color: 'white', fontWeight: 'bold' },
   timerContainer: { alignItems: 'center', marginTop: 20 },
-  timerText: { fontSize: 50, fontWeight: '800', color: 'white' },
+  timerText: { fontSize: 50, fontWeight: '800', color: 'white', letterSpacing: 2 },
   controlRow: { flexDirection: 'row', marginTop: 15 },
   controlBtn: { marginHorizontal: 20 },
-  viewportCard: { backgroundColor: 'white', margin: 20, borderRadius: 30, padding: 20, elevation: 5 },
-  viewportTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
-  blackScreen: { height: 200, backgroundColor: '#0A0A10', borderRadius: 20, marginBottom: 15 },
-  block: { position: 'absolute', width: 40, height: 40, borderRadius: 5 }
+  viewportCard: { backgroundColor: 'white', margin: 20, borderRadius: 30, padding: 25, elevation: 5 },
+  viewportTitle: { fontSize: 18, fontWeight: '900', color: '#4A4A8E', marginBottom: 20 },
+  blackScreen: { height: 220, backgroundColor: '#0A0A10', borderRadius: 25, overflow: 'hidden', justifyContent: 'center' },
+  gridPlane: { position: 'absolute', bottom: 20, width: '100%', height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
+  block: { position: 'absolute', width: 45, height: 45, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
+  timelineRow: { flexDirection: 'row', alignItems: 'center', marginTop: 20 },
+  label: { fontSize: 14, fontWeight: 'bold', color: '#666' },
+  slider: { flex: 1, height: 40, marginLeft: 10 }
 });
