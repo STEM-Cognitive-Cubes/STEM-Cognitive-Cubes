@@ -11,6 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/navigation/types";
 
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+
 
 export default function HomeScreen() {
   const fabOpacity = useRef(new Animated.Value(1)).current;
