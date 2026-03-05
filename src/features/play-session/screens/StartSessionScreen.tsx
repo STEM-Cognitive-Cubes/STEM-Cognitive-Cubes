@@ -1,20 +1,16 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-// 1. Swapped routers for React Navigation
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 
 export default function StartSessionScreen() {
-  // 2. Initialize the navigation hook
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header matching the design */}
       <View style={styles.header}>
-        {/* 3. Changed router.back() to navigation.goBack() */}
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -26,7 +22,6 @@ export default function StartSessionScreen() {
 
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
 
-        {/* Session Preparation Section */}
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionLabel}>Session Preparation</Text>
           <Text style={styles.sectionSub}>Set up your blocks before starting</Text>
@@ -43,12 +38,9 @@ export default function StartSessionScreen() {
           </View>
         </View>
 
-        {/* System Status Section */}
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionLabel}>System Status</Text>
           <View style={styles.whiteCard}>
-
-            {/* Cube Connectivity */}
             <View style={styles.statusRow}>
               <View style={styles.iconCircle}>
                 <Ionicons name="bluetooth" size={24} color="black" />
@@ -62,7 +54,6 @@ export default function StartSessionScreen() {
               </View>
             </View>
 
-            {/* Battery Status */}
             <View style={[styles.statusRow, { marginTop: 20 }]}>
               <View style={styles.iconCircle}>
                 <MaterialCommunityIcons name="battery-charging" size={24} color="black" />
@@ -75,7 +66,6 @@ export default function StartSessionScreen() {
           </View>
         </View>
 
-        {/* Ready Footer & Start Action */}
         <View style={styles.readyFooter}>
           <Text style={styles.readyText}>
             ✓ System is ready. You may now allow the child to begin playing
@@ -83,7 +73,6 @@ export default function StartSessionScreen() {
 
           <TouchableOpacity
             style={styles.startBtn}
-            {/* 4. Navigate to 'LiveSession' route registered in App.tsx */}
             onPress={() => navigation.navigate('LiveSession')}
           >
             <Text style={styles.startBtnText}>Start Session</Text>
@@ -95,7 +84,6 @@ export default function StartSessionScreen() {
   );
 }
 
-// Sub-component for individual checklist items
 const CheckItem = ({ label }: { label: string }) => (
   <View style={styles.checkRow}>
     <Ionicons name="checkmark-circle" size={24} color="#4ADE80" />
@@ -105,85 +93,25 @@ const CheckItem = ({ label }: { label: string }) => (
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#7D67D2' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    alignItems: 'center',
-    paddingTop: 40
-  },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center', paddingTop: 40 },
   headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  container: {
-    flex: 1,
-    backgroundColor: '#F2F2F2',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 20
-  },
-  sectionWrapper: {
-    backgroundColor: '#E5D9E8',
-    borderRadius: 30,
-    padding: 18,
-    marginBottom: 20
-  },
+  container: { flex: 1, backgroundColor: '#F2F2F2', borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 20 },
+  sectionWrapper: { backgroundColor: '#E5D9E8', borderRadius: 30, padding: 18, marginBottom: 20 },
   sectionLabel: { fontSize: 16, fontWeight: 'bold', color: '#4A4A8E' },
   sectionSub: { fontSize: 12, color: '#888', marginBottom: 12 },
-  whiteCard: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4
-  },
+  whiteCard: { backgroundColor: 'white', borderRadius: 20, padding: 20, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
   infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   infoText: { fontWeight: 'bold', marginLeft: 10, color: '#333' },
   checkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   checkText: { marginLeft: 12, fontSize: 14, color: '#444', flex: 1 },
   statusRow: { flexDirection: 'row', alignItems: 'center' },
-  iconCircle: {
-    backgroundColor: '#F0F0F0',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
+  iconCircle: { backgroundColor: '#F0F0F0', width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center' },
   statusTitle: { fontWeight: 'bold', fontSize: 16, color: '#333' },
-  connectedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0FFF4',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: '#4ADE80'
-  },
+  connectedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0FFF4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, borderWidth: 1, borderColor: '#4ADE80' },
   connectedText: { color: '#4ADE80', fontWeight: 'bold', fontSize: 12, marginLeft: 5 },
   batteryPercent: { color: '#4ADE80', fontWeight: 'bold', fontSize: 16 },
   readyFooter: { marginTop: 15, alignItems: 'center' },
-  readyText: {
-    fontSize: 13,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 25,
-    color: '#333',
-    paddingHorizontal: 10
-  },
-  startBtn: {
-    backgroundColor: '#7D849A',
-    width: '100%',
-    padding: 20,
-    borderRadius: 25,
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5
-  },
+  readyText: { fontSize: 13, fontWeight: '700', textAlign: 'center', marginBottom: 25, color: '#333', paddingHorizontal: 10 },
+  startBtn: { backgroundColor: '#7D849A', width: '100%', padding: 20, borderRadius: 25, alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5 },
   startBtnText: { color: 'white', fontSize: 18, fontWeight: 'bold' }
 });
