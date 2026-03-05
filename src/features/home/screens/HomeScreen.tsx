@@ -9,12 +9,13 @@ import { ScrollView } from "react-native";
 import BotBubbleFab from "@/components/BotBubbleFab";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "@/navigation/types"; // Path from their structure
+import { RootStackParamList } from "@/navigation/types";
 
 
 export default function HomeScreen() {
   const fabOpacity = useRef(new Animated.Value(1)).current;
 const fabTranslateY = useRef(new Animated.Value(0)).current;
+const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
 const lastScrollY = useRef(0);
 const isHidden = useRef(false);
