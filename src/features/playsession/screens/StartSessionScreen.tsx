@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-
 export default function StartSessionScreen() {
   const router = useRouter();
 
@@ -97,6 +96,7 @@ const CheckItem = ({ label }) => (
     <Text style={styles.checkText}>{label}</Text>
   </View>
 );
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#7D67D2' },
   header: { 

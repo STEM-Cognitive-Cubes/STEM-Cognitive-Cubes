@@ -7,6 +7,9 @@ import HistoryCardSvg from "@/assets/cards/historyCard.svg";
 import InsightsCardSvg from "@/assets/cards/insightsCard.svg";
 import { ScrollView } from "react-native";
 import BotBubbleFab from "@/components/BotBubbleFab";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "@/navigation/types"; // Path from their structure
 
 
 export default function HomeScreen() {
