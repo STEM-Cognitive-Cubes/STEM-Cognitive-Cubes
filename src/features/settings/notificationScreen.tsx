@@ -82,5 +82,53 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
             />
           </View>
         </View>
+         {/* Child Development Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CHILD DEVELOPMENT</Text>
+
+          <View style={styles.notificationItem}>
+            <View style={styles.notificationLeft}>
+              <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
+                <MaterialIcons name="emoji-events" size={20} color="#FFFFFF" />
+              </View>
+              <View style={styles.notificationTextContainer}>
+                <Text style={styles.notificationTitle}>Milestone Moments</Text>
+                <Text style={styles.notificationSubtitle}>Celebrate when new skills are unlocked</Text>
+              </View>
+            </View>
+            <Switch
+              value={milestoneMoments}
+              onValueChange={setMilestoneMoments}
+              trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
+              thumbColor={milestoneMoments ? '#9333EA' : '#F3F4F6'}
+              ios_backgroundColor="#D1D5DB"
+              disabled={!enableAll}
+            />
+          </View>
+
+          <View style={[styles.notificationItem]}>
+            <View style={styles.notificationLeft}>
+              <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
+                <Ionicons name="book" size={20} color="#FFFFFF" />
+              </View>
+              <View style={styles.notificationTextContainer}>
+                <Text style={styles.notificationTitle}>Parenting Tips</Text>
+                <Text style={styles.notificationSubtitle}>Weekly advice based on play patterns</Text>
+              </View>
+            </View>
+            <Switch
+              value={parentingTips}
+              onValueChange={setParentingTips}
+              trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
+              thumbColor={parentingTips ? '#9333EA' : '#F3F4F6'}
+              ios_backgroundColor="#D1D5DB"
+              disabled={!enableAll}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 
