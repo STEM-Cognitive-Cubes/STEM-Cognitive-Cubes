@@ -38,4 +38,49 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
       setParentingTips(false);
     }
   };
+{/* Hardware & System Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>HARDWARE & SYSTEM</Text>
+
+          <View style={styles.notificationItem}>
+            <View style={styles.notificationLeft}>
+              <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
+                <Ionicons name="battery-charging" size={20} color="#FFFFFF" />
+              </View>
+              <View style={styles.notificationTextContainer}>
+                <Text style={styles.notificationTitle}>Battery Alerts</Text>
+                <Text style={styles.notificationSubtitle}>Notify when cubes need charging</Text>
+              </View>
+            </View>
+            <Switch
+              value={batteryAlerts}
+              onValueChange={setBatteryAlerts}
+              trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
+              thumbColor={batteryAlerts ? '#9333EA' : '#F3F4F6'}
+              ios_backgroundColor="#D1D5DB"
+              disabled={!enableAll}
+            />
+          </View>
+
+          <View style={[styles.notificationItem]}>
+            <View style={styles.notificationLeft}>
+              <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
+                <MaterialIcons name="wifi" size={20} color="#FFFFFF" />
+              </View>
+              <View style={styles.notificationTextContainer}>
+                <Text style={styles.notificationTitle}>Connection Status</Text>
+                <Text style={styles.notificationSubtitle}>Alert if any cubes disconnect during play</Text>
+              </View>
+            </View>
+            <Switch
+              value={connectionStatus}
+              onValueChange={setConnectionStatus}
+              trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
+              thumbColor={connectionStatus ? '#9333EA' : '#F3F4F6'}
+              ios_backgroundColor="#D1D5DB"
+              disabled={!enableAll}
+            />
+          </View>
+        </View>
+
 
