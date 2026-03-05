@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-// 1. Swapped to React Navigation hooks
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import Slider from '@react-native-community/slider';
 
 export default function LiveSessionScreen() {
-  // 2. Initialize the navigation helper
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(true);
   const [buildStep, setBuildStep] = useState(0);
 
-  // Timer Logic
   useEffect(() => {
     let interval: any = null;
     if (isActive) {
@@ -36,10 +33,8 @@ export default function LiveSessionScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      {/* Ensures the header blends into the top status bar */}
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* Top Header Section using team's Purple */}
       <View style={styles.topSection}>
         <View style={styles.liveHeader}>
           <View style={styles.liveIndicator}>
@@ -48,7 +43,6 @@ export default function LiveSessionScreen() {
           </View>
           <TouchableOpacity
             style={styles.endBtn}
-            {/* 3. Navigate back to Home or to Summary */}
             onPress={() => navigation.navigate('Home')}
           >
             <Text style={styles.endBtnText}>End session</Text>
@@ -73,11 +67,9 @@ export default function LiveSessionScreen() {
         </View>
       </View>
 
-      {/* 3D Structure Viewport */}
       <View style={styles.viewportCard}>
         <Text style={styles.viewportTitle}>3D Structure View</Text>
         <View style={styles.blackScreen}>
-          {/* Simulated 3D Building based on Slider */}
           <View style={styles.buildArea}>
              <View style={styles.gridFloor} />
              {buildStep >= 1 && <View style={[styles.block, { bottom: 60, left: '35%', backgroundColor: '#6D5AAE' }]} />}
