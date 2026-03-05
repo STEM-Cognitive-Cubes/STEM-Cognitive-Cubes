@@ -96,11 +96,14 @@ export default function App() {
               }}
             />
             <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="StartSession" component={StartSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </View>
