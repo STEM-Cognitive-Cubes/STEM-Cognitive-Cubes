@@ -10,17 +10,15 @@ import {
   Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type RootStackParamList = {
-  Settings: undefined;
-};
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import type { RootStackParamList } from '../../navigation/types';
 
-interface AppearanceScreenProps {
-  navigation: NavigationProp;
-}
+type AppearanceScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'AppearanceScreen'
+>;
 //logic and state setup
 const AppearanceScreen: React.FC<AppearanceScreenProps> = ({ navigation }) => {
   const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark'>('dark');
