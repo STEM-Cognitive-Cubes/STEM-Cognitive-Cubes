@@ -57,11 +57,32 @@ const AppearanceScreen: React.FC<AppearanceScreenProps> = ({ navigation }) => {
         {/* Theme Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>THEME</Text>
-
+          {/*}light mode*/}
+          <TouchableOpacity
+              style={[
+                styles.themeOption,
+                selectedTheme === 'light' && styles.themeOptionSelected,
+              ]}
+              onPress={() => setSelectedTheme('light')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.themeContent}>
+                <Ionicons name="sunny" size={24} color="#9333EA" />
+                <View style={styles.themeTextContainer}>
+                  <Text style={styles.themeTitle}>Light Mode</Text>
+                  <Text style={styles.themeSubtitle}>Bright and clear</Text>
+                </View>
+              </View>
+              {selectedTheme === 'light' && (
+                <Ionicons name="checkmark-circle" size={24} color="#9333EA" />
+              )}
+            </TouchableOpacity>
+          {/*dark mode*/}
           <TouchableOpacity
             style={[
               styles.themeOption,
               selectedTheme === 'dark' && styles.themeOptionSelected,
+              {marginTop: 12},
             ]}
             onPress={() => setSelectedTheme('dark')}
             activeOpacity={0.7}
