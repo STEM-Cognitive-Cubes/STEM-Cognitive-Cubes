@@ -97,3 +97,87 @@ const CheckItem = ({ label }) => (
     <Text style={styles.checkText}>{label}</Text>
   </View>
 );
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#7D67D2' },
+  header: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    padding: 20, 
+    alignItems: 'center',
+    paddingTop: 40 
+  },
+  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F2F2F2', 
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30, 
+    padding: 20 
+  },
+  sectionWrapper: { 
+    backgroundColor: '#E5D9E8', 
+    borderRadius: 30, 
+    padding: 18, 
+    marginBottom: 20 
+  },
+  sectionLabel: { fontSize: 16, fontWeight: 'bold', color: '#4A4A8E' },
+  sectionSub: { fontSize: 12, color: '#888', marginBottom: 12 },
+  whiteCard: { 
+    backgroundColor: 'white', 
+    borderRadius: 20, 
+    padding: 20, 
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4
+  },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  infoText: { fontWeight: 'bold', marginLeft: 10, color: '#333' },
+  checkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  checkText: { marginLeft: 12, fontSize: 14, color: '#444', flex: 1 },
+  statusRow: { flexDirection: 'row', alignItems: 'center' },
+  iconCircle: { 
+    backgroundColor: '#F0F0F0', 
+    width: 48, 
+    height: 48, 
+    borderRadius: 24, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  statusTitle: { fontWeight: 'bold', fontSize: 16, color: '#333' },
+  connectedBadge: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#F0FFF4', 
+    paddingHorizontal: 12, 
+    paddingVertical: 6, 
+    borderRadius: 15, 
+    borderWidth: 1, 
+    borderColor: '#4ADE80' 
+  },
+  connectedText: { color: '#4ADE80', fontWeight: 'bold', fontSize: 12, marginLeft: 5 },
+  batteryPercent: { color: '#4ADE80', fontWeight: 'bold', fontSize: 16 },
+  readyFooter: { marginTop: 15, alignItems: 'center' },
+  readyText: { 
+    fontSize: 13, 
+    fontWeight: '700', 
+    textAlign: 'center', 
+    marginBottom: 25, 
+    color: '#333',
+    paddingHorizontal: 10 
+  },
+  startBtn: { 
+    backgroundColor: '#7D849A', 
+    width: '100%', 
+    padding: 20, 
+    borderRadius: 25, 
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5
+  },
+  startBtnText: { color: 'white', fontSize: 18, fontWeight: 'bold' }
+});
