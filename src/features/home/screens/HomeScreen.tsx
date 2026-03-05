@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const fabOpacity = useRef(new Animated.Value(1)).current;
 const fabTranslateY = useRef(new Animated.Value(0)).current;
 const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
 const lastScrollY = useRef(0);
 const isHidden = useRef(false);
