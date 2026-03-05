@@ -24,10 +24,12 @@ import EditProfileScreen from './src/features/settings/account/editProfileScreen
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
 
+// Profile Screens
+import AddChildScreen from './src/features/profile/add-new-child/add-child';
+
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -97,6 +99,7 @@ export default function App() {
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="AddChild" component={AddChildScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

@@ -7,4 +7,5 @@ export type RootStackParamList = {
   EditProfile: undefined;
   ChangePassword: undefined;
   DeleteAccount: undefined;
+  AddChild: undefined;
 };

@@ -1,11 +1,14 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "@/features/home/screens/HomeScreen";
-import SettingsScreen from "@/features/settings/settingsScreen";
-
-// TEMP screens (replace later with your real ones)
 import { View, Text } from "react-native";
 
+// Import your screens based on your file structure
+import HomeScreen from "@/features/home/screens/HomeScreen";
+import SettingsScreen from "@/features/settings/settingsScreen";
+import ProfileScreen from "@/features/profile/profile";
+import BlokCTabBar from "@/navigation/components/BlokCTabBar";
+
+// TEMP screens (replace later with your real ones)
 function TempScreen({ title }: { title: string }) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -13,8 +16,6 @@ function TempScreen({ title }: { title: string }) {
     </View>
   );
 }
-
-import BlokCTabBar from "@/navigation/components/BlokCTabBar";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,7 +29,8 @@ export default function AppTabs() {
       <Tab.Screen name="History" children={() => <TempScreen title="History" />} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
       <Tab.Screen name="Insights" children={() => <TempScreen title="Insights" />} />
-      <Tab.Screen name="Profile" children={() => <TempScreen title="Profile" />} />
+      {/* Profile screen is now linked to the Profile Tab */}
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
