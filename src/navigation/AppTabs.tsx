@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "@/features/home/screens/HomeScreen";
 import HistoryScreen from "@/features/history/screens/HistoryScreen";
 import InsightsScreen from "@/features/insights/InsightsScreen";
+import SettingsScreen from "@/features/settings/settingsScreen";
 import { View, Text } from "react-native";
 
 function TempScreen({ title }: { title: string }) {
@@ -25,7 +26,7 @@ export default function AppTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
-      <Tab.Screen name="Settings" children={() => <TempScreen title="Settings" />} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
       <Tab.Screen name="Insights" component={InsightsScreen} />
       <Tab.Screen name="Profile" children={() => <TempScreen title="Profile" />} />
     </Tab.Navigator>

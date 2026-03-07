@@ -35,6 +35,7 @@ type RootStackParamList = {
   FAQsScreen: undefined;
   ContactSupportScreen: undefined;
   Home: undefined;
+  Login: undefined;
   History: undefined;
   Insights: undefined;
   Profile: undefined;
@@ -197,7 +198,7 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
                 {
                   text: 'Close',
                   onPress: () => {
-                    Navigate to login screen or home
+                    // Navigate to login screen or home
                     navigation?.reset({
                     index: 0,
                     routes: [{ name: 'Login' }],

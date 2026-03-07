@@ -38,7 +38,7 @@ import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide
 import FaqsScreen from './src/features/settings/faqsScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 
-// Navigation Types
+// Navigation
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
 
@@ -103,6 +103,7 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
+            <Stack.Screen name="Home" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
@@ -122,7 +123,6 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
-            <Stack.Screen name="Home" component={AppTabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
