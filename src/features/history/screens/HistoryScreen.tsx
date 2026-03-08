@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Pressable,
-  ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   View,
@@ -13,20 +13,15 @@ import { fontFamilies } from "@/config/typography";
 import HistoryStatCard from "../components/HistoryStatCard";
 import SessionItemComponent from "../components/SessionItem";
 import { sessionStats, recentSessions } from "../config/historyData";
+import { groupSessionsByDay } from "../config/groupSessions";
+
 type HistoryScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "History">;
 };
+
 export default function HistoryScreen({ navigation }: HistoryScreenProps) {
-  // Group sessions by dateLabel
-  const grouped = recentSessions.reduce<Record<string, typeof recentSessions>>(
-    (acc, session) => {
-      const key = session.dateLabel ?? session.date;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(session);
-      return acc;
-    },
-    {}
-  );
+  const sections = useMemo(() => groupSessionsByDay(recentSessions), []);
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -35,55 +30,54 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
       >
         <Text style={styles.headerTitle}>History</Text>
       </LinearGradient>
-      <ScrollView
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
+
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Stat Cards */}
-        <View style={styles.statsGrid}>
-          <View style={styles.statsRow}>
-            {sessionStats.slice(0, 2).map((stat) => (
-              <HistoryStatCard key={stat.id} {...stat} />
-            ))}
-          </View>
-          <View style={styles.statsRow}>
-            {sessionStats.slice(2, 4).map((stat) => (
-              <HistoryStatCard key={stat.id} {...stat} />
-            ))}
-          </View>
-        </View>
-        {/* Recent Activities */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Activities</Text>
-          <Pressable
-            onPress={() => navigation.navigate("SessionHistory")}
-          >
-            <Text style={styles.seeMore}>See more</Text>
-          </Pressable>
-        </View>
-        {Object.entries(grouped).map(([label, sessions]) => (
-          <View key={label}>
-            <Text style={styles.dateLabel}>{label}</Text>
-            {sessions.map((session) => (
-              <SessionItemComponent
-                key={session.id}
-                title={session.title}
-                date={session.date}
-                time={session.time}
-                duration={session.duration}
-                dotColor={session.dotColor}
-                onPress={() =>
-                  navigation.navigate("SessionDetail", { sessionId: session.id })
-                }
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+        contentContainerStyle={styles.contentContainer}
+        ListHeaderComponent={
+          <>
+            <View style={styles.statsGrid}>
+              <View style={styles.statsRow}>
+                {sessionStats.slice(0, 2).map((stat) => (
+                  <HistoryStatCard key={stat.id} {...stat} />
+                ))}
+              </View>
+              <View style={styles.statsRow}>
+                {sessionStats.slice(2, 4).map((stat) => (
+                  <HistoryStatCard key={stat.id} {...stat} />
+                ))}
+              </View>
+            </View>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Recent Activities</Text>
+              <Pressable onPress={() => navigation.navigate("SessionHistory")}>
+                <Text style={styles.seeMore}>See more</Text>
+              </Pressable>
+            </View>
+          </>
+        }
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.dateLabel}>{title}</Text>
+        )}
+        renderItem={({ item: session }) => (
+          <SessionItemComponent
+            title={session.title}
+            date={session.date}
+            time={session.time}
+            duration={session.duration}
+            dotColor={session.dotColor}
+            onPress={() =>
+              navigation.navigate("SessionDetail", { sessionId: session.id })
+            }
+          />
+        )}
+      />
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -100,9 +94,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: fontFamilies.bold,
     color: "white",
-  },
-  content: {
-    flex: 1,
   },
   contentContainer: {
     padding: 20,
