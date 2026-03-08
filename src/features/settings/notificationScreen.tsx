@@ -11,12 +11,9 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type {RootStackParamList} from '../../navigation/types';
 
-type RootStackParamList = {
-  Settings: undefined;
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'NotificationPreferencesScreen'>;
 
 interface NotificationPreferencesScreenProps {
   navigation: NavigationProp;
