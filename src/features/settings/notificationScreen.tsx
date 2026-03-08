@@ -22,7 +22,9 @@ interface NotificationPreferencesScreenProps {
   navigation: NavigationProp;
 }
 
-const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps> = ({ navigation }) => {
+const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps> = ({
+  navigation,
+}) => {
   const [enableAll, setEnableAll] = useState(true);
   const [batteryAlerts, setBatteryAlerts] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState(false);
@@ -31,6 +33,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
 
   const handleEnableAll = (value: boolean) => {
     setEnableAll(value);
+
     if (!value) {
       setBatteryAlerts(false);
       setConnectionStatus(false);
@@ -38,7 +41,48 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
       setParentingTips(false);
     }
   };
-{/* Hardware & System Section */}
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
+
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+
+        <Text style={styles.headerTitle}>Notifications</Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {/* Enable All Toggle */}
+        <View style={styles.notificationItem}>
+          <View style={styles.notificationLeft}>
+            <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
+              <Ionicons name="notifications" size={20} color="#FFFFFF" />
+            </View>
+            <View style={styles.notificationTextContainer}>
+              <Text style={styles.notificationTitle}>Enable All</Text>
+              <Text style={styles.notificationSubtitle}>Turn all notifications on or off</Text>
+            </View>
+          </View>
+
+          <Switch
+            value={enableAll}
+            onValueChange={handleEnableAll}
+            trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
+            thumbColor={enableAll ? '#9333EA' : '#F3F4F6'}
+            ios_backgroundColor="#D1D5DB"
+          />
+        </View>
+
+        {/* Hardware & System Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>HARDWARE & SYSTEM</Text>
 
@@ -52,6 +96,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
                 <Text style={styles.notificationSubtitle}>Notify when cubes need charging</Text>
               </View>
             </View>
+
             <Switch
               value={batteryAlerts}
               onValueChange={setBatteryAlerts}
@@ -62,16 +107,19 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
             />
           </View>
 
-          <View style={[styles.notificationItem]}>
+          <View style={styles.notificationItem}>
             <View style={styles.notificationLeft}>
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <MaterialIcons name="wifi" size={20} color="#FFFFFF" />
               </View>
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Connection Status</Text>
-                <Text style={styles.notificationSubtitle}>Alert if any cubes disconnect during play</Text>
+                <Text style={styles.notificationSubtitle}>
+                  Alert if any cubes disconnect during play
+                </Text>
               </View>
             </View>
+
             <Switch
               value={connectionStatus}
               onValueChange={setConnectionStatus}
@@ -82,7 +130,8 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
             />
           </View>
         </View>
-         {/* Child Development Section */}
+
+        {/* Child Development Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CHILD DEVELOPMENT</Text>
 
@@ -93,9 +142,12 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               </View>
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Milestone Moments</Text>
-                <Text style={styles.notificationSubtitle}>Celebrate when new skills are unlocked</Text>
+                <Text style={styles.notificationSubtitle}>
+                  Celebrate when new skills are unlocked
+                </Text>
               </View>
             </View>
+
             <Switch
               value={milestoneMoments}
               onValueChange={setMilestoneMoments}
@@ -106,16 +158,19 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
             />
           </View>
 
-          <View style={[styles.notificationItem]}>
+          <View style={styles.notificationItem}>
             <View style={styles.notificationLeft}>
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <Ionicons name="book" size={20} color="#FFFFFF" />
               </View>
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Parenting Tips</Text>
-                <Text style={styles.notificationSubtitle}>Weekly advice based on play patterns</Text>
+                <Text style={styles.notificationSubtitle}>
+                  Weekly advice based on play patterns
+                </Text>
               </View>
             </View>
+
             <Switch
               value={parentingTips}
               onValueChange={setParentingTips}
@@ -130,6 +185,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -223,5 +279,3 @@ const styles = StyleSheet.create({
 });
 
 export default NotificationPreferencesScreen;
-
-
