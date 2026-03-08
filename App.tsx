@@ -86,7 +86,7 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
           </Stack.Navigator>
