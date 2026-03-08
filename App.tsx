@@ -17,17 +17,13 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
-// Settings Screens
+// Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
-import AccountScreen from './src/features/settings/account/accountScreen';
-import EditProfileScreen from './src/features/settings/account/editProfileScreen';
-import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
-import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
+import AppearanceScreen from './src/features/settings/appearanceScreen';
 
-// Navigation Types
+// Navigation
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -48,7 +44,6 @@ export default function App() {
     Inter_700Bold,
   });
 
-  // Show splash screen while fonts load
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
@@ -91,32 +86,12 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="Account" component={AccountScreen} />
-            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
-            <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
-            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
-            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
-            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
-            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
-            <Stack.Screen name="EmailScreen" component={EmailScreen} />
-            <Stack.Screen name="ChatScreen" component={ChatScreen} />
-            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
-            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
-            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
-            <Stack.Screen name="OperateScreen" component={OperateScreen} />
-            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
-            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
-            <Stack.Screen name="Home" component={AppTabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
     </SafeAreaProvider>
   );
 }
-  
-
