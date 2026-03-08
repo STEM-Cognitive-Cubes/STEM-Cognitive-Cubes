@@ -6,7 +6,8 @@ import type { RouteProp } from "@react-navigation/native";
 import type { RootStackParamList } from "../../../navigation/types";
 import { fontFamilies } from "../../../config/typography";
 import InsightCard from "../components/InsightCard";
-import { sessionDetail } from "../config/historyData";
+import { sessionDetailsMap } from "../config/historyData";
+import { LinearGradient } from "expo-linear-gradient";
 type SessionDetailScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "SessionDetail">;
   route: RouteProp<RootStackParamList, "SessionDetail">;
@@ -15,7 +16,20 @@ export default function SessionDetailScreen({
   navigation,
   route,
 }: SessionDetailScreenProps) {
-  const detail = sessionDetail; // In production, fetch by route.params.sessionId
+  const { sessionId } = route.params;
+  const detail = sessionDetailsMap[sessionId];
+  // Fallback if session not found
+  if (!detail) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Feather name="alert-circle" size={48} color="#B860FF" />
+        <Text style={[styles.sectionTitle, { marginTop: 16 }]}>Session not found</Text>
+        <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.backButtonText}>Go Back</Text>
+        </Pressable>
+      </View>
+    );
+  }
   const metrics = [
     { label: "Duration", value: detail.duration, icon: "clock", color: "#B860FF" },
     { label: "Blocks", value: `${detail.blocks}`, icon: "box", color: "#FF9F43" },
@@ -25,6 +39,16 @@ export default function SessionDetailScreen({
   const maxFocus = Math.max(...detail.focusData.map((d) => d.value));
   return (
     <View style={styles.container}>
+      {/* Header */}
+      <LinearGradient
+        colors={["#B860FF", "#9B40E0"]}
+        style={styles.headerGradient}
+      >
+        <Pressable onPress={() => navigation.goBack()} style={styles.headerBack}>
+          <Feather name="arrow-left" size={22} color="white" />
+        </Pressable>
+        <Text style={styles.headerTitle}>Session Detail</Text>
+      </LinearGradient>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -40,9 +64,14 @@ export default function SessionDetailScreen({
         {/* Metric Pills */}
         <View style={styles.metricsRow}>
           {metrics.map((m) => (
-            <View key={m.label} style={[styles.metricPill, { backgroundColor: `${m.color}15` }]}>
+            <View
+              key={m.label}
+              style={[styles.metricPill, { backgroundColor: `${m.color}15` }]}
+            >
               <Feather name={m.icon as any} size={14} color={m.color} />
-              <Text style={[styles.metricValue, { color: m.color }]}>{m.value}</Text>
+              <Text style={[styles.metricValue, { color: m.color }]}>
+                {m.value}
+              </Text>
               <Text style={styles.metricLabel}>{m.label}</Text>
             </View>
           ))}
@@ -73,10 +102,15 @@ export default function SessionDetailScreen({
         <Text style={styles.sectionTitle}>Blocks Used</Text>
         <View style={styles.blocksRow}>
           {detail.blocksUsed.map((block) => (
-            <View key={block.id} style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}>
+            <View
+              key={block.id}
+              style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}
+            >
               <View style={[styles.blockDot, { backgroundColor: block.color }]} />
               <Text style={styles.blockName}>{block.name}</Text>
-              <Text style={[styles.blockCount, { color: block.color }]}>×{block.count}</Text>
+              <Text style={[styles.blockCount, { color: block.color }]}>
+                ×{block.count}
+              </Text>
             </View>
           ))}
         </View>
@@ -95,6 +129,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F0FF",
+  },
+  headerGradient: {
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerBack: {
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontFamily: fontFamilies.bold,
+    color: "white",
   },
   content: {
     padding: 20,
@@ -230,5 +281,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
     color: "black",
+  },
+  backButton: {
+    marginTop: 16,
+    backgroundColor: "#B860FF",
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontFamily: fontFamilies.semiBold,
+    color: "white",
   },
 });
