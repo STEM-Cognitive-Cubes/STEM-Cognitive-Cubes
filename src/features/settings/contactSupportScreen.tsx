@@ -52,3 +52,8 @@ const ContactSupportScreen: React.FC<ContactSupportScreenProps> = ({ navigation 
         action: () => setShowChatbot(true),
       },
     ];
+  const quickHelp = [
+      { id: '1', title: 'Hardware Setup', icon: 'hardware-chip' },
+      { id: '2', title: 'App Connection', icon: 'wifi' },
+      { id: '3', title: 'Account Issues', icon: 'person-circle' },
+    ];
