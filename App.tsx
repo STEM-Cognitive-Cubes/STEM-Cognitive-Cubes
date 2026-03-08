@@ -23,6 +23,9 @@ import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
+import AppearanceScreen from './src/features/settings/AppearanceScreen';
+import NotificationPreferencesScreen from './src/features/settings/NotificationPreferencesScreen';
+import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
@@ -97,6 +100,9 @@ export default function App() {
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
