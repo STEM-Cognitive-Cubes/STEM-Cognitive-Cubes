@@ -17,12 +17,9 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
-// Settings Screens
+// Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
-import AccountScreen from './src/features/settings/account/accountScreen';
-import EditProfileScreen from './src/features/settings/account/editProfileScreen';
-import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
-import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
+import AppearanceScreen from './src/features/settings/appearanceScreen';
 
 //session
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
@@ -31,7 +28,6 @@ import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionSc
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -52,7 +48,6 @@ export default function App() {
     Inter_700Bold,
   });
 
-  // Show splash screen while fonts load
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
@@ -98,12 +93,15 @@ export default function App() {
             <Stack.Screen name="Home" component={AppTabs} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
+
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
 
+            <Stack.Screen name="MainTabs" component={AppTabs} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
