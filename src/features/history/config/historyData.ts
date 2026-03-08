@@ -6,7 +6,7 @@ export type SessionStat = {
   color: string;
   bgColor: string;
 };
-export type SessionItem = {
+export type SessionListItem = {
   id: string;
   title: string;
   date: string;
@@ -67,7 +67,7 @@ export const sessionStats: SessionStat[] = [
     bgColor: "rgba(255, 213, 79, 0.15)",
   },
 ];
-export const recentSessions: SessionItem[] = [
+export const recentSessions: SessionListItem[] = [
   {
     id: "1",
     title: "Building Session",
