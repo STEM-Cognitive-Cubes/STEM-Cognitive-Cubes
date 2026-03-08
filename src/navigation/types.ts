@@ -35,6 +35,6 @@ export type RootStackParamList = {
   Insights: undefined;
   Recommendations: { category: string };
   // Profile feature
-  AddChild: undefined; // Add this line for the AddChild screen
+  AddChild: undefined; // this line for the AddChild screen
 
 };
