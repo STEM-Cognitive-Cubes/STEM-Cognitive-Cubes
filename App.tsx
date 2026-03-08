@@ -9,24 +9,20 @@ import {
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
 // Splash Screen
 import { LottieSplash } from "./src/features/splash/LottieSplash";
-
 // Auth Screens
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
-
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
-
+// History Screens
+import SessionDetailScreen from './src/features/history/screens/SessionDetailScreen';
 // Navigation
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 const navigationTheme = {
   ...DefaultTheme,
   colors: {
@@ -34,20 +30,16 @@ const navigationTheme = {
     background: "#B860FF",
   },
 };
-
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
-
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
     Inter_700Bold,
   });
-
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
-
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
@@ -89,6 +81,7 @@ export default function App() {
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="SessionDetail" component={SessionDetailScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
