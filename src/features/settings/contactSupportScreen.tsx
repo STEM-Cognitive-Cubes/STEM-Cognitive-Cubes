@@ -57,3 +57,26 @@ const ContactSupportScreen: React.FC<ContactSupportScreenProps> = ({ navigation 
       { id: '2', title: 'App Connection', icon: 'wifi' },
       { id: '3', title: 'Account Issues', icon: 'person-circle' },
     ];
+  const handleSendEmail = () => {
+      if (!subject.trim() || !message.trim()) {
+        Alert.alert('Error', 'Please fill in all fields');
+        return;
+      }
+
+      // Simulate sending email
+      Alert.alert(
+        'Message Sent!',
+        'We typically respond within 24 hours.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setShowEmailForm(false);
+              setSubject('');
+              setMessage('');
+            },
+          },
+        ]
+      );
+    };
+
