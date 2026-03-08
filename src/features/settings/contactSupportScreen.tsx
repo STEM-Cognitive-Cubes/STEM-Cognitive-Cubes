@@ -33,296 +33,298 @@ const ContactSupportScreen: React.FC<ContactSupportScreenProps> = ({ navigation 
   const [message, setMessage] = useState('');
 
   const contactOptions = [
-      {
-        id: '1',
-        title: 'Message',
-        description: 'Send us an email',
-        icon: 'mail',
-        iconType: 'Ionicons' as const,
-        color: '#F59E0B',
-        action: () => setShowEmailForm(true),
-      },
-      {
-        id: '2',
-        title: 'Chat',
-        description: 'Talk to BlokC Assistant',
-        icon: 'chatbubbles',
-        iconType: 'Ionicons' as const,
-        color: '#FBBF24',
-        action: () => setShowChatbot(true),
-      },
-    ];
+    {
+      id: '1',
+      title: 'Message',
+      description: 'Send us an email',
+      icon: 'mail',
+      iconType: 'Ionicons' as const,
+      color: '#F59E0B',
+      action: () => setShowEmailForm(true),
+    },
+    {
+      id: '2',
+      title: 'Chat',
+      description: 'Talk to BlokC Assistant',
+      icon: 'chatbubbles',
+      iconType: 'Ionicons' as const,
+      color: '#FBBF24',
+      action: () => setShowChatbot(true),
+    },
+  ];
+
   const quickHelp = [
-      { id: '1', title: 'Hardware Setup', icon: 'hardware-chip' },
-      { id: '2', title: 'App Connection', icon: 'wifi' },
-      { id: '3', title: 'Account Issues', icon: 'person-circle' },
-    ];
+    { id: '1', title: 'Hardware Setup', icon: 'hardware-chip' },
+    { id: '2', title: 'App Connection', icon: 'wifi' },
+    { id: '3', title: 'Account Issues', icon: 'person-circle' },
+  ];
+
   const handleSendEmail = () => {
-      if (!subject.trim() || !message.trim()) {
-        Alert.alert('Error', 'Please fill in all fields');
-        return;
-      }
+    if (!subject.trim() || !message.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
 
-      // Simulate sending email
-      Alert.alert(
-        'Message Sent!',
-        'We typically respond within 24 hours.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setShowEmailForm(false);
-              setSubject('');
-              setMessage('');
-            },
+    Alert.alert(
+      'Message Sent!',
+      'We typically respond within 24 hours.',
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            setShowEmailForm(false);
+            setSubject('');
+            setMessage('');
           },
-        ]
-      );
-    };
-  const handleOpenEmail = () => {
-      Alert.alert('Opened Email App', 'Your default email app has been opened');
-      setShowEmailForm(false);
-    };
-
-    const renderIcon = (iconType: 'Ionicons' | 'MaterialCommunityIcons', iconName: string, color: string) => {
-      if (iconType === 'MaterialCommunityIcons') {
-        return <MaterialCommunityIcons name={iconName as any} size={32} color={color} />;
-      }
-      return <Ionicons name={iconName as any} size={32} color={color} />;
-    };
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
-
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="arrow-back" size={26} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Contact</Text>
-          <View style={styles.placeholder} />
-        </View>
-
-        {/* Content */}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Response Time Banner */}
-          <View style={styles.bannerCard}>
-            <Ionicons name="time" size={24} color="#F59E0B" />
-            <Text style={styles.bannerText}>We typically respond within 24 hours.</Text>
-          </View>
-
-          {/* Contact Options */}
-          <View style={styles.optionsContainer}>
-            {contactOptions.map((option) => (
-              <TouchableOpacity
-                key={option.id}
-                style={[styles.optionCard, { backgroundColor: option.color }]}
-                onPress={option.action}
-                activeOpacity={0.8}
-              >
-                <View style={styles.optionIconContainer}>
-                  {renderIcon(option.iconType, option.icon, '#FFFFFF')}
-                </View>
-                <Text style={styles.optionTitle}>{option.title}</Text>
-                <Text style={styles.optionDescription}>{option.description}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Quick Help */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>QUICK HELP TOPICS</Text>
-            <View style={styles.quickHelpContainer}>
-              {quickHelp.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={styles.quickHelpButton}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.quickHelpText}>{item.title}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {/* Alternative Contact */}
-          <View style={styles.alternativeCard}>
-            <Ionicons name="call" size={24} color="#9333EA" />
-            <Text style={styles.alternativeTitle}>Need urgent help?</Text>
-            <Text style={styles.alternativeText}>Call us at: +1 (555) 123-4567</Text>
-            <TouchableOpacity
-              style={styles.callButton}
-              onPress={() => Linking.openURL('tel:+15551234567')}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="call" size={18} color="#FFFFFF" />
-              <Text style={styles.callButtonText}>Call Now</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        {/* Email Form Modal */}
-        <Modal
-          visible={showEmailForm}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setShowEmailForm(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Send us a message</Text>
-                <TouchableOpacity
-                  onPress={() => setShowEmailForm(false)}
-                  style={styles.closeButton}
-                >
-                  <Ionicons name="close" size={24} color="#6B7280" />
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.formContainer}>
-                  <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Subject</Text>
-                    <View style={styles.inputWrapper}>
-                      <Ionicons name="information-circle-outline" size={20} color="#9CA3AF" />
-                      <TextInput
-                        style={styles.input}
-                        placeholder="I need help with..."
-                        placeholderTextColor="#9CA3AF"
-                        value={subject}
-                        onChangeText={setSubject}
-                      />
-                    </View>
-                  </View>
-
-                  <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Message</Text>
-                    <TextInput
-                      style={[styles.input, styles.textArea]}
-                      placeholder="Describe your issue..."
-                      placeholderTextColor="#9CA3AF"
-                      value={message}
-                      onChangeText={setMessage}
-                      multiline
-                      numberOfLines={6}
-                      textAlignVertical="top"
-                    />
-                  </View>
-
-                  <TouchableOpacity
-                    style={styles.sendButton}
-                    onPress={handleSendEmail}
-                    activeOpacity={0.7}
-                  >
-                    <Ionicons name="send" size={18} color="#FFFFFF" />
-                    <Text style={styles.sendButtonText}>Send Message</Text>
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Chatbot Modal */}
-        <Modal
-          visible={showChatbot}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setShowChatbot(false)}
-        >
-          <View style={styles.chatModalOverlay}>
-            <View style={styles.chatModalContent}>
-              {/* Chat Header */}
-              <View style={styles.chatHeader}>
-                <View style={styles.chatHeaderLeft}>
-                  <View style={styles.botAvatar}>
-                    <Ionicons name="chatbubbles" size={20} color="#FFFFFF" />
-                  </View>
-                  <View>
-                    <Text style={styles.chatHeaderTitle}>BlokC Assistant</Text>
-                    <Text style={styles.chatHeaderSubtitle}>Online</Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setShowChatbot(false)}
-                  style={styles.chatCloseButton}
-                >
-                  <Ionicons name="close" size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-
-              {/* Chat Messages */}
-              <View style={styles.chatMessages}>
-                <View style={styles.botMessageWrapper}>
-                  <View style={styles.botMessage}>
-                    <Text style={styles.botMessageText}>
-                      Hi there! I'm the BlokC Assistant. How can I help you today?
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Quick Action Buttons */}
-                <View style={styles.quickActions}>
-                  {quickHelp.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={styles.quickActionButton}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.quickActionText}>{item.title}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              {/* Chat Input */}
-              <View style={styles.chatInputContainer}>
-                <TouchableOpacity style={styles.attachButton}>
-                  <Ionicons name="add-circle" size={24} color="#9333EA" />
-                </TouchableOpacity>
-                <TextInput
-                  style={styles.chatInput}
-                  placeholder="Type a message..."
-                  placeholderTextColor="#9CA3AF"
-                />
-                <TouchableOpacity style={styles.micButton}>
-                  <Ionicons name="mic" size={20} color="#6B7280" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.chatSendButton}>
-                  <Ionicons name="send" size={20} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Floating Chat Button */}
-        <TouchableOpacity
-          style={styles.floatingChatButton}
-          onPress={() => setShowChatbot(true)}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="chatbubbles" size={28} color="#FFFFFF" />
-        </TouchableOpacity>
-      </SafeAreaView>
+        },
+      ]
     );
   };
+
+  const renderIcon = (iconType: 'Ionicons' | 'MaterialCommunityIcons', iconName: string, color: string) => {
+    if (iconType === 'MaterialCommunityIcons') {
+      return <MaterialCommunityIcons name={iconName as any} size={32} color={color} />;
+    }
+    return <Ionicons name={iconName as any} size={32} color={color} />;
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={26} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Contact</Text>
+        <View style={styles.iconButton} />
+      </View>
+
+      {/* Content */}
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Response Time Banner */}
+        <View style={styles.banner}>
+          <Ionicons name="time" size={24} color="#F59E0B" />
+          <Text style={styles.bannerText}>We typically respond within 24 hours.</Text>
+        </View>
+
+        {/* Contact Options */}
+        <View style={styles.optionsRow}>
+          {contactOptions.map((option) => (
+            <TouchableOpacity
+              key={option.id}
+              style={[styles.optionCard, { backgroundColor: option.color }]}
+              onPress={option.action}
+              activeOpacity={0.8}
+            >
+              {renderIcon(option.iconType, option.icon, '#FFFFFF')}
+              <Text style={styles.optionTitle}>{option.title}</Text>
+              <Text style={styles.optionDesc}>{option.description}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Quick Help */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>QUICK HELP TOPICS</Text>
+          {quickHelp.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.helpButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.helpText}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Alternative Contact */}
+        <View style={styles.card}>
+          <Ionicons name="call" size={24} color="#9333EA" />
+          <Text style={styles.cardTitle}>Need urgent help?</Text>
+          <Text style={styles.cardText}>Call us at: +1 (555) 123-4567</Text>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => Linking.openURL('tel:+15551234567')}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="call" size={18} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Call Now</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* Email Form Modal */}
+      <Modal
+        visible={showEmailForm}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowEmailForm(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Send us a message</Text>
+              <TouchableOpacity
+                onPress={() => setShowEmailForm(false)}
+                style={styles.iconButton}
+              >
+                <Ionicons name="close" size={24} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.form}>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Subject</Text>
+                  <View style={styles.inputRow}>
+                    <Ionicons name="information-circle-outline" size={20} color="#9CA3AF" />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="I need help with..."
+                      placeholderTextColor="#9CA3AF"
+                      value={subject}
+                      onChangeText={setSubject}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Message</Text>
+                  <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Describe your issue..."
+                    placeholderTextColor="#9CA3AF"
+                    value={message}
+                    onChangeText={setMessage}
+                    multiline
+                    numberOfLines={6}
+                    textAlignVertical="top"
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={handleSendEmail}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="send" size={18} color="#FFFFFF" />
+                  <Text style={styles.buttonText}>Send Message</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Chatbot Modal */}
+      <Modal
+        visible={showChatbot}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowChatbot(false)}
+      >
+        <View style={styles.chatOverlay}>
+          <View style={styles.chatModal}>
+            {/* Chat Header */}
+            <View style={styles.chatHeader}>
+              <View style={styles.chatHeaderLeft}>
+                <View style={styles.avatar}>
+                  <Ionicons name="chatbubbles" size={20} color="#FFFFFF" />
+                </View>
+                <View>
+                  <Text style={styles.chatTitle}>BlokC Assistant</Text>
+                  <Text style={styles.chatSubtitle}>Online</Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowChatbot(false)}
+                style={styles.iconButton}
+              >
+                <Ionicons name="close" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Chat Messages */}
+            <View style={styles.chatContent}>
+              <View style={styles.message}>
+                <Text style={styles.messageText}>
+                  Hi there! I'm the BlokC Assistant. How can I help you today?
+                </Text>
+              </View>
+
+              {/* Quick Actions */}
+              <View style={styles.actions}>
+                {quickHelp.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.actionButton}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.actionText}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Chat Input */}
+            <View style={styles.chatInput}>
+              <TouchableOpacity style={styles.iconButton}>
+                <Ionicons name="add-circle" size={24} color="#9333EA" />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.chatField}
+                placeholder="Type a message..."
+                placeholderTextColor="#9CA3AF"
+              />
+              <TouchableOpacity style={styles.iconButton}>
+                <Ionicons name="mic" size={20} color="#6B7280" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.sendButton}>
+                <Ionicons name="send" size={20} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Floating Chat Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setShowChatbot(true)}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="chatbubbles" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
+  // Layout
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
   },
-  headerContainer: {
+  flex: {
+    flex: 1,
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 80,
+  },
+
+  // Header
+  header: {
     backgroundColor: '#9333EA',
     flexDirection: 'row',
     alignItems: 'center',
@@ -335,12 +337,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   headerTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -349,17 +345,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.5,
   },
-  placeholder: {
+
+  // Reusable
+  iconButton: {
     width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  scrollView: {
-    flex: 1,
+  primaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#9333EA',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    gap: 8,
   },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 80,
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
-  bannerCard: {
+
+  // Banner
+  banner: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FEF3C7',
@@ -376,7 +387,9 @@ const styles = StyleSheet.create({
     color: '#92400E',
     fontWeight: '500',
   },
-  optionsContainer: {
+
+  // Options
+  optionsRow: {
     flexDirection: 'row',
     gap: 12,
     marginBottom: 24,
@@ -392,20 +405,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 3.84,
   },
-  optionIconContainer: {
-    marginBottom: 12,
-  },
   optionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#FFFFFF',
+    marginTop: 12,
     marginBottom: 4,
   },
-  optionDescription: {
+  optionDesc: {
     fontSize: 12,
     color: '#FFFFFF',
     opacity: 0.9,
   },
+
+  // Section
   section: {
     marginBottom: 24,
   },
@@ -417,22 +430,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginLeft: 4,
   },
-  quickHelpContainer: {
-    gap: 12,
-  },
-  quickHelpButton: {
+  helpButton: {
     backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#E5E7EB',
+    marginBottom: 12,
   },
-  quickHelpText: {
+  helpText: {
     fontSize: 15,
     fontWeight: '600',
     color: '#374151',
   },
-  alternativeCard: {
+
+  // Card
+  card: {
     backgroundColor: '#FFFFFF',
     padding: 24,
     borderRadius: 16,
@@ -443,38 +456,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
-  alternativeTitle: {
+  cardTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#1F2937',
     marginTop: 12,
     marginBottom: 8,
   },
-  alternativeText: {
+  cardText: {
     fontSize: 14,
     color: '#6B7280',
     marginBottom: 16,
   },
-  callButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#9333EA',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    gap: 8,
-  },
-  callButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
+
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
-  modalContent: {
+  modal: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
@@ -494,13 +495,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1F2937',
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  formContainer: {
+
+  // Form
+  form: {
     padding: 20,
   },
   inputGroup: {
@@ -512,7 +509,7 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 8,
   },
-  inputWrapper: {
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
@@ -537,22 +534,9 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     textAlignVertical: 'top',
   },
-  sendButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#5B46E5',
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 8,
-    marginTop: 8,
-  },
-  sendButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  floatingChatButton: {
+
+  // Floating Button
+  fab: {
     position: 'absolute',
     right: 16,
     bottom: 16,
@@ -568,11 +552,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
   },
-  chatModalOverlay: {
+
+  // Chat Modal
+  chatOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
-  chatModalContent: {
+  chatModal: {
     flex: 1,
     backgroundColor: '#F3F4F6',
     marginTop: 60,
@@ -594,7 +580,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  botAvatar: {
+  avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -602,46 +588,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  chatHeaderTitle: {
+  chatTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#FFFFFF',
   },
-  chatHeaderSubtitle: {
+  chatSubtitle: {
     fontSize: 12,
     color: '#E9D5FF',
   },
-  chatCloseButton: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chatMessages: {
+  chatContent: {
     flex: 1,
     padding: 16,
   },
-  botMessageWrapper: {
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  botMessage: {
+  message: {
     backgroundColor: '#FFFFFF',
     padding: 12,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
     maxWidth: '80%',
+    marginBottom: 16,
   },
-  botMessageText: {
+  messageText: {
     fontSize: 15,
     color: '#1F2937',
     lineHeight: 20,
   },
-  quickActions: {
+  actions: {
     gap: 12,
     marginTop: 16,
   },
-  quickActionButton: {
+  actionButton: {
     backgroundColor: '#FFFFFF',
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -649,13 +626,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#9333EA',
   },
-  quickActionText: {
+  actionText: {
     fontSize: 14,
     fontWeight: '600',
     color: '#9333EA',
     textAlign: 'center',
   },
-  chatInputContainer: {
+  chatInput: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -665,13 +642,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#E5E7EB',
     gap: 12,
   },
-  attachButton: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chatInput: {
+  chatField: {
     flex: 1,
     backgroundColor: '#F3F4F6',
     borderRadius: 20,
@@ -680,13 +651,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#1F2937',
   },
-  micButton: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chatSendButton: {
+  sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -697,4 +662,3 @@ const styles = StyleSheet.create({
 });
 
 export default ContactSupportScreen;
-
