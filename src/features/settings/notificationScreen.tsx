@@ -11,17 +11,20 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../navigation/types';
+import type { RootStackParamList } from '../../navigation/types';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'NotificationPreferencesScreen'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'NotificationPreferencesScreen'
+>;
 
 interface NotificationPreferencesScreenProps {
   navigation: NavigationProp;
 }
 
-const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps> = ({
-  navigation,
-}) => {
+const NotificationPreferencesScreen: React.FC<
+  NotificationPreferencesScreenProps
+> = ({ navigation }) => {
   const [enableAll, setEnableAll] = useState(true);
   const [batteryAlerts, setBatteryAlerts] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState(false);
@@ -36,6 +39,11 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
       setConnectionStatus(false);
       setMilestoneMoments(false);
       setParentingTips(false);
+    } else {
+      setBatteryAlerts(true);
+      setConnectionStatus(true);
+      setMilestoneMoments(true);
+      setParentingTips(true);
     }
   };
 
@@ -57,16 +65,22 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Enable All Toggle */}
         <View style={styles.notificationItem}>
           <View style={styles.notificationLeft}>
             <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
               <Ionicons name="notifications" size={20} color="#FFFFFF" />
             </View>
+
             <View style={styles.notificationTextContainer}>
               <Text style={styles.notificationTitle}>Enable All</Text>
-              <Text style={styles.notificationSubtitle}>Turn all notifications on or off</Text>
+              <Text style={styles.notificationSubtitle}>
+                Turn all notifications on or off
+              </Text>
             </View>
           </View>
 
@@ -88,9 +102,12 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <Ionicons name="battery-charging" size={20} color="#FFFFFF" />
               </View>
+
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Battery Alerts</Text>
-                <Text style={styles.notificationSubtitle}>Notify when cubes need charging</Text>
+                <Text style={styles.notificationSubtitle}>
+                  Notify when cubes need charging
+                </Text>
               </View>
             </View>
 
@@ -100,7 +117,6 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
               thumbColor={batteryAlerts ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
-              disabled={!enableAll}
             />
           </View>
 
@@ -109,6 +125,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <MaterialIcons name="wifi" size={20} color="#FFFFFF" />
               </View>
+
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Connection Status</Text>
                 <Text style={styles.notificationSubtitle}>
@@ -123,7 +140,6 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
               thumbColor={connectionStatus ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
-              disabled={!enableAll}
             />
           </View>
         </View>
@@ -137,6 +153,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <MaterialIcons name="emoji-events" size={20} color="#FFFFFF" />
               </View>
+
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Milestone Moments</Text>
                 <Text style={styles.notificationSubtitle}>
@@ -151,7 +168,6 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
               thumbColor={milestoneMoments ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
-              disabled={!enableAll}
             />
           </View>
 
@@ -160,6 +176,7 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               <View style={[styles.iconContainer, { backgroundColor: '#9333EA' }]}>
                 <Ionicons name="book" size={20} color="#FFFFFF" />
               </View>
+
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>Parenting Tips</Text>
                 <Text style={styles.notificationSubtitle}>
@@ -174,7 +191,6 @@ const NotificationPreferencesScreen: React.FC<NotificationPreferencesScreenProps
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
               thumbColor={parentingTips ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
-              disabled={!enableAll}
             />
           </View>
         </View>
@@ -196,10 +212,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   backButton: {
     width: 40,
@@ -213,7 +225,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     flex: 1,
     textAlign: 'center',
-    letterSpacing: 0.5,
   },
   placeholder: {
     width: 40,
@@ -243,8 +254,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     marginBottom: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
   },
   notificationLeft: {
     flexDirection: 'row',
