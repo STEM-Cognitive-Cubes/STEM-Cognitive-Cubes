@@ -31,3 +31,24 @@ const ContactSupportScreen: React.FC<ContactSupportScreenProps> = ({ navigation 
   const [showChatbot, setShowChatbot] = useState(false);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+
+  const contactOptions = [
+      {
+        id: '1',
+        title: 'Message',
+        description: 'Send us an email',
+        icon: 'mail',
+        iconType: 'Ionicons' as const,
+        color: '#F59E0B',
+        action: () => setShowEmailForm(true),
+      },
+      {
+        id: '2',
+        title: 'Chat',
+        description: 'Talk to BlokC Assistant',
+        icon: 'chatbubbles',
+        iconType: 'Ionicons' as const,
+        color: '#FBBF24',
+        action: () => setShowChatbot(true),
+      },
+    ];
