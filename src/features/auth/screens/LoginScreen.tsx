@@ -46,7 +46,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   const timer = setTimeout(() => {
     setIsLoginSuccess(false);
-    navigation.replace("Home" as any);
+    navigation.replace("MainTabs");
   }, 1500); // delay to show home screen after success modal
 
   return () => clearTimeout(timer);
