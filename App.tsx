@@ -100,9 +100,26 @@ export default function App() {
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
+            {/* <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
+            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
+            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
+            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
+            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} /> */}
+            <Stack.Screen name="Home" component={AppTabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
     </SafeAreaProvider>
   );
 }
+  
+
