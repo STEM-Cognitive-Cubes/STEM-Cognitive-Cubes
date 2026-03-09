@@ -5,4 +5,6 @@ node_modules/
 !.env.example
 venv/
 .idea/
-
+.DS_Store
+assets/.DS_Store
+android/app/debug.keystore
