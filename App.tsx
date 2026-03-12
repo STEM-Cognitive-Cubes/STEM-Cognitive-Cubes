@@ -23,6 +23,26 @@ import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
+import AppearanceScreen from './src/features/settings/appearanceScreen';
+import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
+import PrivacyControlsScreen from './src/features/settings/privacyScreen';
+import HelpSupportScreen from './src/features/settings/helpAndSupport/helpScreen';
+import CommunityScreen from './src/features/settings/helpAndSupport/community/communityScreen';
+import EmailScreen from './src/features/settings/helpAndSupport/emailSupport/emailScreen';
+import ChatScreen from './src/features/settings/helpAndSupport/liveChat/chatScreen';
+import UserGuideScreen from './src/features/settings/helpAndSupport/userGuide/userGuideScreen';
+import AppFeaturesScreen from './src/features/settings/helpAndSupport/userGuide/appFeatures';
+import OperateScreen from './src/features/settings/helpAndSupport/userGuide/operateScreen';
+import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
+import FaqsScreen from './src/features/settings/faqsScreen';
+import ContactSupportScreen from './src/features/settings/contactSupportScreen';
+import DataSharingScreen from './src/features/settings/dataSharingScreen';
+
+
+//session
+import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
+import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
+
 
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
@@ -91,12 +111,26 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
+            <Stack.Screen name="StartSession" component={StartSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
