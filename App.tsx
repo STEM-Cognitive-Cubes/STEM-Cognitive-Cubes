@@ -101,7 +101,6 @@ export default function App() {
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
-            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
