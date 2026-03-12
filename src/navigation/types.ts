@@ -1,4 +1,14 @@
 export type RootStackParamList = {
+  // Auth
+  Login: undefined;
+  Signup: undefined;
+  MainTabs: undefined;
+  // Settings feature
+  Settings: undefined;
+  Account: undefined;
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  DeleteAccount: undefined;
   AppearanceScreen: undefined;
   NotificationPreferencesScreen: undefined;
   PrivacyControlsScreen: undefined;
