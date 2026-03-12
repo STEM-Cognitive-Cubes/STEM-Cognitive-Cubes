@@ -12,17 +12,10 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 
-type RootStackParamList = {
-  HelpSupportScreen: undefined;
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
-interface ChatScreenProps {
-  navigation: NavigationProp;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'ChatScreen'>;
 
 interface Message {
   id: string;
@@ -31,7 +24,7 @@ interface Message {
   timestamp: string;
 }
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
+const ChatScreen: React.FC<Props> = ({ navigation }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -49,7 +42,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
       id: Date.now().toString(),
       text: inputText,
       sender: 'user',
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     };
 
     setMessages([...messages, newMessage]);
@@ -61,9 +57,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
         id: (Date.now() + 1).toString(),
         text: 'Thanks for reaching out! A support agent will be with you shortly.',
         sender: 'support',
-        timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       };
-      setMessages(prev => [...prev, supportMessage]);
+      setMessages((prev) => [...prev, supportMessage]);
     }, 1000);
   };
 
@@ -80,10 +79,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
+
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Live Chat</Text>
           <Text style={styles.headerSubtitle}>Support Team</Text>
         </View>
+
         <View style={styles.placeholder} />
       </View>
 
@@ -103,27 +104,36 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
               key={message.id}
               style={[
                 styles.messageWrapper,
-                message.sender === 'user' ? styles.messageWrapperUser : styles.messageWrapperSupport,
+                message.sender === 'user'
+                  ? styles.messageWrapperUser
+                  : styles.messageWrapperSupport,
               ]}
             >
               <View
                 style={[
                   styles.messageBubble,
-                  message.sender === 'user' ? styles.messageBubbleUser : styles.messageBubbleSupport,
+                  message.sender === 'user'
+                    ? styles.messageBubbleUser
+                    : styles.messageBubbleSupport,
                 ]}
               >
                 <Text
                   style={[
                     styles.messageText,
-                    message.sender === 'user' ? styles.messageTextUser : styles.messageTextSupport,
+                    message.sender === 'user'
+                      ? styles.messageTextUser
+                      : styles.messageTextSupport,
                   ]}
                 >
                   {message.text}
                 </Text>
+
                 <Text
                   style={[
                     styles.messageTime,
-                    message.sender === 'user' ? styles.messageTimeUser : styles.messageTimeSupport,
+                    message.sender === 'user'
+                      ? styles.messageTimeUser
+                      : styles.messageTimeSupport,
                   ]}
                 >
                   {message.timestamp}
@@ -143,10 +153,148 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigation }) => {
             placeholderTextColor="#9CA3AF"
             multiline
           />
+
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!inputText.trim()}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="send" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  headerContainer: {
+    backgroundColor: '#9333EA',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#E9D5FF',
+    marginTop: 2,
+  },
+  placeholder: {
+    width: 40,
+  },
+  chatContainer: {
+    flex: 1,
+  },
+  messagesContainer: {
+    flex: 1,
+  },
+  messagesContent: {
+    padding: 16,
+    gap: 12,
+  },
+  messageWrapper: {
+    width: '100%',
+  },
+  messageWrapperUser: {
+    alignItems: 'flex-end',
+  },
+  messageWrapperSupport: {
+    alignItems: 'flex-start',
+  },
+  messageBubble: {
+    maxWidth: '80%',
+    padding: 12,
+    borderRadius: 16,
+  },
+  messageBubbleUser: {
+    backgroundColor: '#9333EA',
+    borderBottomRightRadius: 4,
+  },
+  messageBubbleSupport: {
+    backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 4,
+  },
+  messageText: {
+    fontSize: 15,
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+  messageTextUser: {
+    color: '#FFFFFF',
+  },
+  messageTextSupport: {
+    color: '#1F2937',
+  },
+  messageTime: {
+    fontSize: 11,
+  },
+  messageTimeUser: {
+    color: '#E9D5FF',
+  },
+  messageTimeSupport: {
+    color: '#9CA3AF',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    gap: 12,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: '#1F2937',
+    maxHeight: 100,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#9333EA',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendButtonDisabled: {
+    backgroundColor: '#D1D5DB',
+  },
+});
+
+export default ChatScreen;            disabled={!inputText.trim()}
             activeOpacity={0.7}
           >
             <Ionicons name="send" size={20} color="#FFFFFF" />
