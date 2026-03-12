@@ -17,7 +17,7 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
-// Settings Screens
+// Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
 import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
@@ -37,11 +37,13 @@ import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide
 import FaqsScreen from './src/features/settings/faqsScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 
+//session
+import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
+import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
 
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
-
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -62,11 +64,9 @@ export default function App() {
     Inter_700Bold,
   });
 
-  // Show splash screen while fonts load
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
-
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
@@ -105,24 +105,25 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-             <Stack.Screen name="Settings" component={SettingsScreen} />
-                    <Stack.Screen name="Account" component={AccountScreen} />
-                    <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-                    <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-                    <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
-                    <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
-                    <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
-                    <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
-                    <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
-                    <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
-                    <Stack.Screen name="EmailScreen" component={EmailScreen} />
-                    <Stack.Screen name="ChatScreen" component={ChatScreen} />
-                    <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
-                    <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
-                    <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
-                    <Stack.Screen name="OperateScreen" component={OperateScreen} />
-                    <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
-                    <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Account" component={AccountScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="StartSession" component={StartSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
