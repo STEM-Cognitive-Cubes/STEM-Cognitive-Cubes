@@ -23,8 +23,7 @@ import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
-import AppearanceScreen from './src/features/settings/AppearanceScreen';
-import NotificationPreferencesScreen from './src/features/settings/NotificationPreferencesScreen';
+import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
 
