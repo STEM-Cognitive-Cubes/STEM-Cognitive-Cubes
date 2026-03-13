@@ -1,7 +1,9 @@
 export type RootStackParamList = {
+  // Auth
   Login: undefined;
   Signup: undefined;
-  Home: undefined;
+  MainTabs: undefined;
+  // Settings feature
   Settings: undefined;
   Account: undefined;
   EditProfile: undefined;
@@ -10,6 +12,11 @@ export type RootStackParamList = {
   AppearanceScreen: undefined;
   NotificationPreferencesScreen: undefined;
   PrivacyControlsScreen: undefined;
+  StartSession: undefined;
+  LiveSession: undefined;
+  NotificationPreferencesScreen: undefined;
+  PrivacyControlsScreen: undefined;
+  DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   CommunityScreen: undefined;
   EmailScreen: undefined;
@@ -19,5 +26,4 @@ export type RootStackParamList = {
   ProductIntro: undefined;
   UserGuide: undefined;
   Logout: undefined;
-  ContactSupportScreen: undefined;
-  };
+};
