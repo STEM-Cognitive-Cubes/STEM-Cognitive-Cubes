@@ -25,6 +25,14 @@ import ChangePasswordScreen from './src/features/settings/account/changePassword
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
 import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
+import HelpSupportScreen from './src/features/settings/helpAndSupport/helpScreen';
+import CommunityScreen from './src/features/settings/helpAndSupport/community';
+import EmailScreen from './src/features/settings/helpAndSupport/emailSupport';
+import ChatScreen from './src/features/settings/helpAndSupport/liveChat';
+import UserGuideScreen from './src/features/settings/helpAndSupport/userGuide/userGuide';
+import AppFeaturesScreen from './src/features/settings/helpAndSupport/userGuide/appFeatures';
+import OperateScreen from './src/features/settings/helpAndSupport/userGuide/operateScreen';
+import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
 
 //session
@@ -99,7 +107,7 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
@@ -111,8 +119,15 @@ export default function App() {
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
-
           </Stack.Navigator>
         </NavigationContainer>
       </View>
