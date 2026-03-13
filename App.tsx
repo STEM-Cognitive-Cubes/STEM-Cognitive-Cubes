@@ -20,6 +20,7 @@ import SignupScreen from "./src/features/auth/screens/SignupScreen";
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
+import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 
 //session
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
@@ -93,21 +94,22 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
-            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
 
-            <Stack.Screen name="Account" component={AccountScreen} />
+            {/* <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} /> */}
 
-            <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
-            
             <Stack.Screen name="AddChild" component={AddChildScreen} />
-
+            <Stack.Screen
+              name="NotificationPreferencesScreen"
+              component={NotificationPreferencesScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
