@@ -19,6 +19,18 @@ import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
+import AccountScreen from './src/features/settings/account/accountScreen';
+import EditProfileScreen from './src/features/settings/account/editProfileScreen';
+import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
+import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
+import HelpSupportScreen from './src/features/settings/helpAndSupport/helpScreen';
+import CommunityScreen from './src/features/settings/helpAndSupport/community';
+import EmailScreen from './src/features/settings/helpAndSupport/emailSupport';
+import ChatScreen from './src/features/settings/helpAndSupport/liveChat';
+import UserGuideScreen from './src/features/settings/helpAndSupport/userGuide/userGuide';
+import AppFeaturesScreen from './src/features/settings/helpAndSupport/userGuide/appFeatures';
+import OperateScreen from './src/features/settings/helpAndSupport/userGuide/operateScreen';
+import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
 import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 
@@ -104,6 +116,18 @@ export default function App() {
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} /> */}
 
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Account" component={AccountScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+            <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
+            <Stack.Screen name="EmailScreen" component={EmailScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="OperateScreen" component={OperateScreen} />
+            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
             <Stack.Screen
