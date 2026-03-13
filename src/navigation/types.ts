@@ -10,6 +10,8 @@ export type RootStackParamList = {
   ChangePassword: undefined;
   DeleteAccount: undefined;
   AppearanceScreen: undefined;
+  StartSession: undefined;
+  LiveSession: undefined;
   NotificationPreferencesScreen: undefined;
   PrivacyControlsScreen: undefined;
   DataSharingScreen: undefined;
@@ -34,4 +36,7 @@ export type RootStackParamList = {
   // Insights feature
   Insights: undefined;
   Recommendations: { category: string };
+  // Profile feature
+  AddChild: undefined; // this line for the AddChild screen
+
 };

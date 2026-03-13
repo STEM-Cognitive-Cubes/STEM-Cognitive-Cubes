@@ -27,9 +27,16 @@ import NotificationPreferencesScreen from './src/features/settings/notificationS
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
 
-// Navigation
+//session
+import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
+import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
+
+// Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
+
+// Profile Screens
+import AddChildScreen from './src/features/profile/add-new-child/add-child';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -92,6 +99,9 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
+            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="StartSession" component={StartSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
@@ -101,6 +111,8 @@ export default function App() {
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="AddChild" component={AddChildScreen} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </View>
