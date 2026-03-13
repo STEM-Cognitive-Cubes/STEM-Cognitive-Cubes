@@ -45,6 +45,9 @@ import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionSc
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
 
+// Profile Screens
+import AddChildScreen from './src/features/profile/add-new-child/add-child';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const navigationTheme = {
@@ -123,7 +126,8 @@ export default function App() {
             <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
             <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
-            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />            
+            <Stack.Screen name="AddChild" component={AddChildScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
