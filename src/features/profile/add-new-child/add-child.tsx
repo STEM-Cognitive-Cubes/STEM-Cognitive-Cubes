@@ -11,7 +11,9 @@ export default function AddChildScreen() {
   const [childAge, setChildAge] = React.useState('');
   const handleCreateProfile = () => {
     // Here you would typically send the childName and childAge to your backend or Firebase
-    console.log('Creating profile for:', childName, 'Age:', childAge);
+    if (__DEV__) {
+      console.log('Creating profile for:', childName, 'Age:', childAge);
+    }
 
     // if (!childName || !childAge) {
     //   alert('Please enter both name and age');
