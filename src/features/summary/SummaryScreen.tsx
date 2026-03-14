@@ -2,12 +2,14 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../navigation/types";
-import { fontFamilies } from "../../../config/typography";
-import SummaryCard from "../components/SummaryCard";
+import type { RootStackParamList } from "../../navigation/types";
+import { fontFamilies } from "../../config/typography";
+import SummaryCard from "./SummaryCard";
+
 type SummaryScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "WeeklySummary">;
 };
+
 const weeklySessions = [
   { id: "1", dayLabel: "Monday", date: "June 10, 2025" },
   { id: "2", dayLabel: "Tuesday", date: "June 11, 2025" },
@@ -17,6 +19,7 @@ const weeklySessions = [
   { id: "6", dayLabel: "Saturday", date: "June 15, 2025" },
   { id: "7", dayLabel: "Sunday", date: "June 16, 2025" },
 ];
+
 export default function SummaryScreen({ navigation }: SummaryScreenProps) {
   return (
     <View style={styles.container}>
@@ -26,6 +29,7 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
       >
         <Text style={styles.headerTitle}>Weekly Summary</Text>
       </LinearGradient>
+
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -44,6 +48,7 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
