@@ -33,6 +33,13 @@ import OperateScreen from './src/features/settings/helpAndSupport/userGuide/oper
 import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
 import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
+import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
+import DataSharingScreen from './src/features/settings/dataSharingScreen';
+import FAQsScreen from './src/features/settings/faqsScreen';
+import ContactSupportScreen from './src/features/settings/contactSupportScreen';
+import RecommendationsScreen from './src/features/recommendations/RecommendationsScreen';
+import SummaryScreen from './src/features/summary/SummaryScreen';
+import SummaryDetailScreen from './src/features/summary/SummaryDetailScreen';
 
 //session
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
@@ -129,6 +136,28 @@ export default function App() {
             <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen
+              name="PrivacyControlsScreen"
+              component={PrivacyControlsScreen}
+            />
+            <Stack.Screen
+              name="DataSharingScreen"
+              component={DataSharingScreen}
+            />
+            <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
+            <Stack.Screen
+              name="ContactSupportScreen"
+              component={ContactSupportScreen}
+            />
+            <Stack.Screen
+              name="Recommendations"
+              component={RecommendationsScreen}
+            />
+            <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
+            <Stack.Screen
+              name="SummaryDetail"
+              component={SummaryDetailScreen}
+            />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
             <Stack.Screen
               name="NotificationPreferencesScreen"
