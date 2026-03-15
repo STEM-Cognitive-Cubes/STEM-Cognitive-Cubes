@@ -56,13 +56,13 @@ export default function AddChildScreen() {
       <View style={styles.formCard}>
         <Text style={styles.label}>CHILD'S NAME</Text>
         <View style={styles.inputContainer}>
-          <Ionicons name="person" size={20} color="black" />
+          <Ionicons name="person" size={20} color="#64748B" />
           <TextInput style={styles.input} placeholder="E.g. Nehara Fernando" onChangeText={(text) => setChildName(text)} />
         </View>
 
         <Text style={styles.label}>AGE (YEARS)</Text>
         <View style={styles.inputContainer}>
-          <Ionicons name="calendar" size={20} color="black" />
+          <Ionicons name="calendar" size={20} color="#64748B" />
           <TextInput style={styles.input} placeholder="birthday" onChangeText={(text) => setChildAge(text)} />
         </View>
 
