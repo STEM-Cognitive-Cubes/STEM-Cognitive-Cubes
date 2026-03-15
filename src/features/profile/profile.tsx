@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   childName: { fontSize: 16, fontWeight: 'bold', color: '#F97316' },
   childStatus: { fontSize: 12, color: '#92400E' },
   addButton: {
-    borderWidth: 2, borderStyle: 'dashed', borderColor: '#E2E8F0',
+    borderWidth: 2, borderStyle: 'dashed', borderColor: '#CBD5E1',
     borderRadius: 20, padding: 15, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'
   },
   addButtonText: { color: '#6366F1', fontWeight: 'bold', marginLeft: 10 },
