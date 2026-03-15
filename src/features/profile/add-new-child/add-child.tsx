@@ -14,11 +14,18 @@ export default function AddChildScreen() {
       return;
     }
 
-    // Navigate back to Profile with the new child data
-    navigation.navigate('Home', {
-      screen: 'Profile',
-      params: { newChild: { name: childName.trim(), age: childAge.trim() } },
-    });
+    // Show success feedback, then navigate back with child data
+    Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
+      {
+        text: 'OK',
+        onPress: () => {
+          navigation.navigate('Home', {
+            screen: 'Profile',
+            params: { newChild: { name: childName.trim(), age: childAge.trim() } },
+          });
+        },
+      },
+    ]);
   };
 
   return (
