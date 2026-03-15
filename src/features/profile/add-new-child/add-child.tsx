@@ -63,7 +63,7 @@ export default function AddChildScreen() {
         <Text style={styles.label}>AGE (YEARS)</Text>
         <View style={styles.inputContainer}>
           <Ionicons name="calendar" size={20} color="#64748B" />
-          <TextInput style={styles.input} placeholder="birthday" onChangeText={(text) => setChildAge(text)} />
+          <TextInput style={styles.input} placeholder="E.g. 5" onChangeText={(text) => setChildAge(text)} />
         </View>
 
         <Pressable style={styles.createButton} onPress={handleCreateProfile}>
