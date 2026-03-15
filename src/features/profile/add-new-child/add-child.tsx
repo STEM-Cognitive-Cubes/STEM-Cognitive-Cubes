@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,6 +22,7 @@ export default function AddChildScreen() {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -56,7 +57,8 @@ export default function AddChildScreen() {
           <Text style={styles.createButtonText}>Create Profile</Text>
         </Pressable>
       </View>
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
