@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
   avatarSection: { alignItems: 'center', marginTop: -50 },
   avatarCircle: {
     width: 120, height: 120, borderRadius: 60, backgroundColor: '#F1F5F9',
-    justifyContent: 'center', alignItems: 'center', borderWidth: 4, borderColor: 'white'
+    justifyContent: 'center', alignItems: 'center', borderWidth: 5, borderColor: 'white'
   },
   plusBadge: {
     position: 'absolute', bottom: 5, right: 5,
-    backgroundColor: '#A855F7', borderRadius: 20, padding: 5
+    backgroundColor: '#A855F7', borderRadius: 20, padding: 6
   },
   formCard: {
     backgroundColor: '#F59E0B', margin: 25, borderRadius: 25, padding: 25, marginTop: 40
