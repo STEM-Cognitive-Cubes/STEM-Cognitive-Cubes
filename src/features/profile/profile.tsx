@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   statItem: { alignItems: 'center', flex: 1 },
   statDivider: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
   statValue: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  statLabel: { color: 'white', fontSize: 10, opacity: 0.9 },
+  statLabel: { color: 'white', fontSize: 12, opacity: 0.9 },
   section: { padding: 25 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#334155', marginBottom: 15 },
   childCard: {
