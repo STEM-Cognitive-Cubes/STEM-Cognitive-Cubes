@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../navigation/types";
+import type { RootStackParamList } from "../../navigation/types";
 import { fontFamilies } from "@/config/typography";
 import InsightBox from "./InsightBox";
+import MascotInsight from "./MascotInsight";
+
 type InsightsScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Insights">;
 };
+
 const tabs = ["Cognitive", "Creativity", "Problem-solving"] as const;
 type TabKey = (typeof tabs)[number];
+
 const insightsData: Record<
   TabKey,
   {
@@ -18,6 +22,7 @@ const insightsData: Record<
     improvement: string;
     data: { day: string; value: number }[];
     barColor: string;
+    insightMessage: string;
   }
 > = {
   Cognitive: {
@@ -34,6 +39,8 @@ const insightsData: Record<
       { day: "Sun", value: 60 },
     ],
     barColor: "#FF9F43",
+    insightMessage:
+      "Cognitive play is trending upward this week. Keep mixing puzzles with free building.",
   },
   Creativity: {
     title: "Creative Growth",
@@ -49,6 +56,8 @@ const insightsData: Record<
       { day: "Sun", value: 65 },
     ],
     barColor: "#FFD54F",
+    insightMessage:
+      "Creative expression is improving. Open-ended builds are working well here.",
   },
   "Problem-solving": {
     title: "Problem-Solving Growth",
@@ -64,11 +73,15 @@ const insightsData: Record<
       { day: "Sun", value: 72 },
     ],
     barColor: "#FF9F43",
+    insightMessage:
+      "Problem-solving is the strongest category right now. Add harder build challenges gradually.",
   },
 };
+
 export default function InsightsScreen({ navigation }: InsightsScreenProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("Cognitive");
   const current = insightsData[activeTab];
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -77,32 +90,25 @@ export default function InsightsScreen({ navigation }: InsightsScreenProps) {
       >
         <Text style={styles.headerTitle}>Development Insights</Text>
       </LinearGradient>
+
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Tab Pills */}
         <View style={styles.tabRow}>
           {tabs.map((tab) => (
             <Pressable
               key={tab}
-              style={[
-                styles.tabPill,
-                activeTab === tab && styles.tabPillActive,
-              ]}
+              style={[styles.tabPill, activeTab === tab && styles.tabPillActive]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab && styles.tabTextActive,
-                ]}
-              >
+              <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
                 {tab}
               </Text>
             </Pressable>
           ))}
         </View>
+
         <InsightBox
           title={current.title}
           score={current.score}
@@ -110,30 +116,27 @@ export default function InsightsScreen({ navigation }: InsightsScreenProps) {
           improvement={current.improvement}
           data={current.data}
           barColor={current.barColor}
-          // mascotSource={require("../../../assets/mascot.png")} // Uncomment when you add your mascot image
         />
-        {/* Export Report Button */}
-        <Pressable
-          style={styles.exportButton}
-          onPress={() => {}}
-        >
+
+        <MascotInsight message={current.insightMessage} />
+
+        <Pressable style={styles.exportButton} onPress={() => {}}>
           <Text style={styles.exportButtonText}>Export report</Text>
         </Pressable>
-        {/* Recommendations Link */}
+
         <Pressable
           style={styles.recommendationsLink}
           onPress={() =>
             navigation.navigate("Recommendations", { category: activeTab })
           }
         >
-          <Text style={styles.recommendationsText}>
-            View Recommendations →
-          </Text>
+          <Text style={styles.recommendationsText}>{"View Recommendations ->"}</Text>
         </Pressable>
       </ScrollView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

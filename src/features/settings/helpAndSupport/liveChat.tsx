@@ -1,434 +1,188 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../../navigation/types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ChatScreen'>;
+type Props = NativeStackScreenProps<RootStackParamList, "ChatScreen">;
 
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'support';
-  timestamp: string;
-}
+const starterMessages = [
+  {
+    id: "1",
+    sender: "Support",
+    body: "Hello. Tell us what issue you hit while using the app.",
+  },
+  {
+    id: "2",
+    sender: "You",
+    body: "I need help with a session setup problem.",
+  },
+];
 
-const ChatScreen: React.FC<Props> = ({ navigation }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Hello! How can we help you today?',
-      sender: 'support',
-      timestamp: '10:30 AM',
-    },
-  ]);
-  const [inputText, setInputText] = useState('');
-
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputText('');
-
-    // Simulate support response
-    setTimeout(() => {
-      const supportMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Thanks for reaching out! A support agent will be with you shortly.',
-        sender: 'support',
-        timestamp: new Date().toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      };
-      setMessages((prev) => [...prev, supportMessage]);
-    }, 1000);
-  };
+export default function ChatScreen({ navigation }: Props) {
+  const [inputText, setInputText] = useState("");
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
-
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={26} color="#FFFFFF" />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Live Chat</Text>
-          <Text style={styles.headerSubtitle}>Support Team</Text>
-        </View>
-
-        <View style={styles.placeholder} />
+        <Text style={styles.headerTitle}>Live Chat</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
       <KeyboardAvoidingView
-        style={styles.chatContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        behavior={Platform.select({ ios: "padding", android: undefined })}
+        style={styles.flex}
       >
-        {/* Messages */}
-        <ScrollView
-          style={styles.messagesContainer}
-          contentContainerStyle={styles.messagesContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {messages.map((message) => (
-            <View
-              key={message.id}
-              style={[
-                styles.messageWrapper,
-                message.sender === 'user'
-                  ? styles.messageWrapperUser
-                  : styles.messageWrapperSupport,
-              ]}
-            >
+        <ScrollView contentContainerStyle={styles.messages}>
+          {starterMessages.map((message) => {
+            const isUser = message.sender === "You";
+            return (
               <View
-                style={[
-                  styles.messageBubble,
-                  message.sender === 'user'
-                    ? styles.messageBubbleUser
-                    : styles.messageBubbleSupport,
-                ]}
+                key={message.id}
+                style={[styles.messageRow, isUser && styles.messageRowUser]}
               >
-                <Text
-                  style={[
-                    styles.messageText,
-                    message.sender === 'user'
-                      ? styles.messageTextUser
-                      : styles.messageTextSupport,
-                  ]}
-                >
-                  {message.text}
-                </Text>
-
-                <Text
-                  style={[
-                    styles.messageTime,
-                    message.sender === 'user'
-                      ? styles.messageTimeUser
-                      : styles.messageTimeSupport,
-                  ]}
-                >
-                  {message.timestamp}
-                </Text>
+                <View style={[styles.messageBubble, isUser && styles.messageBubbleUser]}>
+                  <Text style={[styles.messageSender, isUser && styles.messageSenderUser]}>
+                    {message.sender}
+                  </Text>
+                  <Text style={[styles.messageBody, isUser && styles.messageBodyUser]}>
+                    {message.body}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </ScrollView>
 
-        {/* Input */}
-        <View style={styles.inputContainer}>
+        <View style={styles.inputBar}>
           <TextInput
-            style={styles.input}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type a message..."
+            placeholder="Type a message"
             placeholderTextColor="#9CA3AF"
-            multiline
+            style={styles.input}
           />
-
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-            onPress={handleSend}
             disabled={!inputText.trim()}
-            activeOpacity={0.7}
           >
-            <Ionicons name="send" size={20} color="#FFFFFF" />
+            <Ionicons name="send" size={18} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
   },
-  headerContainer: {
-    backgroundColor: '#9333EA',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  flex: {
+    flex: 1,
+  },
+  header: {
+    backgroundColor: "#9333EA",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    paddingVertical: 16,
   },
-  backButton: {
+  headerButton: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
+    flex: 1,
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "700",
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: '#E9D5FF',
-    marginTop: 2,
-  },
-  placeholder: {
+  headerSpacer: {
     width: 40,
   },
-  chatContainer: {
-    flex: 1,
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
+  messages: {
     padding: 16,
     gap: 12,
   },
-  messageWrapper: {
-    width: '100%',
+  messageRow: {
+    flexDirection: "row",
   },
-  messageWrapperUser: {
-    alignItems: 'flex-end',
-  },
-  messageWrapperSupport: {
-    alignItems: 'flex-start',
+  messageRowUser: {
+    justifyContent: "flex-end",
   },
   messageBubble: {
-    maxWidth: '80%',
-    padding: 12,
-    borderRadius: 16,
+    maxWidth: "82%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 14,
   },
   messageBubbleUser: {
-    backgroundColor: '#9333EA',
-    borderBottomRightRadius: 4,
+    backgroundColor: "#9333EA",
   },
-  messageBubbleSupport: {
-    backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: 4,
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 20,
+  messageSender: {
+    color: "#6B7280",
+    fontSize: 12,
+    fontWeight: "700",
     marginBottom: 4,
   },
-  messageTextUser: {
-    color: '#FFFFFF',
+  messageSenderUser: {
+    color: "#E9D5FF",
   },
-  messageTextSupport: {
-    color: '#1F2937',
+  messageBody: {
+    color: "#1F2937",
+    fontSize: 15,
+    lineHeight: 21,
   },
-  messageTime: {
-    fontSize: 11,
+  messageBodyUser: {
+    color: "#FFFFFF",
   },
-  messageTimeUser: {
-    color: '#E9D5FF',
-  },
-  messageTimeSupport: {
-    color: '#9CA3AF',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+  inputBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     gap: 12,
   },
   input: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 20,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 24,
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#1F2937',
-    maxHeight: 100,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: "#111827",
   },
   sendButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#9333EA',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#9333EA",
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendButtonDisabled: {
-    backgroundColor: '#D1D5DB',
+    backgroundColor: "#D1D5DB",
   },
 });
-
-export default ChatScreen;            disabled={!inputText.trim()}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="send" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  headerContainer: {
-    backgroundColor: '#9333EA',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
-  },
-  headerSubtitle: {
-    fontSize: 12,
-    color: '#E9D5FF',
-    marginTop: 2,
-  },
-  placeholder: {
-    width: 40,
-  },
-  chatContainer: {
-    flex: 1,
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: 16,
-    gap: 12,
-  },
-  messageWrapper: {
-    width: '100%',
-  },
-  messageWrapperUser: {
-    alignItems: 'flex-end',
-  },
-  messageWrapperSupport: {
-    alignItems: 'flex-start',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    padding: 12,
-    borderRadius: 16,
-  },
-  messageBubbleUser: {
-    backgroundColor: '#9333EA',
-    borderBottomRightRadius: 4,
-  },
-  messageBubbleSupport: {
-    backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: 4,
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 20,
-    marginBottom: 4,
-  },
-  messageTextUser: {
-    color: '#FFFFFF',
-  },
-  messageTextSupport: {
-    color: '#1F2937',
-  },
-  messageTime: {
-    fontSize: 11,
-  },
-  messageTimeUser: {
-    color: '#E9D5FF',
-  },
-  messageTimeSupport: {
-    color: '#9CA3AF',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#1F2937',
-    maxHeight: 100,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#9333EA',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    backgroundColor: '#D1D5DB',
-  },
-});
-
-export default ChatScreen;
