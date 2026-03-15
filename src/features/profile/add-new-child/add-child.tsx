@@ -2,11 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-//import {db} from '../firebase-config';
-import { collection, addDoc } from 'firebase/firestore';
+
 
 export default function AddChildScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [childName, setChildName] = React.useState('');
   const [childAge, setChildAge] = React.useState('');
   const handleCreateProfile = () => {
@@ -15,9 +14,11 @@ export default function AddChildScreen() {
       return;
     }
 
-    if (__DEV__) {
-      console.log('Creating profile for:', childName, 'Age:', childAge);
-    }
+    // Navigate back to Profile with the new child data
+    navigation.navigate('Home', {
+      screen: 'Profile',
+      params: { newChild: { name: childName.trim(), age: childAge.trim() } },
+    });
   };
 
   return (
