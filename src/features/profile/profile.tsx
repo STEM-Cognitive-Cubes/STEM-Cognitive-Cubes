@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
   childCard: {
     backgroundColor: '#FDE047', flexDirection: 'row', alignItems: 'center',
     padding: 15, borderRadius: 20, marginBottom: 15,
+    shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, elevation: 3,
   },
   childAvatar: {
     width: 50, height: 50, borderRadius: 25,
