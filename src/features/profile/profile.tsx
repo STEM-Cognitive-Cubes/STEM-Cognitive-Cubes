@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
+interface Child {
+  name: string;
+  age: string;
+}
+
 export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
+  const [children, setChildren] = useState<Child[]>([
+    { name: 'Sanuki Jayawardhana', age: '5' },
+  ]);
 
   // Get the parent stack navigator (since Profile is inside a Tab navigator)
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<any>();
+
+  // Listen for new child data from AddChild screen
+  useEffect(() => {
+    if (route.params?.newChild) {
+      const { name, age } = route.params.newChild;
+      setChildren(prev => [...prev, { name, age }]);
+      // Clear the params so it doesn't re-add on re-render
+      navigation.setParams({ newChild: undefined } as any);
+    }
+  }, [route.params?.newChild]);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -43,18 +62,20 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Child Profile</Text>
 
-        <Pressable style={styles.childCard}>
-          <View style={styles.childAvatar}>
-            <Text style={styles.childAvatarText}>S</Text>
-          </View>
-          <View style={styles.childInfo}>
-            <Text style={styles.childName}>Sanuki Jayawardhana</Text>
-            <Text style={styles.childStatus}>Age 5  |  Active</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#A855F7" />
-        </Pressable>
+        {children.map((child, index) => (
+          <Pressable key={index} style={styles.childCard}>
+            <View style={styles.childAvatar}>
+              <Text style={styles.childAvatarText}>{child.name.charAt(0).toUpperCase()}</Text>
+            </View>
+            <View style={styles.childInfo}>
+              <Text style={styles.childName}>{child.name}</Text>
+              <Text style={styles.childStatus}>Age {child.age}  |  Active</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A855F7" />
+          </Pressable>
+        ))}
 
-        {/* Updated Button to navigate to Add Child Screen */}
+        {/* Button to navigate to Add Child Screen */}
         <Pressable
           style={styles.addButton}
           onPress={() => navigation.navigate('AddChild')}
