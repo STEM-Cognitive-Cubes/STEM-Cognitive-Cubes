@@ -10,6 +10,9 @@ interface Child {
   age: string;
 }
 
+const CARD_COLORS = ['#FDE047', '#BBF7D0', '#BFDBFE', '#FED7AA'];
+const AVATAR_COLORS = ['#F97316', '#16A34A', '#3B82F6', '#EA580C'];
+
 export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const [children, setChildren] = useState<Child[]>([
@@ -63,8 +66,8 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Child Profile</Text>
 
         {children.map((child, index) => (
-          <Pressable key={index} style={styles.childCard}>
-            <View style={styles.childAvatar}>
+          <Pressable key={index} style={[styles.childCard, { backgroundColor: CARD_COLORS[index % CARD_COLORS.length] }]}>
+            <View style={[styles.childAvatar, { backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }]}>
               <Text style={styles.childAvatarText}>{child.name.charAt(0).toUpperCase()}</Text>
             </View>
             <View style={styles.childInfo}>
