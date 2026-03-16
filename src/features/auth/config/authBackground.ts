@@ -1,0 +1,31 @@
+export const authBackground = {
+  lightBlob: {
+    width: 800,
+    height: 800,
+    top: -230,
+    left: -330,
+    rotate: "20deg",
+  },
+  darkBlob: {
+    width: 800,
+    height: 800,
+    bottom: -120,
+    left: -150,
+    rotate: "-10deg",
+  },
+  dots: [
+    { top: 70, left: 36, size: 15, opacity: 0.7 },
+    { top: 90, left: 130, size: 15, opacity: 0.4 },
+    { top: 60, left: 220, size: 15, opacity: 0.6 },
+    { top: 120, left: 350, size: 15, opacity: 0.5 },
+    { top: 150, left: 90, size: 15, opacity: 0.65 },
+    { top: 180, left: 260, size: 15, opacity: 0.4 },
+    { top: 210, left: 180, size: 15, opacity: 0.35 },
+    { top: 240, left: 350, size: 15, opacity: 0.45 },
+    { top: 260, left: 28, size: 15, opacity: 0.7 },
+    { top: 300, left: 230, size: 15, opacity: 0.35 },
+    { top: 140, left: 240, size: 15, opacity: 0.75 },
+    { top: 190, left: 240, size: 15, opacity: 0.7 },
+    { top: 320, left: 320, size: 15, opacity: 0.65 },
+  ],
+};
