@@ -9,3 +9,5 @@ venv/
 assets/.DS_Store
 android/app/debug.keystore
 .gradle/
+.android/
+ios/Pods/

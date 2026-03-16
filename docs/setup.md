@@ -7,48 +7,82 @@ ANDROID SETUP (Windows only)
 ========================================
 
 Prereqs
-- Node.js 18 (see .nvmrc)
+- Node.js 20 LTS (20.19.4 recommended; see .nvmrc)
 - npm
 - Expo account (EAS)
 
-1) Install dependencies (PowerShell)
+Important Windows notes
+- Use PowerShell or Command Prompt for Windows-specific commands.
+- If you use Git Bash, `rm -rf` works there, but PowerShell commands like `Remove-Item` do not.
+- This repo is inside OneDrive. If `npm install` fails with `EBUSY` on `.gradle` lock files, pause OneDrive sync and close all terminals before retrying.
+- If `npx expo start --dev-client` fails with `ERR_UNSUPPORTED_ESM_URL_SCHEME` while loading `metro.config.js`, you are likely on Node 24. Switch back to Node 20.
+
+1) Verify Node and npm
+PowerShell:
+```powershell
+node -v
+npm -v
+```
+Expected:
+```text
+v20.19.4
+```
+
+2) Install dependencies
+PowerShell:
 ```
 npm install
 ```
 
-2) Install EAS CLI (once)
+If `npm install` fails with `EBUSY` on `node_modules/@react-native/gradle-plugin/.gradle` or `android/.gradle`, run:
+```powershell
+Remove-Item -Recurse -Force node_modules\@react-native\gradle-plugin\.gradle
+Remove-Item -Recurse -Force android\.gradle
+npm install
+```
+
+Git Bash equivalent:
+```bash
+rm -rf node_modules/@react-native/gradle-plugin/.gradle
+rm -rf android/.gradle
+npm install
+```
+
+If the lock cannot be removed, close VS Code, Android Studio, and any Java/Node terminals still running. On this project the lock is typically held by a Java/Gradle background process on Windows, not by EAS itself.
+
+3) Install EAS CLI (once)
 ```
 powershell -ExecutionPolicy Bypass -Command "npm i -g eas-cli"
 ```
 
-3) Login to EAS
+4) Login to EAS
 ```
 powershell -ExecutionPolicy Bypass -Command "eas login"
 ```
 
-4) Firebase config files (shared project)
+5) Firebase config files (shared project)
 This repo already includes the Android config file:
 - google-services.json
 
 Do NOT edit it unless Firebase config changes. If it changes, update the file in the repo.
 
-5) Build the Android dev client (APK)
+6) Build the Android dev client (APK)
 ```
 npx eas-cli build -p android --profile development
 ```
 
-6) Install the APK
+7) Install the APK
 - Open the EAS build link on your phone
 - Download and install the APK (allow unknown sources)
 
-7) Run the dev client app
+8) Run the dev client app
 Start Metro:
 ```
 npx expo start --dev-client
 ```
 Open the dev client app on your phone and scan the QR.
 
-8) Navigation dependencies (info)
+9) Navigation dependencies (info)
 Install navigation packages (if missing):
 ```
 npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context
