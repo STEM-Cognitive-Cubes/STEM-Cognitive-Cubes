@@ -1,21 +1,24 @@
 import React from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
-import type { RootStackParamList } from "../../../navigation/types";
-import { fontFamilies } from "../../../config/typography";
+import type { RootStackParamList } from "../../navigation/types";
+import { fontFamilies } from "../../config/typography";
+
 type RecommendationsScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Recommendations">;
   route: RouteProp<RootStackParamList, "Recommendations">;
 };
+
 type Recommendation = {
   id: string;
   name: string;
   bgColor: string;
   iconColor: string;
 };
+
 const recommendationsData: Record<string, Recommendation[]> = {
   Cognitive: [
     { id: "1", name: "Memory Match Game", bgColor: "#E8F5E9", iconColor: "#1DBE5F" },
@@ -23,7 +26,7 @@ const recommendationsData: Record<string, Recommendation[]> = {
     { id: "3", name: "Sequence Builder", bgColor: "#F3E5F5", iconColor: "#B860FF" },
   ],
   Creativity: [
-    { id: "1", name: "Drawing & Colouring Game", bgColor: "#FFF3E0", iconColor: "#FF9F43" },
+    { id: "1", name: "Drawing and Coloring Game", bgColor: "#FFF3E0", iconColor: "#FF9F43" },
     { id: "2", name: "Story Builder", bgColor: "#F3E5F5", iconColor: "#B860FF" },
     { id: "3", name: "Music Maker", bgColor: "#E8F5E9", iconColor: "#1DBE5F" },
   ],
@@ -33,12 +36,14 @@ const recommendationsData: Record<string, Recommendation[]> = {
     { id: "3", name: "Bridge Builder", bgColor: "#FFF3E0", iconColor: "#FF9F43" },
   ],
 };
+
 export default function RecommendationsScreen({
-  navigation,
   route,
 }: RecommendationsScreenProps) {
   const category = route.params?.category ?? "Cognitive";
-  const recommendations = recommendationsData[category] ?? recommendationsData.Cognitive;
+  const recommendations =
+    recommendationsData[category] ?? recommendationsData.Cognitive;
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -50,14 +55,16 @@ export default function RecommendationsScreen({
           Activities to improve {category.toLowerCase()}
         </Text>
       </LinearGradient>
+
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {recommendations.map((rec) => (
           <Pressable key={rec.id} style={[styles.card, { backgroundColor: rec.bgColor }]}>
-            <View style={[styles.imageContainer, { backgroundColor: `${rec.iconColor}20` }]}>
-              {/* Replace with actual illustration images */}
+            <View
+              style={[styles.imageContainer, { backgroundColor: `${rec.iconColor}20` }]}
+            >
               <Feather name="play-circle" size={36} color={rec.iconColor} />
             </View>
             <View style={styles.cardInfo}>
@@ -66,6 +73,7 @@ export default function RecommendationsScreen({
             </View>
           </Pressable>
         ))}
+
         <Pressable style={styles.seeMoreButton}>
           <Text style={styles.seeMoreText}>See More</Text>
         </Pressable>
@@ -73,6 +81,7 @@ export default function RecommendationsScreen({
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
