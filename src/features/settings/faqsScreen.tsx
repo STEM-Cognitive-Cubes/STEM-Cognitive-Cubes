@@ -100,7 +100,7 @@ const FAQsScreen: React.FC<FAQsScreenProps> = ({ navigation }) => {
     {
       id: '10',
       question: 'Can the cubes be used without adult supervision?',
-      answer: 'The cubes contain batteries, therefore if the internet connection is strong, the app synchronizes any recorded data.',
+      answer: 'The cubes contain batteries and may pose a choking hazard. We recommend always supervising young children during play. Consult your device manual for age-appropriate guidance.',
       category: 'Device',
       isExpanded: false,
     },
