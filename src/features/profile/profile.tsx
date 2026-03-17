@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import { auth } from '../../services/firebase';
 
 interface Child {
   name: string;
@@ -17,6 +18,7 @@ export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const [children, setChildren] = useState<Child[]>([
     { name: 'Sanuki Jayawardhana', age: '5' },
+    { name: 'Nehara Fernando', age: '3' },
   ]);
 
   // Get the parent stack navigator (since Profile is inside a Tab navigator)
@@ -41,7 +43,7 @@ export default function ProfileScreen() {
         <View style={styles.avatarCircle}>
           <Text style={styles.avatarText}>DJ</Text>
         </View>
-        <Text style={styles.userName}>Diseni Jayawardhana</Text>
+        <Text style={styles.userName}>{auth.currentUser?.uid ?? "Guest User"}</Text>
         <Text style={styles.userEmail}>diseni.jayawardhana@email.com</Text>
 
         {/* Stats Bar */}

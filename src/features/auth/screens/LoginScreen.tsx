@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View, Alert } from "react-native";
 import { useEffect, useState } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -6,7 +6,9 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
   signInWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
@@ -15,7 +17,7 @@ import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import type { RootStackParamList } from "../../../navigation/types";
-import { auth } from "../../../services/firebase";
+import { auth, db } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
 import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
 
@@ -71,25 +73,63 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   };
 
   const handleGoogleLogin = async () => {
+    console.log("handleGoogleLogin pressed");
     setAuthError("");
     try {
+      console.log("Checking play services");
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      try {
+        await GoogleSignin.signOut();
+      } catch (e) {
+        // Safe to ignore if they weren't signed in initially
+      }
+      console.log("Calling signIn");
       const userInfo = (await GoogleSignin.signIn()) as unknown as {
         idToken?: string | null;
-        user?: { name?: string | null } | null;
+        user?: { name?: string | null; email?: string | null } | null;
       };
+      console.log("signIn completed:", !!userInfo);
       const tokens = await GoogleSignin.getTokens();
       const idToken = userInfo.idToken ?? tokens.idToken;
       if (!idToken) {
         setAuthError("Google sign-in failed. Missing token.");
         return;
       }
+      
+      const emailToCheck = userInfo.user?.email ?? "";
+      if (emailToCheck) {
+        const methods = await fetchSignInMethodsForEmail(auth, emailToCheck);
+        if (methods.includes("password")) {
+          setAuthError("An account already exists using email/password. Please log in with your password.");
+          await GoogleSignin.signOut();
+          return;
+        }
+      }
+
       const credential = GoogleAuthProvider.credential(idToken);
+      console.log("signInWithCredential...");
       const result = await signInWithCredential(auth, credential);
-      setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
+      console.log("signInWithCredential completed. UID:", result.user.uid);
+      const name = result.user.displayName ?? userInfo.user?.name ?? "User";
+      console.log("Saving to Firestore...");
+      setDoc(doc(db, "parents", result.user.uid), {
+        fullName: name,
+        email: result.user.email ?? userInfo.user?.email ?? "",
+        updatedAt: new Date().toISOString()
+      }, { merge: true })
+      .then(() => console.log("Saved to Firestore!"))
+      .catch((e) => console.error("Firestore save failed:", e));
+      
+      setGoogleName(name);
       setIsLoginSuccess(true);
     } catch (rawError) {
+      console.error("GOOGLE LOGIN ERROR:", rawError);
       const error = rawError as { code?: string; message?: string } | undefined;
+      
+      if (error?.code !== statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert("Google Login Error", `Code: ${error?.code} Msg: ${error?.message || String(rawError)}`);
+      }
+
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
         return;
       }

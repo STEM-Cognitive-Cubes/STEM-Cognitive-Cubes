@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, fetchSignInMethodsForEmail } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
@@ -8,7 +9,7 @@ import { colors } from "../../../config/theme";
 import { fontFamilies } from "../../../config/typography";
 import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
-import { auth } from "../../../services/firebase";
+import { auth, db } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../navigation/types";
@@ -37,7 +38,21 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       return;
     }
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const methods = await fetchSignInMethodsForEmail(auth, email.trim());
+      if (methods.includes("google.com")) {
+        setAuthError("An account already exists using Google. Please log in with Google.");
+        return;
+      }
+      
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      setDoc(doc(db, "parents", userCredential.user.uid), {
+        fullName,
+        email: email.trim(),
+        createdAt: new Date().toISOString()
+      })
+      .then(() => console.log("Signup Firestore saved"))
+      .catch((e) => console.error("Signup Firestore error:", e));
+      
       setIsSuccessOpen(true);
     } catch (error) {
       setAuthError(getFirebaseAuthErrorMessage(error, "Sign up failed. Try again."));
