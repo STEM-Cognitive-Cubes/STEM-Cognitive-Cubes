@@ -9,3 +9,9 @@ venv/
 assets/.DS_Store
 android/app/debug.keystore
 .gradle/
+.android/
+ios/Pods/
+
+# Firebase credentials — never commit these
+google-services.json
+GoogleService-Info.plist

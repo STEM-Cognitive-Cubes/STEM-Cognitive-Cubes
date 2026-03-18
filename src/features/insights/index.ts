@@ -1,1 +1,1 @@
-export { default as InsightsScreen } from "./screens/InsightsScreen";
+export { default as InsightsScreen } from "./InsightsScreen";
