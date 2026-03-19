@@ -23,11 +23,27 @@ interface DataSharingScreenProps {
   navigation: NavigationProp;
 }
 
+type DataSharingSettings = {
+  usageAnalytics: boolean;
+  crashReports: boolean;
+  researchPartners: boolean;
+  educatorAccess: boolean;
+};
+
 const DataSharingScreen: React.FC<DataSharingScreenProps> = ({ navigation }) => {
-  const [usageAnalytics, setUsageAnalytics] = useState(true);
-  const [crashReports, setCrashReports] = useState(true);
-  const [researchPartners, setResearchPartners] = useState(false);
-  const [educatorAccess, setEducatorAccess] = useState(false);
+  const [settings, setSettings] = useState<DataSharingSettings>({
+    usageAnalytics: true,
+    crashReports: true,
+    researchPartners: false,
+    educatorAccess: false,
+  });
+
+  const updateSetting = <K extends keyof DataSharingSettings>(
+    key: K,
+    value: DataSharingSettings[K]
+  ) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleDownloadData = () => {
     Alert.alert(
@@ -91,10 +107,10 @@ const DataSharingScreen: React.FC<DataSharingScreenProps> = ({ navigation }) => 
               </View>
             </View>
             <Switch
-              value={usageAnalytics}
-              onValueChange={setUsageAnalytics}
+              value={settings.usageAnalytics}
+              onValueChange={(value) => updateSetting('usageAnalytics', value)}
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
-              thumbColor={usageAnalytics ? '#9333EA' : '#F3F4F6'}
+              thumbColor={settings.usageAnalytics ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
             />
           </View>
@@ -110,10 +126,10 @@ const DataSharingScreen: React.FC<DataSharingScreenProps> = ({ navigation }) => 
               </View>
             </View>
             <Switch
-              value={crashReports}
-              onValueChange={setCrashReports}
+              value={settings.crashReports}
+              onValueChange={(value) => updateSetting('crashReports', value)}
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
-              thumbColor={crashReports ? '#9333EA' : '#F3F4F6'}
+              thumbColor={settings.crashReports ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
             />
           </View>
@@ -129,10 +145,10 @@ const DataSharingScreen: React.FC<DataSharingScreenProps> = ({ navigation }) => 
               </View>
             </View>
             <Switch
-              value={researchPartners}
-              onValueChange={setResearchPartners}
+              value={settings.researchPartners}
+              onValueChange={(value) => updateSetting('researchPartners', value)}
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
-              thumbColor={researchPartners ? '#9333EA' : '#F3F4F6'}
+              thumbColor={settings.researchPartners ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
             />
           </View>
@@ -153,10 +169,10 @@ const DataSharingScreen: React.FC<DataSharingScreenProps> = ({ navigation }) => 
               </View>
             </View>
             <Switch
-              value={educatorAccess}
-              onValueChange={setEducatorAccess}
+              value={settings.educatorAccess}
+              onValueChange={(value) => updateSetting('educatorAccess', value)}
               trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
-              thumbColor={educatorAccess ? '#9333EA' : '#F3F4F6'}
+              thumbColor={settings.educatorAccess ? '#9333EA' : '#F3F4F6'}
               ios_backgroundColor="#D1D5DB"
             />
           </View>
@@ -296,7 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 8,
   },
-  downloadButtonText: {
+   downloadButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
