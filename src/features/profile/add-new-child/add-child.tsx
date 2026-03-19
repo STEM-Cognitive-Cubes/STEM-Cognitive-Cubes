@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../../services/firebase';
@@ -10,6 +10,7 @@ export default function AddChildScreen() {
   const navigation = useNavigation<any>();
   const [childName, setChildName] = React.useState('');
   const [childBirthday, setChildBirthday] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
   const handleCreateProfile = async () => {
     if (!childName.trim() || !childBirthday.trim()) {
       Alert.alert('Missing Information', 'Please enter both name and birthday');
@@ -21,6 +22,8 @@ export default function AddChildScreen() {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       await addDoc(collection(db, "parents", auth.currentUser.uid, "children"), {
         name: childName.trim(),
@@ -28,17 +31,19 @@ export default function AddChildScreen() {
         createdAt: new Date().toISOString()
       });
 
+    setIsLoading(false);
     // Show success feedback, then navigate back
     Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
       {
         text: 'OK',
         onPress: () => {
-          navigation.navigate('Home', { screen: 'Profile' });
+          navigation.goBack();
         },
       },
     ]);
     } catch (error) {
        console.error("Error adding child:", error);
+       setIsLoading(false);
        Alert.alert("Error", "Could not save the child profile.");
     }
   };
@@ -79,6 +84,12 @@ export default function AddChildScreen() {
           <Text style={styles.createButtonText}>Create Profile</Text>
         </Pressable>
       </View>
+
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#A855F7" />
+        </View>
+      )}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -113,5 +124,12 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#5A67D8', padding: 15, borderRadius: 15, alignItems: 'center', marginTop: 10
   },
-  createButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
+  createButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  }
 });
