@@ -1,18 +1,33 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../../services/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 
 export default function AddChildScreen() {
   const navigation = useNavigation<any>();
   const [childName, setChildName] = React.useState('');
-  const [childBirthday, setChildBirthday] = React.useState('');
+  const [childBirthday, setChildBirthday] = React.useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const formattedBirthday = childBirthday ? childBirthday.toISOString().split('T')[0] : '';
+
+  const handleBirthdayChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (event.type === 'set' && selectedDate) {
+      setChildBirthday(selectedDate);
+    }
+  };
+
   const handleCreateProfile = async () => {
-    if (!childName.trim() || !childBirthday.trim()) {
+    if (!childName.trim() || !childBirthday) {
       Alert.alert('Missing Information', 'Please enter both name and birthday');
       return;
     }
@@ -27,24 +42,23 @@ export default function AddChildScreen() {
     try {
       await addDoc(collection(db, "parents", auth.currentUser.uid, "children"), {
         name: childName.trim(),
-        birthday: childBirthday.trim(),
+        birthday: formattedBirthday,
         createdAt: new Date().toISOString()
       });
 
-    setIsLoading(false);
-    // Show success feedback, then navigate back
-    Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.goBack();
+      setIsLoading(false);
+      Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.goBack();
+          },
         },
-      },
-    ]);
+      ]);
     } catch (error) {
-       console.error("Error adding child:", error);
-       setIsLoading(false);
-       Alert.alert("Error", "Could not save the child profile.");
+      console.error("Error adding child:", error);
+      setIsLoading(false);
+      Alert.alert("Error", "Could not save the child profile.");
     }
   };
 
@@ -75,10 +89,22 @@ export default function AddChildScreen() {
         </View>
 
         <Text style={styles.label}>BIRTHDAY</Text>
-        <View style={styles.inputContainer}>
+        <Pressable style={styles.inputContainer} onPress={() => setShowDatePicker(true)}>
           <Ionicons name="calendar" size={20} color="#64748B" />
-          <TextInput style={styles.input} placeholder="E.g. YYYY-MM-DD" onChangeText={(text) => setChildBirthday(text)} />
-        </View>
+          <Text style={[styles.dateText, !formattedBirthday && styles.datePlaceholder]}>
+            {formattedBirthday || 'Select birthday'}
+          </Text>
+        </Pressable>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={childBirthday ?? new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            maximumDate={new Date()}
+            onChange={handleBirthdayChange}
+          />
+        )}
 
         <Pressable style={styles.createButton} onPress={handleCreateProfile}>
           <Text style={styles.createButtonText}>Create Profile</Text>
@@ -121,6 +147,8 @@ const styles = StyleSheet.create({
     borderRadius: 15, paddingHorizontal: 15, height: 50, marginBottom: 20
   },
   input: { flex: 1, marginLeft: 10 },
+  dateText: { flex: 1, marginLeft: 10, color: '#0F172A' },
+  datePlaceholder: { color: '#94A3B8' },
   createButton: {
     backgroundColor: '#5A67D8', padding: 15, borderRadius: 15, alignItems: 'center', marginTop: 10
   },

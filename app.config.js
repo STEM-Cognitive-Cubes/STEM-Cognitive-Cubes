@@ -6,6 +6,7 @@ export default ({ config }) => ({
   plugins: [
     ...(config.plugins ?? []),
     "@react-native-google-signin/google-signin",
+    "@react-native-community/datetimepicker",
   ],
   ios: {
     ...(config.ios ?? {}),
