@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Switch } from 'react-native';
+import { doc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
-import { auth } from '../../services/firebase';
+import { auth, db } from '../../services/firebase';
 
 interface Child {
+  id: string;
   name: string;
-  age: string;
+  birthday: string;
 }
 
 const CARD_COLORS = ['#FDE047', '#BBF7D0', '#BFDBFE', '#FED7AA'];
@@ -16,24 +18,61 @@ const AVATAR_COLORS = ['#F97316', '#16A34A', '#3B82F6', '#EA580C'];
 
 export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
-  const [children, setChildren] = useState<Child[]>([
-    { name: 'Sanuki Jayawardhana', age: '5' },
-    { name: 'Nehara Fernando', age: '3' },
-  ]);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [parentName, setParentName] = useState("Guest User");
+  const [parentEmail, setParentEmail] = useState("");
+  const [parentInitials, setParentInitials] = useState("DJ");
 
   // Get the parent stack navigator (since Profile is inside a Tab navigator)
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<any>();
 
-  // Listen for new child data from AddChild screen
   useEffect(() => {
-    if (route.params?.newChild) {
-      const { name, age } = route.params.newChild;
-      setChildren(prev => [...prev, { name, age }]);
-      // Clear the params so it doesn't re-add on re-render
-      navigation.setParams({ newChild: undefined } as any);
-    }
-  }, [route.params?.newChild]);
+    if (!auth.currentUser?.uid) return;
+    
+    // Fetch parent profile fields
+    const unsubscribeParent = onSnapshot(
+      doc(db, "parents", auth.currentUser!.uid),
+      (parentDoc) => {
+        if (parentDoc.exists()) {
+          const data = parentDoc.data();
+          console.log("ProfileScreen Parent Data:", data);
+          const fName = data.firstName || "";
+          const lName = data.lastName || "";
+          
+          setParentName(`${fName} ${lName}`.trim() || auth.currentUser!.uid);
+          setParentEmail(data.email || "");
+          
+          let inits = "";
+          if (fName) inits += fName.charAt(0).toUpperCase();
+          if (lName) inits += lName.charAt(0).toUpperCase();
+          if (!inits) inits = "U";
+          setParentInitials(inits);
+        }
+      },
+      (error) => console.error("ProfileScreen Parent onSnapshot error:", error)
+    );
+    
+    // Subscribe to children subcollection
+    const q = query(collection(db, "parents", auth.currentUser.uid, "children"), orderBy("createdAt", "asc"));
+    const unsubscribeChildren = onSnapshot(q, (snapshot) => {
+      const loadedChildren: Child[] = [];
+      snapshot.forEach((subDoc) => {
+        const data = subDoc.data();
+        loadedChildren.push({
+          id: subDoc.id,
+          name: data.name || "Unknown",
+          birthday: data.birthday || "Unknown",
+        });
+      });
+      setChildren(loadedChildren);
+    }, (error) => console.error("ProfileScreen Children onSnapshot error:", error));
+
+    return () => {
+      unsubscribeParent();
+      unsubscribeChildren();
+    };
+  }, []);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -41,10 +80,10 @@ export default function ProfileScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>DJ</Text>
+          <Text style={styles.avatarText}>{parentInitials}</Text>
         </View>
-        <Text style={styles.userName}>{auth.currentUser?.uid ?? "Guest User"}</Text>
-        <Text style={styles.userEmail}>diseni.jayawardhana@email.com</Text>
+        <Text style={styles.userName}>{parentName}</Text>
+        <Text style={styles.userEmail}>{parentEmail}</Text>
 
         {/* Stats Bar */}
         <View style={styles.statsContainer}>
@@ -68,13 +107,13 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Child Profile</Text>
 
         {children.map((child, index) => (
-          <Pressable key={index} style={[styles.childCard, { backgroundColor: CARD_COLORS[index % CARD_COLORS.length] }]}>
+          <Pressable key={child.id} style={[styles.childCard, { backgroundColor: CARD_COLORS[index % CARD_COLORS.length] }]}>
             <View style={[styles.childAvatar, { backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }]}>
               <Text style={styles.childAvatarText}>{child.name.charAt(0).toUpperCase()}</Text>
             </View>
             <View style={styles.childInfo}>
               <Text style={styles.childName}>{child.name}</Text>
-              <Text style={styles.childStatus}>Age {child.age}  |  Active</Text>
+              <Text style={styles.childStatus}>Birthday {child.birthday}  |  Active</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#A855F7" />
           </Pressable>

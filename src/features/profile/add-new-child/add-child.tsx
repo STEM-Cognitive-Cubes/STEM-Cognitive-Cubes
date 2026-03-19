@@ -2,30 +2,45 @@ import React from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { auth, db } from '../../../services/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 
 export default function AddChildScreen() {
   const navigation = useNavigation<any>();
   const [childName, setChildName] = React.useState('');
-  const [childAge, setChildAge] = React.useState('');
-  const handleCreateProfile = () => {
-    if (!childName.trim() || !childAge.trim()) {
-      Alert.alert('Missing Information', 'Please enter both name and age');
+  const [childBirthday, setChildBirthday] = React.useState('');
+  const handleCreateProfile = async () => {
+    if (!childName.trim() || !childBirthday.trim()) {
+      Alert.alert('Missing Information', 'Please enter both name and birthday');
+      return;
+    }
+    
+    if (!auth.currentUser?.uid) {
+      Alert.alert('Authentication Error', 'You must be logged in to add a child.');
       return;
     }
 
-    // Show success feedback, then navigate back with child data
+    try {
+      await addDoc(collection(db, "parents", auth.currentUser.uid, "children"), {
+        name: childName.trim(),
+        birthday: childBirthday.trim(),
+        createdAt: new Date().toISOString()
+      });
+
+    // Show success feedback, then navigate back
     Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
       {
         text: 'OK',
         onPress: () => {
-          navigation.navigate('Home', {
-            screen: 'Profile',
-            params: { newChild: { name: childName.trim(), age: childAge.trim() } },
-          });
+          navigation.navigate('Home', { screen: 'Profile' });
         },
       },
     ]);
+    } catch (error) {
+       console.error("Error adding child:", error);
+       Alert.alert("Error", "Could not save the child profile.");
+    }
   };
 
   return (
@@ -54,10 +69,10 @@ export default function AddChildScreen() {
           <TextInput style={styles.input} placeholder="E.g. Nehara Fernando" onChangeText={(text) => setChildName(text)} />
         </View>
 
-        <Text style={styles.label}>AGE (YEARS)</Text>
+        <Text style={styles.label}>BIRTHDAY</Text>
         <View style={styles.inputContainer}>
           <Ionicons name="calendar" size={20} color="#64748B" />
-          <TextInput style={styles.input} placeholder="E.g. 5" keyboardType="numeric" onChangeText={(text) => setChildAge(text)} />
+          <TextInput style={styles.input} placeholder="E.g. YYYY-MM-DD" onChangeText={(text) => setChildBirthday(text)} />
         </View>
 
         <Pressable style={styles.createButton} onPress={handleCreateProfile}>

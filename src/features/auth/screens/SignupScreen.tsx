@@ -20,7 +20,8 @@ type SignupScreenProps = {
 };
 
 export default function SignupScreen({ navigation }: SignupScreenProps) {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -46,7 +47,8 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
       setDoc(doc(db, "parents", userCredential.user.uid), {
-        fullName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         email: email.trim(),
         createdAt: new Date().toISOString()
       })
@@ -90,10 +92,16 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
 
           <Text style={styles.sectionTitle}>PARENT DETAILS</Text>
           <AuthTextInput
-            placeholder="Full Name"
+            placeholder="First Name"
             leftElement={<Feather name="user" size={16} color="black" />}
-            value={fullName}
-            onChangeText={setFullName}
+            value={firstName}
+            onChangeText={setFirstName}
+          />
+          <AuthTextInput
+            placeholder="Last Name"
+            leftElement={<Feather name="user" size={16} color="black" />}
+            value={lastName}
+            onChangeText={setLastName}
           />
           <AuthTextInput
             placeholder="Email Address"

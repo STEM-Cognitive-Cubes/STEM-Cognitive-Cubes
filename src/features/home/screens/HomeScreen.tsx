@@ -1,5 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Animated, Pressable, Text, StyleSheet, View, Image } from "react-native";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../../../services/firebase";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
@@ -20,6 +22,31 @@ export default function HomeScreen() {
 
   const lastScrollY = useRef(0);
   const isHidden = useRef(false);
+
+  const [parentName, setParentName] = useState("User");
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+
+    const unsubscribe = onSnapshot(
+      doc(db, "parents", uid),
+      (parentDoc) => {
+        if (parentDoc.exists()) {
+          const data = parentDoc.data();
+          console.log("HomeScreen Parent Data:", data);
+          if (data.firstName) {
+            setParentName(data.firstName);
+          }
+        }
+      },
+      (error) => {
+        console.error("HomeScreen onSnapshot error:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const hideFab = () => {
     if (isHidden.current) return;
@@ -96,7 +123,7 @@ export default function HomeScreen() {
             <View style={styles.headerRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.helloText}>
-                  Hello, <Text style={styles.nameText}>User!</Text>
+                  Hello, <Text style={styles.nameText}>{parentName}!</Text>
                 </Text>
                 <Text style={styles.welcomeText}>Ready to track creativity?</Text>
               </View>

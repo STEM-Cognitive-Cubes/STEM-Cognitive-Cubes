@@ -7,8 +7,9 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
   fetchSignInMethodsForEmail,
+  getAdditionalUserInfo,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
@@ -57,7 +58,21 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const handleLogin = async () => {
     setAuthError("");
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      
+      // Log parent document details
+      onSnapshot(
+        doc(db, "parents", userCredential.user.uid),
+        (parentDoc) => {
+          if (parentDoc.exists()) {
+            console.log("Logged in Parent Data (Manual Login):", parentDoc.data());
+          } else {
+            console.warn("Parent document not found after manual login.");
+          }
+        },
+        (error) => console.error("Failed to get parent collection after manual login:", error)
+      );
+      
       setIsLoginSuccess(true);
     } catch (error) {
       setAuthError(
@@ -86,7 +101,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       console.log("Calling signIn");
       const userInfo = (await GoogleSignin.signIn()) as unknown as {
         idToken?: string | null;
-        user?: { name?: string | null; email?: string | null } | null;
+        user?: { 
+          name?: string | null; 
+          email?: string | null;
+          givenName?: string | null;
+          familyName?: string | null;
+        } | null;
       };
       console.log("signIn completed:", !!userInfo);
       const tokens = await GoogleSignin.getTokens();
@@ -111,15 +131,48 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       const result = await signInWithCredential(auth, credential);
       console.log("signInWithCredential completed. UID:", result.user.uid);
       const name = result.user.displayName ?? userInfo.user?.name ?? "User";
-      console.log("Saving to Firestore...");
-      setDoc(doc(db, "parents", result.user.uid), {
-        fullName: name,
-        email: result.user.email ?? userInfo.user?.email ?? "",
-        updatedAt: new Date().toISOString()
-      }, { merge: true })
-      .then(() => console.log("Saved to Firestore!"))
-      .catch((e) => console.error("Firestore save failed:", e));
       
+      const additionalInfo = getAdditionalUserInfo(result);
+      if (additionalInfo?.isNewUser) {
+        console.log("New Google User! Saving to Firestore...");
+        
+        let googleFirstName = "User";
+        let googleLastName = "";
+        
+        if (userInfo.user?.givenName) {
+           googleFirstName = userInfo.user.givenName;
+           googleLastName = userInfo.user.familyName ?? "";
+        } else if (name.includes(" ")) {
+           const nameParts = name.split(" ");
+           googleFirstName = nameParts[0];
+           googleLastName = nameParts.slice(1).join(" ");
+        } else {
+           googleFirstName = name;
+        }
+
+        setDoc(doc(db, "parents", result.user.uid), {
+          firstName: googleFirstName,
+          lastName: googleLastName,
+          email: result.user.email ?? userInfo.user?.email ?? "",
+          createdAt: new Date().toISOString()
+        })
+        .then(() => console.log("Saved new Google user to Firestore!"))
+        .catch((e) => console.error("Firestore save failed:", e));
+      }
+      
+      // Log parent document details
+      onSnapshot(
+        doc(db, "parents", result.user.uid),
+        (parentDoc) => {
+          if (parentDoc.exists()) {
+            console.log("Logged in Parent Data (Google Login):", parentDoc.data());
+          } else {
+            console.warn("Parent document not found after Google login.");
+          }
+        },
+        (error) => console.error("Failed to get parent collection after Google login:", error)
+      );
+
       setGoogleName(name);
       setIsLoginSuccess(true);
     } catch (rawError) {
