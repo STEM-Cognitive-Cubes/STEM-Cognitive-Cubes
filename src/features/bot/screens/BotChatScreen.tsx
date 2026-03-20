@@ -59,16 +59,16 @@ export default function BotChatScreen() {
         }
 
         if (history.messages.length > 0) {
-          setMessages(
-            history.messages
-              .map((message) => ({
-                id: message.id,
-                text: message.text,
-                sender: message.role === "assistant" ? "bot" : "user",
-                sources: message.sources,
-              }))
-              .reverse()
-          );
+          const hydratedMessages: Message[] = history.messages
+            .map((message): Message => ({
+              id: message.id,
+              text: message.text,
+              sender: message.role === "assistant" ? "bot" : "user",
+              sources: message.sources,
+            }))
+            .reverse();
+
+          setMessages(hydratedMessages);
         } else {
           setMessages(defaultGreeting);
         }
