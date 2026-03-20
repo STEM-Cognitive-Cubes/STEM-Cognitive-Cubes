@@ -1,38 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-//import {db} from '../firebase-config';
 import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../../services/firebase';
 
 export default function AddChildScreen() {
   const navigation = useNavigation();
   const [childName, setChildName] = React.useState('');
   const [childAge, setChildAge] = React.useState('');
-  const handleCreateProfile = () => {
-    // Here you would typically send the childName and childAge to your backend or Firebase
-    if (__DEV__) {
-      console.log('Creating profile for:', childName, 'Age:', childAge);
+
+  const handleCreateProfile = async () => {
+    if (!childName.trim() || !childAge.trim()) {
+      Alert.alert('Missing fields', 'Please enter both name and age.');
+      return;
     }
-
-    // if (!childName || !childAge) {
-    //   alert('Please enter both name and age');
-    //   return;
-
-    // }
-    // alert('gammak');
-    // try {
-    //   const docRef = addDoc(collection(db, "children"), {
-    //     name: childName,
-    //     age: childAge,
-    //   });
-    //   console.log("Document written with ID: ", docRef);
-    // } catch (error) {
-    //   console.error('Error creating profile:', error);
-    //   alert('Failed to create profile. Please try again.');
-    //   return;
-    //}
-    // router.back(); // Navigate back to the previous screen after creating the profile
+    try {
+      await addDoc(collection(db, 'children'), {
+        name: childName.trim(),
+        age: childAge.trim(),
+        createdAt: new Date().toISOString(),
+      });
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to create profile. Please try again.');
+    }
   };
 
   return (

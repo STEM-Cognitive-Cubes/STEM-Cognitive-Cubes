@@ -19,7 +19,6 @@ import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
-import PrivacyControlsScreen from './src/features/settings/privacyScreen';
 import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
@@ -33,6 +32,14 @@ import AppFeaturesScreen from './src/features/settings/helpAndSupport/userGuide/
 import OperateScreen from './src/features/settings/helpAndSupport/userGuide/operateScreen';
 import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
 import AppearanceScreen from './src/features/settings/appearanceScreen';
+import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
+import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
+import DataSharingScreen from './src/features/settings/dataSharingScreen';
+import FAQsScreen from './src/features/settings/faqsScreen';
+import ContactSupportScreen from './src/features/settings/contactSupportScreen';
+import RecommendationsScreen from './src/features/recommendations/RecommendationsScreen';
+import SummaryScreen from './src/features/summary/SummaryScreen';
+import SummaryDetailScreen from './src/features/summary/SummaryDetailScreen';
 
 //session
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
@@ -108,6 +115,10 @@ export default function App() {
             />
             <Stack.Screen name="Home" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="MainTabs" component={AppTabs} />
+            <Stack.Screen name="StartSession" component={StartSessionScreen} />
+            <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
@@ -125,8 +136,21 @@ export default function App() {
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen}/>
+            <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen}/>
+            <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen}/>
+            <Stack.Screen
+              name="Recommendations"
+              component={RecommendationsScreen}
+            />
+            <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
+            <Stack.Screen
+              name="SummaryDetail"
+              component={SummaryDetailScreen}
+            />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
-
+            
           </Stack.Navigator>
         </NavigationContainer>
       </View>

@@ -1,2 +1,2 @@
-export { default as SummaryScreen } from "./screens/SummaryScreen";
-export { default as SummaryDetailScreen } from "./screens/SummaryDetailScreen";
+export { default as SummaryScreen } from "./SummaryScreen";
+export { default as SummaryDetailScreen } from "./SummaryDetailScreen";

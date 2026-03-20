@@ -28,3 +28,6 @@ project.xcworkspace
 
 # CocoaPods
 /Pods/
+
+# Firebase credentials — never commit these
+STEMCognitiveCubes/GoogleService-Info.plist

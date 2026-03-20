@@ -3,95 +3,104 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
-import type { RootStackParamList } from "../../../navigation/types";
-import { colors } from "../../../config/theme";
-import { fontFamilies } from "../../../config/typography";
-import InsightCard from "../components/InsightCard";
-import { sessionDetail } from "../config/historyData";
-type SessionDetailScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "SessionDetail">;
-  route: RouteProp<RootStackParamList, "SessionDetail">;
+import type { RootStackParamList } from "../../navigation/types";
+import { fontFamilies } from "../../config/typography";
+import InsightCard from "../history/components/InsightCard";
+import { sessionDetail } from "../history/config/historyData";
+
+type SummaryDetailScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, "SummaryDetail">;
+  route: RouteProp<RootStackParamList, "SummaryDetail">;
 };
-export default function SessionDetailScreen({
+
+export default function SummaryDetailScreen({
   navigation,
-  route,
-}: SessionDetailScreenProps) {
-  const detail = sessionDetail; // In production, fetch by route.params.sessionId
+}: SummaryDetailScreenProps) {
+  const detail = sessionDetail;
   const metrics = [
     { label: "Duration", value: detail.duration, icon: "clock", color: "#B860FF" },
     { label: "Blocks", value: `${detail.blocks}`, icon: "box", color: "#FF9F43" },
     { label: "Focus", value: detail.focusLevel, icon: "target", color: "#1DBE5F" },
     { label: "Score", value: `${detail.score}`, icon: "star", color: "#FFD54F" },
   ];
-  const maxFocus = Math.max(...detail.focusData.map((d) => d.value));
+  const maxFocus = Math.max(...detail.focusData.map((item) => item.value));
+
   return (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3D Build Preview Card */}
         <View style={styles.previewCard}>
           <Feather name="box" size={40} color="#B860FF" />
-          <Text style={styles.previewTitle}>3D Build Preview</Text>
-          <Text style={styles.previewDate}>
-            {detail.date} • {detail.time}
-          </Text>
+          <Text style={styles.previewTitle}>Summary Preview</Text>
+          <Text style={styles.previewDate}>{detail.date} | {detail.time}</Text>
         </View>
-        {/* Metric Pills */}
+
         <View style={styles.metricsRow}>
-          {metrics.map((m) => (
-            <View key={m.label} style={[styles.metricPill, { backgroundColor: `${m.color}15` }]}>
-              <Feather name={m.icon as any} size={14} color={m.color} />
-              <Text style={[styles.metricValue, { color: m.color }]}>{m.value}</Text>
-              <Text style={styles.metricLabel}>{m.label}</Text>
+          {metrics.map((metric) => (
+            <View
+              key={metric.label}
+              style={[styles.metricPill, { backgroundColor: `${metric.color}15` }]}
+            >
+              <Feather name={metric.icon as any} size={14} color={metric.color} />
+              <Text style={[styles.metricValue, { color: metric.color }]}>
+                {metric.value}
+              </Text>
+              <Text style={styles.metricLabel}>{metric.label}</Text>
             </View>
           ))}
         </View>
-        {/* AI Insight */}
+
         <InsightCard text={detail.aiInsight} />
-        {/* Focus Analysis Bar Chart */}
+
         <Text style={styles.sectionTitle}>Focus Analysis</Text>
         <View style={styles.chartContainer}>
-          {detail.focusData.map((d) => (
-            <View key={d.day} style={styles.barColumn}>
+          {detail.focusData.map((item) => (
+            <View key={item.day} style={styles.barColumn}>
               <View style={styles.barTrack}>
                 <View
                   style={[
                     styles.bar,
                     {
-                      height: `${(d.value / maxFocus) * 100}%`,
+                      height: `${(item.value / maxFocus) * 100}%`,
                       backgroundColor: "#B860FF",
                     },
                   ]}
                 />
               </View>
-              <Text style={styles.barLabel}>{d.day}</Text>
+              <Text style={styles.barLabel}>{item.day}</Text>
             </View>
           ))}
         </View>
-        {/* Blocks Used */}
+
         <Text style={styles.sectionTitle}>Blocks Used</Text>
         <View style={styles.blocksRow}>
           {detail.blocksUsed.map((block) => (
-            <View key={block.id} style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}>
+            <View
+              key={block.id}
+              style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}
+            >
               <View style={[styles.blockDot, { backgroundColor: block.color }]} />
               <Text style={styles.blockName}>{block.name}</Text>
-              <Text style={[styles.blockCount, { color: block.color }]}>×{block.count}</Text>
+              <Text style={[styles.blockCount, { color: block.color }]}>
+                x{block.count}
+              </Text>
             </View>
           ))}
         </View>
-        {/* Export Summary Button */}
+
         <Pressable
           style={styles.exportButton}
-          onPress={() => navigation.navigate("WeeklySummary")}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={styles.exportButtonText}>Export Summary</Text>
+          <Text style={styles.exportButtonText}>Back to Summary</Text>
         </Pressable>
       </ScrollView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
