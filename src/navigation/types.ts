@@ -14,6 +14,7 @@ export type RootStackParamList = {
   Bot: undefined;
 
   AppearanceScreen: undefined;
+  PrivacyControlsScreen: undefined;
   StartSession: undefined;
   LiveSession: undefined;
   NotificationPreferencesScreen: undefined;
