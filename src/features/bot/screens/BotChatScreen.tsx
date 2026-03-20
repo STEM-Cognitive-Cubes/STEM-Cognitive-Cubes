@@ -41,6 +41,7 @@ export default function BotChatScreen() {
   const [inputText, setInputText] = useState("");
   const [typing, setTyping] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | undefined>();
   const flatListRef = useRef<FlatList<Message>>(null);
 
@@ -72,9 +73,11 @@ export default function BotChatScreen() {
         } else {
           setMessages(defaultGreeting);
         }
+        setHistoryError(null);
       } catch {
         if (isMounted) {
           setMessages(defaultGreeting);
+          setHistoryError("Could not load earlier chat. You can still start a new conversation.");
         }
       } finally {
         if (isMounted) {
@@ -92,7 +95,7 @@ export default function BotChatScreen() {
 
   const sendMessage = async (text: string) => {
     const trimmedText = text.trim();
-    if (!trimmedText || typing || loadingHistory) return;
+    if (!trimmedText || typing) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -202,6 +205,14 @@ export default function BotChatScreen() {
               </View>
             </View>
           )}
+
+          {historyError ? (
+            <View style={[styles.row, styles.rowLeft]}>
+              <View style={[styles.bubble, styles.botBubble, styles.infoBubble]}>
+                <Text style={[styles.msgText, styles.botText]}>{historyError}</Text>
+              </View>
+            </View>
+          ) : null}
 
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -319,6 +330,10 @@ const styles = StyleSheet.create({
   msgText: { fontSize: 14, lineHeight: 20, fontWeight: "700" },
   botText: { color: "rgba(80,100,172,0.95)" },
   userText: { color: "#fff" },
+  infoBubble: {
+    backgroundColor: "rgba(255,193,7,0.12)",
+    borderColor: "rgba(255,193,7,0.3)",
+  },
   sourcesRow: {
     flexDirection: "row",
     flexWrap: "wrap",

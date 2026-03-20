@@ -6,8 +6,8 @@
     "node": "20"
   },
   "scripts": {
-    "serve": "firebase emulators:start --only functions",
-    "deploy": "firebase deploy --only functions:chatbot",
+    "serve": "npx firebase-tools emulators:start --only functions",
+    "deploy": "npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory",
     "seed:knowledge": "node seedKnowledge.js"
   },
   "dependencies": {

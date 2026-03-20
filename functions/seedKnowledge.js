@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const { knowledgeSeedData } = require("./knowledgeSeedData");
 
@@ -18,7 +19,7 @@ async function seedKnowledge() {
         title: item.title,
         keywords: item.keywords,
         content: item.content,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
