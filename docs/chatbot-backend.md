@@ -2,6 +2,7 @@
 
 ## Architecture
 - React Native app sends chatbot messages to a Firebase HTTPS function.
+- React Native app can also fetch the latest stored chatbot history from Firebase.
 - The app includes the signed-in user's Firebase ID token in the `Authorization` header.
 - The Firebase function verifies the user, loads product knowledge from Firestore, calls the model API, and stores messages back in Firestore.
 - OpenAI API keys stay on the server side only.
@@ -68,3 +69,4 @@ For a physical Android device, `localhost` will not work. Use your machine IP in
 - The function verifies the Firebase user token before processing.
 - The model request has a timeout so the app does not hang forever on provider delays.
 - If the model cannot produce useful text, the backend returns a safer support-oriented fallback reply.
+- Assistant replies store their knowledge source labels so the app can render them when history is reopened.

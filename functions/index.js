@@ -192,10 +192,22 @@ async function getRecentMessages(conversationRef) {
     .reverse();
 }
 
-async function saveMessage(conversationRef, role, text) {
+function mapStoredMessage(doc) {
+  const data = doc.data() || {};
+
+  return {
+    id: doc.id,
+    role: data.role,
+    text: data.text,
+    sources: Array.isArray(data.sources) ? data.sources : [],
+  };
+}
+
+async function saveMessage(conversationRef, role, text, options = {}) {
   await conversationRef.collection("messages").add({
     role,
     text: chunkText(text, 4000),
+    sources: Array.isArray(options.sources) ? options.sources : [],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 }
@@ -235,6 +247,83 @@ async function requestModelReply({ apiKey, model, input }) {
     clearTimeout(timeout);
   }
 }
+
+exports.chatbotHistory = onRequest(
+  {
+    region: "us-central1",
+    cors: false,
+  },
+  async (req, res) => {
+    setCors(res);
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    if (req.method !== "GET") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    try {
+      const decodedToken = await verifyUser(req);
+      const requestedConversationId = cleanText(req.query?.conversationId);
+      const conversationsRef = db
+        .collection("users")
+        .doc(decodedToken.uid)
+        .collection("chatConversations");
+
+      let conversationRef;
+
+      if (requestedConversationId) {
+        conversationRef = conversationsRef.doc(requestedConversationId);
+      } else {
+        const latestConversationSnapshot = await conversationsRef
+          .orderBy("updatedAt", "desc")
+          .limit(1)
+          .get();
+
+        if (latestConversationSnapshot.empty) {
+          res.status(200).json({
+            conversationId: null,
+            messages: [],
+          });
+          return;
+        }
+
+        conversationRef = latestConversationSnapshot.docs[0].ref;
+      }
+
+      const conversationSnapshot = await conversationRef.get();
+      if (!conversationSnapshot.exists) {
+        res.status(404).json({ error: "Conversation not found" });
+        return;
+      }
+
+      const messagesSnapshot = await conversationRef
+        .collection("messages")
+        .orderBy("createdAt", "asc")
+        .limit(20)
+        .get();
+
+      const messages = messagesSnapshot.docs
+        .map(mapStoredMessage)
+        .filter((item) => item.role && item.text);
+
+      res.status(200).json({
+        conversationId: conversationRef.id,
+        messages,
+      });
+    } catch (error) {
+      logger.error("chatbotHistory function failed", error);
+      const message =
+        error instanceof Error ? error.message : "Unknown server error";
+      const status = message === "Missing bearer token" ? 401 : 500;
+      res.status(status).json({ error: getRequestErrorMessage(status) });
+    }
+  }
+);
 
 exports.chatbot = onRequest(
   {
@@ -341,7 +430,9 @@ exports.chatbot = onRequest(
 
       await Promise.all([
         saveMessage(conversationRef, "user", message),
-        saveMessage(conversationRef, "assistant", reply),
+        saveMessage(conversationRef, "assistant", reply, {
+          sources: knowledge.sources,
+        }),
         updateConversationSummary(conversationRef, message, reply),
       ]);
 

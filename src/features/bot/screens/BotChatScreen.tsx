@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BotBubbleFab from "@/components/BotBubbleFab";
-import { sendChatMessage } from "@/services/chatbot";
+import { fetchChatHistory, sendChatMessage } from "@/services/chatbot";
 
 type Message = {
   id: string;
@@ -22,22 +22,77 @@ type Message = {
 };
 
 export default function BotChatScreen() {
+  const defaultGreeting = useMemo<Message[]>(
+    () => [
+      {
+        id: "1",
+        text: "Hi there! I'm your BlokC assistant. How can I help you today?",
+        sender: "bot",
+      },
+    ],
+    []
+  );
   const quickChips = useMemo(
     () => ["How do I connect to Hive?", "What are insights?", "How do I track rewards?"],
     []
   );
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: "1", text: "Hi there! I'm your BlokC assistant. How can I help you today?", sender: "bot" },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(defaultGreeting);
   const [inputText, setInputText] = useState("");
   const [typing, setTyping] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [conversationId, setConversationId] = useState<string | undefined>();
   const flatListRef = useRef<FlatList<Message>>(null);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadHistory = async () => {
+      try {
+        const history = await fetchChatHistory();
+        if (!isMounted) {
+          return;
+        }
+
+        if (history.conversationId) {
+          setConversationId(history.conversationId);
+        }
+
+        if (history.messages.length > 0) {
+          setMessages(
+            history.messages
+              .map((message) => ({
+                id: message.id,
+                text: message.text,
+                sender: message.role === "assistant" ? "bot" : "user",
+                sources: message.sources,
+              }))
+              .reverse()
+          );
+        } else {
+          setMessages(defaultGreeting);
+        }
+      } catch {
+        if (isMounted) {
+          setMessages(defaultGreeting);
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingHistory(false);
+        }
+      }
+    };
+
+    loadHistory();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [defaultGreeting]);
+
   const sendMessage = async (text: string) => {
     const trimmedText = text.trim();
-    if (!trimmedText || typing) return;
+    if (!trimmedText || typing || loadingHistory) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -138,10 +193,12 @@ export default function BotChatScreen() {
             showsVerticalScrollIndicator={false}
           />
 
-          {typing && (
+          {(typing || loadingHistory) && (
             <View style={[styles.row, styles.rowLeft]}>
               <View style={[styles.bubble, styles.botBubble]}>
-                <Text style={[styles.msgText, styles.botText]}>Typing…</Text>
+                <Text style={[styles.msgText, styles.botText]}>
+                  {loadingHistory ? "Loading chat…" : "Typing…"}
+                </Text>
               </View>
             </View>
           )}
