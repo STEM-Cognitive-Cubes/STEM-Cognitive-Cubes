@@ -25,7 +25,6 @@ import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
-import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 import HelpSupportScreen from './src/features/settings/helpAndSupport/helpScreen';
 import CommunityScreen from './src/features/settings/helpAndSupport/community/communityScreen';
@@ -37,6 +36,7 @@ import OperateScreen from './src/features/settings/helpAndSupport/userGuide/oper
 import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
 import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
 import FAQsScreen from './src/features/settings/faqsScreen';
+import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
 import DataSharingScreen from './src/features/settings/dataSharingScreen';
 import RecommendationsScreen from './src/features/recommendations/RecommendationsScreen';
 import SummaryScreen from './src/features/summary/SummaryScreen';
@@ -75,7 +75,6 @@ export default function App() {
   if (!splashDone || !fontsLoaded) {
     return <LottieSplash onFinish={() => setSplashDone(true)} />;
   }
-
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
@@ -136,11 +135,11 @@ export default function App() {
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
             <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />            
             <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen}  />          
+            <Stack.Screen name="AddChild" component={AddChildScreen} />
             <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
             <Stack.Screen name="Recommendations" component={RecommendationsScreen} />           
             <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
             <Stack.Screen name="SummaryDetail" component={SummaryDetailScreen}/>
-            <Stack.Screen name="AddChild" component={AddChildScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
