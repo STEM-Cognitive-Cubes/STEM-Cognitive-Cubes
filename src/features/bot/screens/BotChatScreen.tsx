@@ -18,6 +18,7 @@ type Message = {
   id: string;
   text: string;
   sender: "user" | "bot";
+  sources?: string[];
 };
 
 export default function BotChatScreen() {
@@ -51,15 +52,12 @@ export default function BotChatScreen() {
       const response = await sendChatMessage(trimmedText, conversationId);
       setConversationId(response.conversationId);
 
-      const suffix =
-        response.sources.length > 0
-          ? `\n\nSources: ${response.sources.join(", ")}`
-          : "";
       setTyping(false);
       const botResponse: Message = {
         id: `${Date.now()}-bot`,
-        text: `${response.reply}${suffix}`,
+        text: response.reply,
         sender: "bot",
+        sources: response.sources,
       };
       setMessages((prev) => [botResponse, ...prev]);
     } catch (error) {
@@ -80,10 +78,21 @@ export default function BotChatScreen() {
     const isUser = item.sender === "user";
     return (
       <View style={[styles.row, isUser ? styles.rowRight : styles.rowLeft]}>
-        <View style={[styles.bubble, isUser ? styles.userBubble : styles.botBubble]}>
-          <Text style={[styles.msgText, isUser ? styles.userText : styles.botText]}>
-            {item.text}
-          </Text>
+        <View style={styles.messageBlock}>
+          <View style={[styles.bubble, isUser ? styles.userBubble : styles.botBubble]}>
+            <Text style={[styles.msgText, isUser ? styles.userText : styles.botText]}>
+              {item.text}
+            </Text>
+          </View>
+          {!isUser && item.sources && item.sources.length > 0 ? (
+            <View style={styles.sourcesRow}>
+              {item.sources.map((source) => (
+                <View key={`${item.id}-${source}`} style={styles.sourceChip}>
+                  <Text style={styles.sourceChipText}>{source}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
       </View>
     );
@@ -233,9 +242,11 @@ const styles = StyleSheet.create({
   row: { width: "100%", marginVertical: 6 },
   rowLeft: { alignItems: "flex-start" },
   rowRight: { alignItems: "flex-end" },
+  messageBlock: {
+    maxWidth: "82%",
+  },
 
   bubble: {
-    maxWidth: "82%",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: 16,
@@ -251,6 +262,25 @@ const styles = StyleSheet.create({
   msgText: { fontSize: 14, lineHeight: 20, fontWeight: "700" },
   botText: { color: "rgba(80,100,172,0.95)" },
   userText: { color: "#fff" },
+  sourcesRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 8,
+  },
+  sourceChip: {
+    backgroundColor: "rgba(80,100,172,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(80,100,172,0.15)",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  sourceChipText: {
+    color: "rgba(80,100,172,0.8)",
+    fontSize: 11,
+    fontWeight: "800",
+  },
 
   inputRow: {
     flexDirection: "row",
