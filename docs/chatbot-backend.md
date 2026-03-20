@@ -28,9 +28,11 @@ Suggested `botKnowledge` document shape:
    `firebase functions:secrets:set OPENAI_API_KEY`
 3. Optional model override:
    `firebase functions:secrets:set OPENAI_MODEL`
-4. Run the functions emulator:
+4. Seed the base product knowledge:
+   `npm run functions:seed-knowledge`
+5. Run the functions emulator:
    `firebase emulators:start --only functions`
-5. Set `API_BASE_URL` for Expo.
+6. Set `API_BASE_URL` for Expo.
 
 For local emulation, `API_BASE_URL` should point to:
 
@@ -44,3 +46,11 @@ For a physical Android device, `localhost` will not work. Use your machine IP in
 - Deploy the chatbot function:
   `firebase deploy --only functions:chatbot`
 - Then set `API_BASE_URL` in your app environment to the deployed function base URL.
+
+## Seed content included
+- Hive connectivity
+- Live session tracking
+- Insights and recommendations
+- History and summary
+- Account and settings
+- Assistant scope

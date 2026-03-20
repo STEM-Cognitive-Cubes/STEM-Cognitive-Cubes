@@ -6,6 +6,7 @@
     "functions:install": "npm --prefix functions install",
     "functions:serve": "npm --prefix functions run serve",
     "functions:deploy": "npm --prefix functions run deploy",
+    "functions:seed-knowledge": "npm --prefix functions run seed:knowledge",
     "lint": "eslint src",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"

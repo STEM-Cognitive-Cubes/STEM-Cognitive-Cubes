@@ -7,7 +7,8 @@
   },
   "scripts": {
     "serve": "firebase emulators:start --only functions",
-    "deploy": "firebase deploy --only functions:chatbot"
+    "deploy": "firebase deploy --only functions:chatbot",
+    "seed:knowledge": "node seedKnowledge.js"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0",
