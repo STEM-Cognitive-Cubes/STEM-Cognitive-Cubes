@@ -17,6 +17,9 @@ import { LottieSplash } from "./src/features/splash/LottieSplash";
 import LoginScreen from "./src/features/auth/screens/LoginScreen";
 import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
+// Bot Screens
+import BotStack from './src/features/bot/navigation/BotStack';
+
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
 import AccountScreen from './src/features/settings/account/accountScreen';
@@ -113,6 +116,8 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
+            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="Bot" component={BotStack} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />

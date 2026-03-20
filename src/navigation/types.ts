@@ -11,6 +11,8 @@ export type RootStackParamList = {
   EditProfile: undefined;
   ChangePassword: undefined;
   DeleteAccount: undefined;
+  Bot: undefined;
+
   AppearanceScreen: undefined;
   StartSession: undefined;
   LiveSession: undefined;
@@ -41,3 +43,4 @@ export type RootStackParamList = {
   // Profile feature
   AddChild: undefined;
 };
+  
