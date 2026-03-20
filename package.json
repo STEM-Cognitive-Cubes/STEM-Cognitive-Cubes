@@ -3,6 +3,9 @@
     "start": "expo start",
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
+    "functions:install": "npm --prefix functions install",
+    "functions:serve": "npm --prefix functions run serve",
+    "functions:deploy": "npm --prefix functions run deploy",
     "lint": "eslint src",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
