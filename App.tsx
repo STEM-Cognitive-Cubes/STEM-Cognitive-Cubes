@@ -112,6 +112,8 @@ export default function App() {
                 headerShadowVisible: false,
               }}
             />
+            <Stack.Screen name="Home" component={AppTabs} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
@@ -127,15 +129,15 @@ export default function App() {
             <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
             <Stack.Screen name="EmailScreen" component={EmailScreen} />
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
-            <Stack.Screen name="AppFeaturesScreen" component={AppFeaturesScreen} />
+            <Stack.Screen name="AppFeatures" component={AppFeaturesScreen} />
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
-            <Stack.Screen name="ProductIntroScreen" component={ProductIntroScreen} />
+            <Stack.Screen name="ProductIntro" component={ProductIntroScreen} />
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
-            <Stack.Screen name="FAQsScreen" component={FaqsScreen} />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
             <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen}/>
             <Stack.Screen name="DataSharingScreen" component={DataSharingScreen}/>
-            <Stack.Screen name="Recommendations" component={RecommendationsScreen}/>
+            <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
+            <Stack.Screen name="Recommendations" component={RecommendationsScreen} />           
             <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
             <Stack.Screen name="SummaryDetail" component={SummaryDetailScreen}/>
           </Stack.Navigator>
