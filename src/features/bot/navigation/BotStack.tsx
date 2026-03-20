@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -14,13 +14,14 @@ export type BotStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<BotStackParamList>();
+const BOT_INTRO_STORAGE_KEY = 'bot_intro_seen';
 
 export default function BotStack() {
     const [initialRoute, setInitialRoute] = useState<keyof BotStackParamList | null>(null);
 
     useEffect(() => {
         (async () => {
-            const hasSeenIntro = await AsyncStorage.getItem('hasSeenBotIntro');
+            const hasSeenIntro = await AsyncStorage.getItem(BOT_INTRO_STORAGE_KEY);
             setInitialRoute(hasSeenIntro === 'true' ? 'BotChat' : 'BotIntro1');
         })();
     }, []);

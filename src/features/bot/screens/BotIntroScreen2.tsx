@@ -4,10 +4,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const BOT_INTRO_STORAGE_KEY = "bot_intro_seen";
+
 export default function BotIntroScreen2({ navigation }: any) {
 
   const finishIntro = async () => {
-    await AsyncStorage.setItem("bot_intro_seen", "true");
+    await AsyncStorage.setItem(BOT_INTRO_STORAGE_KEY, "true");
     navigation.replace("BotChat");
   };
 
