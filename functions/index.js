@@ -9,6 +9,9 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+const DEFAULT_MODEL = "gpt-4.1-mini";
+const SUPPORT_FALLBACK_REPLY =
+  "I am not fully sure about that yet. Please check the relevant app screen or contact support if the issue continues.";
 
 function setCors(res) {
   res.set("Access-Control-Allow-Origin", "*");
@@ -22,6 +25,29 @@ function cleanText(value) {
 
 function chunkText(value, maxLength = 1200) {
   return cleanText(value).slice(0, maxLength);
+}
+
+function getOpenAiConfig() {
+  const apiKey = cleanText(process.env.OPENAI_API_KEY);
+  const model = cleanText(process.env.OPENAI_MODEL) || DEFAULT_MODEL;
+
+  if (!apiKey) {
+    throw new Error("Missing OPENAI_API_KEY secret");
+  }
+
+  return { apiKey, model };
+}
+
+function getRequestErrorMessage(status) {
+  if (status === 401) {
+    return "Your session expired. Please sign in again.";
+  }
+
+  if (status === 502) {
+    return "The assistant is temporarily unavailable. Please try again.";
+  }
+
+  return "The assistant could not handle that request right now.";
 }
 
 function extractOutputText(responseJson) {
@@ -145,6 +171,8 @@ async function getConversationRef(uid, incomingConversationId, firstMessage) {
       title: chunkText(firstMessage, 60) || "New conversation",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      messageCount: 0,
+      lastUserMessage: chunkText(firstMessage, 120),
     },
     { merge: true }
   );
@@ -172,6 +200,42 @@ async function saveMessage(conversationRef, role, text) {
   });
 }
 
+async function updateConversationSummary(conversationRef, userMessage, assistantReply) {
+  await conversationRef.set(
+    {
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      lastUserMessage: chunkText(userMessage, 120),
+      lastAssistantMessage: chunkText(assistantReply, 200),
+      messageCount: admin.firestore.FieldValue.increment(2),
+    },
+    { merge: true }
+  );
+}
+
+async function requestModelReply({ apiKey, model, input }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        input,
+      }),
+      signal: controller.signal,
+    });
+
+    return response;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 exports.chatbot = onRequest(
   {
     region: "us-central1",
@@ -192,12 +256,18 @@ exports.chatbot = onRequest(
     }
 
     try {
+      const { apiKey, model } = getOpenAiConfig();
       const decodedToken = await verifyUser(req);
       const message = cleanText(req.body?.message);
       const conversationId = cleanText(req.body?.conversationId);
 
       if (!message) {
         res.status(400).json({ error: "Message is required" });
+        return;
+      }
+
+      if (message.length > 2000) {
+        res.status(400).json({ error: "Message is too long" });
         return;
       }
 
@@ -249,16 +319,10 @@ exports.chatbot = onRequest(
         },
       ];
 
-      const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-          input,
-        }),
+      const openAiResponse = await requestModelReply({
+        apiKey,
+        model,
+        input,
       });
 
       if (!openAiResponse.ok) {
@@ -273,32 +337,31 @@ exports.chatbot = onRequest(
 
       const responseJson = await openAiResponse.json();
       const reply =
-        extractOutputText(responseJson) ||
-        "I could not generate a useful answer right now. Please try again.";
+        extractOutputText(responseJson) || SUPPORT_FALLBACK_REPLY;
 
       await Promise.all([
-        conversationRef.set(
-          {
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        ),
         saveMessage(conversationRef, "user", message),
         saveMessage(conversationRef, "assistant", reply),
+        updateConversationSummary(conversationRef, message, reply),
       ]);
 
       res.status(200).json({
         conversationId: conversationRef.id,
         reply,
         sources: knowledge.sources,
-        model: responseJson.model || process.env.OPENAI_MODEL || "gpt-4.1-mini",
+        model: responseJson.model || model,
       });
     } catch (error) {
       logger.error("chatbot function failed", error);
       const message =
         error instanceof Error ? error.message : "Unknown server error";
-      const status = message === "Missing bearer token" ? 401 : 500;
-      res.status(status).json({ error: message });
+      const status =
+        message === "Missing bearer token"
+          ? 401
+          : message === "Missing OPENAI_API_KEY secret"
+            ? 500
+            : 502;
+      res.status(status).json({ error: getRequestErrorMessage(status) });
     }
   }
 );

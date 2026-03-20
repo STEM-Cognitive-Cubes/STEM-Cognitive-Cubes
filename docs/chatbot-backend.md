@@ -11,6 +11,14 @@
 - `users/{uid}/chatConversations/{conversationId}/messages/{messageId}`
 - `botKnowledge/{docId}`
 
+Conversation metadata stored on `chatConversations` now includes:
+- `title`
+- `createdAt`
+- `updatedAt`
+- `messageCount`
+- `lastUserMessage`
+- `lastAssistantMessage`
+
 Suggested `botKnowledge` document shape:
 
 ```json
@@ -54,3 +62,9 @@ For a physical Android device, `localhost` will not work. Use your machine IP in
 - History and summary
 - Account and settings
 - Assistant scope
+
+## Runtime behavior
+- The function rejects empty messages and very long messages.
+- The function verifies the Firebase user token before processing.
+- The model request has a timeout so the app does not hang forever on provider delays.
+- If the model cannot produce useful text, the backend returns a safer support-oriented fallback reply.
