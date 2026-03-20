@@ -12,6 +12,7 @@ export type RootStackParamList = {
   ChangePassword: undefined;
   DeleteAccount: undefined;
   AppearanceScreen: undefined;
+  PrivacyControlsScreen: undefined;
   StartSession: undefined;
   LiveSession: undefined;
   NotificationPreferencesScreen: undefined;
