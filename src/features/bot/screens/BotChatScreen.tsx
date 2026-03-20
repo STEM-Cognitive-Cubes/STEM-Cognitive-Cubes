@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BotBubbleFab from "@/components/BotBubbleFab";
+import { sendChatMessage } from "@/services/chatbot";
 
 type Message = {
   id: string;
@@ -30,28 +31,49 @@ export default function BotChatScreen() {
   ]);
   const [inputText, setInputText] = useState("");
   const [typing, setTyping] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>();
   const flatListRef = useRef<FlatList<Message>>(null);
 
-  const sendMessage = (text: string) => {
-    if (!text.trim()) return;
+  const sendMessage = async (text: string) => {
+    const trimmedText = text.trim();
+    if (!trimmedText || typing) return;
+
     const newMessage: Message = {
       id: Date.now().toString(),
-      text,
+      text: trimmedText,
       sender: "user",
     };
     setMessages((prev) => [newMessage, ...prev]); // keep inverted list behavior
     setInputText("");
     setTyping(true);
 
-    setTimeout(() => {
+    try {
+      const response = await sendChatMessage(trimmedText, conversationId);
+      setConversationId(response.conversationId);
+
+      const suffix =
+        response.sources.length > 0
+          ? `\n\nSources: ${response.sources.join(", ")}`
+          : "";
       setTyping(false);
       const botResponse: Message = {
-        id: Date.now().toString(),
-        text: "Thanks for your message! I'm still learning, but I'll do my best to help you.",
+        id: `${Date.now()}-bot`,
+        text: `${response.reply}${suffix}`,
         sender: "bot",
       };
       setMessages((prev) => [botResponse, ...prev]);
-    }, 1000);
+    } catch (error) {
+      setTyping(false);
+      const botResponse: Message = {
+        id: `${Date.now()}-error`,
+        text:
+          error instanceof Error
+            ? error.message
+            : "The assistant is unavailable right now.",
+        sender: "bot",
+      };
+      setMessages((prev) => [botResponse, ...prev]);
+    }
   };
 
   const renderItem = ({ item }: { item: Message }) => {
