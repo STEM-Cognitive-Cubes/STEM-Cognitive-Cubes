@@ -19,12 +19,12 @@ import SignupScreen from "./src/features/auth/screens/SignupScreen";
 
 // Settings Screens (available)
 import SettingsScreen from './src/features/settings/settingsScreen';
+import AppearanceScreen from './src/features/settings/appearanceScreen';
+import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 import AccountScreen from './src/features/settings/account/accountScreen';
 import EditProfileScreen from './src/features/settings/account/editProfileScreen';
 import ChangePasswordScreen from './src/features/settings/account/changePasswordScreen';
 import DeleteAccountScreen from './src/features/settings/account/deleteAccountScreen';
-import AppearanceScreen from './src/features/settings/appearanceScreen';
-import NotificationPreferencesScreen from './src/features/settings/notificationScreen';
 import ContactSupportScreen from './src/features/settings/contactSupportScreen';
 import HelpSupportScreen from './src/features/settings/helpAndSupport/helpScreen';
 import CommunityScreen from './src/features/settings/helpAndSupport/community/communityScreen';
@@ -34,7 +34,8 @@ import UserGuideScreen from './src/features/settings/helpAndSupport/userGuide/us
 import AppFeaturesScreen from './src/features/settings/helpAndSupport/userGuide/appFeatures';
 import OperateScreen from './src/features/settings/helpAndSupport/userGuide/operateScreen';
 import ProductIntroScreen from './src/features/settings/helpAndSupport/userGuide/productIntro';
-import FaqsScreen from './src/features/settings/faqsScreen';
+import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
+import FAQsScreen from './src/features/settings/faqsScreen';
 import PrivacyControlsScreen from './src/features/settings/privacyControlsScreen';
 import DataSharingScreen from './src/features/settings/dataSharingScreen';
 import RecommendationsScreen from './src/features/recommendations/RecommendationsScreen';
@@ -115,7 +116,6 @@ export default function App() {
             <Stack.Screen name="Home" component={AppTabs} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="StartSession" component={StartSessionScreen} />
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="Account" component={AccountScreen} />
@@ -124,7 +124,7 @@ export default function App() {
             <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
-            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />            
             <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
             <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
             <Stack.Screen name="EmailScreen" component={EmailScreen} />
@@ -133,9 +133,9 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="ProductIntro" component={ProductIntroScreen} />
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
+            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />            
+            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen}  />          
             <Stack.Screen name="AddChild" component={AddChildScreen} />
-            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen}/>
-            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen}/>
             <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
             <Stack.Screen name="Recommendations" component={RecommendationsScreen} />           
             <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
