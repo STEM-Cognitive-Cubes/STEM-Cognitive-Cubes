@@ -1,6 +1,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const { fallbackProductContext } = require("./productContext");
 
@@ -9,7 +10,7 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
-const DEFAULT_MODEL = "gpt-4.1-mini";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 const SUPPORT_FALLBACK_REPLY =
   "I am not fully sure about that yet. Please check the relevant app screen or contact support if the issue continues.";
 
@@ -27,12 +28,12 @@ function chunkText(value, maxLength = 1200) {
   return cleanText(value).slice(0, maxLength);
 }
 
-function getOpenAiConfig() {
-  const apiKey = cleanText(process.env.OPENAI_API_KEY);
-  const model = cleanText(process.env.OPENAI_MODEL) || DEFAULT_MODEL;
+function getGeminiConfig() {
+  const apiKey = cleanText(process.env.GEMINI_API_KEY);
+  const model = cleanText(process.env.GEMINI_MODEL) || DEFAULT_MODEL;
 
   if (!apiKey) {
-    throw new Error("Missing OPENAI_API_KEY secret");
+    throw new Error("Missing GEMINI_API_KEY secret");
   }
 
   return { apiKey, model };
@@ -51,29 +52,19 @@ function getRequestErrorMessage(status) {
 }
 
 function extractOutputText(responseJson) {
-  if (typeof responseJson?.output_text === "string" && responseJson.output_text.trim()) {
-    return responseJson.output_text.trim();
-  }
+  const candidates = Array.isArray(responseJson?.candidates)
+    ? responseJson.candidates
+    : [];
+  const firstCandidate = candidates[0];
+  const parts = Array.isArray(firstCandidate?.content?.parts)
+    ? firstCandidate.content.parts
+    : [];
 
-  const output = Array.isArray(responseJson?.output) ? responseJson.output : [];
-  const parts = [];
-
-  for (const item of output) {
-    const content = Array.isArray(item?.content) ? item.content : [];
-    for (const entry of content) {
-      const text = cleanText(entry?.text ?? entry?.value);
-      if (
-        text &&
-        (entry?.type === "output_text" ||
-          entry?.type === "text" ||
-          item?.type === "message")
-      ) {
-        parts.push(text);
-      }
-    }
-  }
-
-  return parts.join("\n\n").trim();
+  return parts
+    .map((part) => cleanText(part?.text))
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
 }
 
 function scoreKnowledgeItem(item, query) {
@@ -169,8 +160,8 @@ async function getConversationRef(uid, incomingConversationId, firstMessage) {
   await newConversationRef.set(
     {
       title: chunkText(firstMessage, 60) || "New conversation",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
       messageCount: 0,
       lastUserMessage: chunkText(firstMessage, 120),
     },
@@ -208,39 +199,68 @@ async function saveMessage(conversationRef, role, text, options = {}) {
     role,
     text: chunkText(text, 4000),
     sources: Array.isArray(options.sources) ? options.sources : [],
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
 }
 
 async function updateConversationSummary(conversationRef, userMessage, assistantReply) {
   await conversationRef.set(
     {
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
       lastUserMessage: chunkText(userMessage, 120),
       lastAssistantMessage: chunkText(assistantReply, 200),
-      messageCount: admin.firestore.FieldValue.increment(2),
+      messageCount: FieldValue.increment(2),
     },
     { merge: true }
   );
 }
 
-async function requestModelReply({ apiKey, model, input }) {
+function buildGeminiContents(history, message) {
+  return [
+    ...history.map((item) => ({
+      role: item.role === "assistant" ? "model" : "user",
+      parts: [
+        {
+          text: chunkText(item.text, 2000),
+        },
+      ],
+    })),
+    {
+      role: "user",
+      parts: [
+        {
+          text: message,
+        },
+      ],
+    },
+  ];
+}
+
+async function requestModelReply({ apiKey, model, history, message, systemInstruction }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model,
-        input,
+        systemInstruction: {
+          parts: [
+            {
+              text: systemInstruction,
+            },
+          ],
+        },
+        contents: buildGeminiContents(history, message),
       }),
       signal: controller.signal,
-    });
+      }
+    );
 
     return response;
   } finally {
@@ -329,7 +349,7 @@ exports.chatbot = onRequest(
   {
     region: "us-central1",
     cors: false,
-    secrets: ["OPENAI_API_KEY"],
+    secrets: ["GEMINI_API_KEY"],
   },
   async (req, res) => {
     setCors(res);
@@ -345,7 +365,7 @@ exports.chatbot = onRequest(
     }
 
     try {
-      const { apiKey, model } = getOpenAiConfig();
+      const { apiKey, model } = getGeminiConfig();
       const decodedToken = await verifyUser(req);
       const message = cleanText(req.body?.message);
       const conversationId = cleanText(req.body?.conversationId);
@@ -371,60 +391,34 @@ exports.chatbot = onRequest(
         getKnowledgeContext(message),
       ]);
 
-      const input = [
-        {
-          role: "system",
-          content: [
-            {
-              type: "input_text",
-              text: [
-                "You are the BlokC in-app assistant.",
-                "Answer using the provided product context first.",
-                "Do not invent features or unsupported troubleshooting steps.",
-                "If the answer is uncertain, say what is known and suggest support.",
-                "Keep answers concise, practical, and easy for app users to follow.",
-                knowledge.context,
-              ].join("\n\n"),
-            },
-          ],
-        },
-        ...history.map((item) => ({
-          role: item.role === "assistant" ? "assistant" : "user",
-          content: [
-            {
-              type: "input_text",
-              text: chunkText(item.text, 2000),
-            },
-          ],
-        })),
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: message,
-            },
-          ],
-        },
-      ];
+      const systemInstruction = [
+        "You are the BlokC in-app assistant.",
+        "Answer using the provided product context first.",
+        "Do not invent features or unsupported troubleshooting steps.",
+        "If the answer is uncertain, say what is known and suggest support.",
+        "Keep answers concise, practical, and easy for app users to follow.",
+        knowledge.context,
+      ].join("\n\n");
 
-      const openAiResponse = await requestModelReply({
+      const geminiResponse = await requestModelReply({
         apiKey,
         model,
-        input,
+        history,
+        message,
+        systemInstruction,
       });
 
-      if (!openAiResponse.ok) {
-        const errorText = await openAiResponse.text();
-        logger.error("OpenAI request failed", {
-          status: openAiResponse.status,
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        logger.error("Gemini request failed", {
+          status: geminiResponse.status,
           body: errorText,
         });
         res.status(502).json({ error: "Chat provider request failed" });
         return;
       }
 
-      const responseJson = await openAiResponse.json();
+      const responseJson = await geminiResponse.json();
       const reply =
         extractOutputText(responseJson) || SUPPORT_FALLBACK_REPLY;
 
@@ -449,7 +443,7 @@ exports.chatbot = onRequest(
       const status =
         message === "Missing bearer token"
           ? 401
-          : message === "Missing OPENAI_API_KEY secret"
+          : message === "Missing GEMINI_API_KEY secret"
             ? 500
             : 502;
       res.status(status).json({ error: getRequestErrorMessage(status) });

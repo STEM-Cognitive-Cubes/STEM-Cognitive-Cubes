@@ -5,7 +5,7 @@
 - React Native app can also fetch the latest stored chatbot history from Firebase.
 - The app includes the signed-in user's Firebase ID token in the `Authorization` header.
 - The Firebase function verifies the user, loads product knowledge from Firestore, calls the model API, and stores messages back in Firestore.
-- OpenAI API keys stay on the server side only.
+- Gemini API keys stay on the server side only.
 
 ## Firestore shape
 - `users/{uid}/chatConversations/{conversationId}`
@@ -33,14 +33,15 @@ Suggested `botKnowledge` document shape:
 ## Local setup
 1. Install function dependencies:
    `npm --prefix functions install`
-2. Set the OpenAI secret in Firebase:
-   `firebase functions:secrets:set OPENAI_API_KEY`
+2. Set the Gemini secret in Firebase:
+   `npx firebase-tools functions:secrets:set GEMINI_API_KEY`
+   Get the Gemini API key from Vertex AI Studio / Google AI Studio before running this command.
 3. Optional model override:
-   `firebase functions:secrets:set OPENAI_MODEL`
+   `npx firebase-tools functions:secrets:set GEMINI_MODEL`
 4. Seed the base product knowledge:
    `npm run functions:seed-knowledge`
 5. Run the functions emulator:
-   `firebase emulators:start --only functions`
+   `npx firebase-tools emulators:start --only functions`
 6. Set `API_BASE_URL` for Expo.
 
 For local emulation, `API_BASE_URL` should point to:
@@ -53,7 +54,7 @@ For a physical Android device, `localhost` will not work. Use your machine IP in
 
 ## Deployment
 - Deploy the chatbot function:
-  `firebase deploy --only functions:chatbot`
+  `npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory`
 - Then set `API_BASE_URL` in your app environment to the deployed function base URL.
 
 ## Seed content included
