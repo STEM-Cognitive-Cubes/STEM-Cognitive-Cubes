@@ -111,7 +111,7 @@ export default function App() {
             <Stack.Screen name="Account" component={AccountScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />*/}
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
             <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
             <Stack.Screen name="CommunityScreen" component={CommunityScreen} />
             <Stack.Screen name="EmailScreen" component={EmailScreen} />
@@ -125,7 +125,6 @@ export default function App() {
             <Stack.Screen name="LiveSession" component={LiveSessionScreen} />
             <Stack.Screen name="MainTabs" component={AppTabs} />
             <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
-            
             <Stack.Screen name="AddChild" component={AddChildScreen} />
 
           </Stack.Navigator>
