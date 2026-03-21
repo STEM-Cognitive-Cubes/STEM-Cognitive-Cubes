@@ -1,4 +1,5 @@
 const { db } = require('../config/firebase');
+const { calculateInsights } = require('./insightService');
 
 // Session service
 const sessionService = {
@@ -12,7 +13,10 @@ const sessionService = {
     
     await sessionRef.set(sessionDoc);
     
-    return { id: sessionRef.id, ...sessionDoc };
+    // Calculate insights automatically
+    const insights = calculateInsights(sessionData);
+    
+    return { id: sessionRef.id, ...sessionDoc, insights };
   }
 };
 
