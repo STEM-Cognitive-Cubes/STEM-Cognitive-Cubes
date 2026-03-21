@@ -219,17 +219,19 @@ export default function BotChatScreen() {
             keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
           >
             <View style={styles.inputRow}>
-              <TextInput
-                value={inputText}
-                onChangeText={setInputText}
-                placeholder="Ask me anything…"
-                placeholderTextColor="rgba(80,100,172,0.55)"
-                style={styles.input}
-                multiline
-              />
-              <Pressable style={styles.sendBtn} onPress={() => sendMessage(inputText)}>
-                <Text style={styles.sendText}>Send</Text>
-              </Pressable>
+              <View style={styles.inputShell}>
+                <TextInput
+                  value={inputText}
+                  onChangeText={setInputText}
+                  placeholder="Ask me anything…"
+                  placeholderTextColor="rgba(243,232,255,0.72)"
+                  style={styles.input}
+                  multiline
+                />
+                <Pressable style={styles.sendBtn} onPress={() => sendMessage(inputText)}>
+                  <Text style={styles.sendText}>Send</Text>
+                </Pressable>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -355,31 +357,47 @@ const styles = StyleSheet.create({
   },
 
   inputRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 10,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.06)",
-    backgroundColor: "#fff",
+    paddingTop: 8,
+    paddingBottom: 14,
+    backgroundColor: "transparent",
+  },
+  inputShell: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "rgba(237,205,255,0.45)",
+    backgroundColor: "rgba(82,49,122,0.92)",
+    paddingLeft: 14,
+    paddingRight: 8,
+    paddingVertical: 8,
+    shadowColor: "#DCA7FF",
+    shadowOpacity: 0.55,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
   },
   input: {
     flex: 1,
     minHeight: 44,
     maxHeight: 110,
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 20,
-    backgroundColor: "rgba(80,100,172,0.08)",
-    color: "rgba(80,100,172,0.95)",
+    paddingRight: 10,
+    paddingVertical: 10,
+    color: "#F8EEFF",
+    fontSize: 16,
     fontWeight: "700",
   },
   sendBtn: {
-    paddingHorizontal: 14,
+    minWidth: 64,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 16,
-    backgroundColor: "#A24BFF",
+    borderRadius: 14,
+    backgroundColor: "#8E34F7",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
   },
-  sendText: { color: "#fff", fontWeight: "900" },
+  sendText: { color: "#F7ECFF", fontWeight: "900" },
 });
