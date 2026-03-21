@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { doc, onSnapshot } from 'firebase/firestore';
 import type { RootStackParamList } from '../../../navigation/types';
+import { auth, db } from '../../../services/firebase';
 
 type AccountScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -21,15 +23,81 @@ type AccountScreenProps = {
   navigation?: AccountScreenNavigationProp;
 };
 
+type ParentProfileView = {
+  name: string;
+  email: string;
+  phone: string;
+  dob: string;
+  initials: string;
+};
+
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return 'U';
+  }
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+};
+
 const AccountScreen = ({ navigation }: AccountScreenProps) => {
-  // Dummy data for now until we connect the backend
-  const [userData] = useState({
-    name: 'Example User',
-    email: 'user@example.com',
-    phone: '+1 555 0100 000',
-    dob: '01/01/1990',
-    initials: 'EU',
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [userData, setUserData] = useState<ParentProfileView>({
+    name: 'User',
+    email: '',
+    phone: 'Not set',
+    dob: 'Not set',
+    initials: 'U',
   });
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      setIsProfileLoading(false);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'parents', uid),
+      (parentDoc) => {
+        if (!parentDoc.exists()) {
+          const fallbackName = auth.currentUser?.email ?? 'User';
+          setUserData({
+            name: fallbackName,
+            email: auth.currentUser?.email ?? '',
+            phone: 'Not set',
+            dob: 'Not set',
+            initials: getInitials(fallbackName),
+          });
+          setIsProfileLoading(false);
+          return;
+        }
+
+        const data = parentDoc.data();
+        const firstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
+        const lastName = typeof data.lastName === 'string' ? data.lastName.trim() : '';
+        const fullName = typeof data.fullName === 'string' ? data.fullName.trim() : '';
+        const resolvedName =
+          fullName || `${firstName} ${lastName}`.trim() || auth.currentUser?.email || 'User';
+
+        setUserData({
+          name: resolvedName,
+          email: typeof data.email === 'string' ? data.email : auth.currentUser?.email ?? '',
+          phone: typeof data.phoneNumber === 'string' ? data.phoneNumber : 'Not set',
+          dob: typeof data.dateOfBirth === 'string' ? data.dateOfBirth : 'Not set',
+          initials: getInitials(resolvedName),
+        });
+        setIsProfileLoading(false);
+      },
+      () => {
+        setIsProfileLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const handleEditProfile = () => navigation?.navigate('EditProfile');
   const handleChangePassword = () => navigation?.navigate('ChangePassword');
@@ -63,6 +131,7 @@ return (
           </View>
 
           <Text style={styles.userName}>{userData.name}</Text>
+          {isProfileLoading ? <Text style={styles.loadingText}>Loading profile...</Text> : null}
 
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>PERSONAL INFO</Text>
@@ -333,6 +402,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1F2937',
+  },
+  loadingText: {
+    color: '#6B7280',
+    fontSize: 13,
+    marginTop: -12,
+    marginBottom: 16,
+    textAlign: 'center',
   },
 });
 

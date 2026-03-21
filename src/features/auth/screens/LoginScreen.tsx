@@ -9,7 +9,7 @@ import {
   fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
@@ -59,19 +59,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     setAuthError("");
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
-      
-      // Log parent document details
-      onSnapshot(
-        doc(db, "parents", userCredential.user.uid),
-        (parentDoc) => {
-          if (parentDoc.exists()) {
-            console.log("Logged in Parent Data (Manual Login):", parentDoc.data());
-          } else {
-            console.warn("Parent document not found after manual login.");
-          }
-        },
-        (error) => console.error("Failed to get parent collection after manual login:", error)
-      );
+
+      const parentDoc = await getDoc(doc(db, "parents", userCredential.user.uid));
+      if (parentDoc.exists()) {
+        console.log("Logged in Parent Data (Manual Login):", parentDoc.data());
+      } else {
+        console.warn("Parent document not found after manual login.");
+      }
       
       setIsLoginSuccess(true);
     } catch (error) {
@@ -95,7 +89,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       try {
         await GoogleSignin.signOut();
-      } catch (e) {
+      } catch {
         // Safe to ignore if they weren't signed in initially
       }
       console.log("Calling signIn");
@@ -150,28 +144,20 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
            googleFirstName = name;
         }
 
-        setDoc(doc(db, "parents", result.user.uid), {
+        await setDoc(doc(db, "parents", result.user.uid), {
           firstName: googleFirstName,
           lastName: googleLastName,
           email: result.user.email ?? userInfo.user?.email ?? "",
           createdAt: new Date().toISOString()
-        })
-        .then(() => console.log("Saved new Google user to Firestore!"))
-        .catch((e) => console.error("Firestore save failed:", e));
+        });
       }
-      
-      // Log parent document details
-      onSnapshot(
-        doc(db, "parents", result.user.uid),
-        (parentDoc) => {
-          if (parentDoc.exists()) {
-            console.log("Logged in Parent Data (Google Login):", parentDoc.data());
-          } else {
-            console.warn("Parent document not found after Google login.");
-          }
-        },
-        (error) => console.error("Failed to get parent collection after Google login:", error)
-      );
+
+      const parentDoc = await getDoc(doc(db, "parents", result.user.uid));
+      if (parentDoc.exists()) {
+        console.log("Logged in Parent Data (Google Login):", parentDoc.data());
+      } else {
+        console.warn("Parent document not found after Google login.");
+      }
 
       setGoogleName(name);
       setIsLoginSuccess(true);

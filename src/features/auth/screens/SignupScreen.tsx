@@ -46,14 +46,12 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       }
       
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      setDoc(doc(db, "parents", userCredential.user.uid), {
+      await setDoc(doc(db, "parents", userCredential.user.uid), {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
         createdAt: new Date().toISOString()
-      })
-      .then(() => console.log("Signup Firestore saved"))
-      .catch((e) => console.error("Signup Firestore error:", e));
+      });
       
       setIsSuccessOpen(true);
     } catch (error) {
