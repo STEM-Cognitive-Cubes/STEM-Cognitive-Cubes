@@ -106,7 +106,37 @@ const insightController = {
         res.end(pdfData);
       });
       
-      doc.text('Insight Report Placeholder');
+      const insightsSnapshot = await db.collection('insights')
+        .where('childId', '==', childId)
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+        
+      let latestInsight = null;
+      if (!insightsSnapshot.empty) {
+        latestInsight = insightsSnapshot.docs[0].data();
+      }
+
+      doc.fontSize(20).text('Cognitive Play Insights Report', { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(14).text(`Child ID: ${childId}`);
+      doc.moveDown();
+      
+      if (latestInsight) {
+        doc.fontSize(12).text(`Date: ${new Date(latestInsight.createdAt).toLocaleDateString()}`);
+        doc.moveDown();
+        doc.fontSize(14).text('Performance Metrics', { underline: true });
+        doc.fontSize(12).text(`Cognitive Score: ${latestInsight.cognitive}`);
+        doc.text(`Problem Solving Score: ${latestInsight.problemSolving}`);
+        doc.text(`Creativity Score: ${latestInsight.creativity}`);
+        doc.text(`Overall Score: ${latestInsight.overall}`);
+        doc.moveDown();
+        doc.fontSize(14).text('Summary Feedback', { underline: true });
+        doc.fontSize(12).text(latestInsight.summary);
+      } else {
+        doc.text('No play sessions recorded yet.');
+      }
+      
       doc.end();
 
     } catch (error) {
