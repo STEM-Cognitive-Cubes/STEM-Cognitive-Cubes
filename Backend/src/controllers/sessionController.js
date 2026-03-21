@@ -1,5 +1,9 @@
 const sessionService = require('../services/sessionService');
 
-const sessionController = {};
+const sessionController = {
+  createSession: async (req, res) => {
+    // implementation pending
+  }
+};
 
 module.exports = sessionController;
