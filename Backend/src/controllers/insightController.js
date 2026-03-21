@@ -87,6 +87,32 @@ const insightController = {
       console.error('Error fetching insight summary:', error);
       return res.status(500).json({ error: 'Failed to fetch insight summary' });
     }
+  },
+  
+  generateReport: async (req, res) => {
+    try {
+      const { childId } = req.params;
+      
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument();
+      
+      let buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        let pdfData = Buffer.concat(buffers);
+        res.setHeader('Content-Length', Buffer.byteLength(pdfData));
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=insight_report_${childId}.pdf`);
+        res.end(pdfData);
+      });
+      
+      doc.text('Insight Report Placeholder');
+      doc.end();
+
+    } catch (error) {
+      console.error('Error generating report:', error);
+      return res.status(500).json({ error: 'Failed to generate report' });
+    }
   }
 };
 
