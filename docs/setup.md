@@ -60,11 +60,21 @@ powershell -ExecutionPolicy Bypass -Command "npm i -g eas-cli"
 powershell -ExecutionPolicy Bypass -Command "eas login"
 ```
 
-5) Firebase config files (shared project)
-This repo already includes the Android config file:
-- google-services.json
+5) Firebase config for EAS (team-friendly)
+Do not commit Firebase credential files.
 
-Do NOT edit it unless Firebase config changes. If it changes, update the file in the repo.
+Set EAS file secrets once per project:
+```bash
+eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json
+eas secret:create --scope project --name GOOGLE_SERVICE_INFO_PLIST --type file --value ./GoogleService-Info.plist
+```
+
+Notes:
+- `GOOGLE_SERVICES_JSON` is used for Android builds.
+- `GOOGLE_SERVICE_INFO_PLIST` is used for iOS builds.
+- This repo runs a pre-build script (`eas-build-pre-install`) to copy these into native paths:
+  - `android/app/google-services.json`
+  - `ios/STEMCognitiveCubes/GoogleService-Info.plist`
 
 6) Build the Android dev client (APK)
 ```
@@ -97,11 +107,14 @@ IOS SETUP (macOS only)
 Prereqs
 - macOS + Xcode
 - Apple Developer account
-- GoogleService-Info.plist in project root (already added; do not change unless Firebase config changes)
+- EAS file secret `GOOGLE_SERVICE_INFO_PLIST` (or local native file at `ios/STEMCognitiveCubes/GoogleService-Info.plist`)
 
 1) Add iOS Firebase config file
-Place this file in project root:
-- GoogleService-Info.plist
+Preferred for team/EAS:
+- Set EAS file secret `GOOGLE_SERVICE_INFO_PLIST` (see Android step 5 above).
+
+Optional local native file fallback:
+- `ios/STEMCognitiveCubes/GoogleService-Info.plist`
 
 2) Build the iOS dev client
 ```

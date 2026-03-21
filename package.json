@@ -5,7 +5,8 @@
     "ios": "npx expo run:ios",
     "lint": "eslint src",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eas-build-pre-install": "bash ./scripts/eas-prepare-firebase.sh"
   },
   "engines": {
     "node": ">=20 <21"
