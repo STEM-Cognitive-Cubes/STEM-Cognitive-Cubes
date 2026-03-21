@@ -15,15 +15,18 @@ type SummaryDetailScreenProps = {
 
 export default function SummaryDetailScreen({
   navigation,
+  route
 }: SummaryDetailScreenProps) {
-  const detail = sessionDetail;
+  const detail = route.params.weekData;
+
   const metrics = [
-    { label: "Duration", value: detail.duration, icon: "clock", color: "#B860FF" },
+    { label: "Duration", value: detail.durationMinutes, icon: "clock", color: "#B860FF" },
     { label: "Blocks", value: `${detail.blocks}`, icon: "box", color: "#FF9F43" },
     { label: "Focus", value: detail.focusLevel, icon: "target", color: "#1DBE5F" },
     { label: "Score", value: `${detail.score}`, icon: "star", color: "#FFD54F" },
   ];
-  const maxFocus = Math.max(...detail.focusData.map((item) => item.value));
+  
+  const maxFocus = Math.max(...detail.focusData.map((item: any) => item.value), 10);
 
   return (
     <View style={styles.container}>
@@ -33,8 +36,8 @@ export default function SummaryDetailScreen({
       >
         <View style={styles.previewCard}>
           <Feather name="box" size={40} color="#B860FF" />
-          <Text style={styles.previewTitle}>Summary Preview</Text>
-          <Text style={styles.previewDate}>{detail.date} | {detail.time}</Text>
+          <Text style={styles.previewTitle}>Weekly Summary</Text>
+          <Text style={styles.previewDate}>{detail.title} | {detail.dateLabel}</Text>
         </View>
 
         <View style={styles.metricsRow}>
@@ -56,7 +59,7 @@ export default function SummaryDetailScreen({
 
         <Text style={styles.sectionTitle}>Focus Analysis</Text>
         <View style={styles.chartContainer}>
-          {detail.focusData.map((item) => (
+          {detail.focusData.map((item: any) => (
             <View key={item.day} style={styles.barColumn}>
               <View style={styles.barTrack}>
                 <View
@@ -76,7 +79,7 @@ export default function SummaryDetailScreen({
 
         <Text style={styles.sectionTitle}>Blocks Used</Text>
         <View style={styles.blocksRow}>
-          {detail.blocksUsed.map((block) => (
+          {detail.blocksUsed.map((block: any) => (
             <View
               key={block.id}
               style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}
@@ -92,9 +95,10 @@ export default function SummaryDetailScreen({
 
         <Pressable
           style={styles.exportButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => console.log('Exporting weekly summary...')}
         >
-          <Text style={styles.exportButtonText}>Back to Summary</Text>
+          <Feather name="download" size={18} color="white" style={{ marginRight: 8 }} />
+          <Text style={styles.exportButtonText}>Export Summary</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -231,14 +235,16 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.bold,
   },
   exportButton: {
-    backgroundColor: "#FFD54F",
+    backgroundColor: "#4A5EB4",
+    flexDirection: "row",
     borderRadius: 24,
     paddingVertical: 14,
     alignItems: "center",
+    justifyContent: "center",
   },
   exportButtonText: {
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
-    color: "black",
+    color: "white",
   },
 });
