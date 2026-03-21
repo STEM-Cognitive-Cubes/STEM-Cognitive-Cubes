@@ -7,7 +7,6 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
   fetchSignInMethodsForEmail,
-  getAdditionalUserInfo,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
@@ -24,6 +23,23 @@ import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+};
+
+const splitName = (fullName?: string | null) => {
+  const safeName = fullName?.trim() ?? "";
+  if (!safeName) {
+    return { firstName: "", lastName: "" };
+  }
+  const parts = safeName.split(/\s+/);
+  return {
+    firstName: parts[0] ?? "",
+    lastName: parts.slice(1).join(" "),
+  };
+};
+
+const fallbackNameFromEmail = (email?: string | null) => {
+  if (!email) return "User";
+  return email.split("@")[0] || "User";
 };
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
@@ -59,10 +75,22 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     setAuthError("");
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const parentRef = doc(db, "parents", userCredential.user.uid);
+      const parentDoc = await getDoc(parentRef);
+      if (!parentDoc.exists()) {
+        const { firstName, lastName } = splitName(userCredential.user.displayName);
+        const emailValue = userCredential.user.email ?? email.trim();
+        await setDoc(parentRef, {
+          firstName: firstName || fallbackNameFromEmail(emailValue),
+          lastName,
+          email: emailValue,
+          createdAt: new Date().toISOString(),
+        });
+      }
 
-      const parentDoc = await getDoc(doc(db, "parents", userCredential.user.uid));
-      if (parentDoc.exists()) {
-        console.log("Logged in Parent Data (Manual Login):", parentDoc.data());
+      const refreshedParentDoc = await getDoc(parentRef);
+      if (refreshedParentDoc.exists()) {
+        console.log("Logged in Parent Data (Manual Login):", refreshedParentDoc.data());
       } else {
         console.warn("Parent document not found after manual login.");
       }
@@ -125,36 +153,31 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       const result = await signInWithCredential(auth, credential);
       console.log("signInWithCredential completed. UID:", result.user.uid);
       const name = result.user.displayName ?? userInfo.user?.name ?? "User";
-      
-      const additionalInfo = getAdditionalUserInfo(result);
-      if (additionalInfo?.isNewUser) {
-        console.log("New Google User! Saving to Firestore...");
-        
-        let googleFirstName = "User";
-        let googleLastName = "";
-        
-        if (userInfo.user?.givenName) {
-           googleFirstName = userInfo.user.givenName;
-           googleLastName = userInfo.user.familyName ?? "";
-        } else if (name.includes(" ")) {
-           const nameParts = name.split(" ");
-           googleFirstName = nameParts[0];
-           googleLastName = nameParts.slice(1).join(" ");
-        } else {
-           googleFirstName = name;
-        }
 
-        await setDoc(doc(db, "parents", result.user.uid), {
-          firstName: googleFirstName,
-          lastName: googleLastName,
-          email: result.user.email ?? userInfo.user?.email ?? "",
-          createdAt: new Date().toISOString()
+      const parentRef = doc(db, "parents", result.user.uid);
+      const parentDoc = await getDoc(parentRef);
+      if (!parentDoc.exists()) {
+        const fromGivenFamily = {
+          firstName: userInfo.user?.givenName?.trim() ?? "",
+          lastName: userInfo.user?.familyName?.trim() ?? "",
+        };
+        const fromDisplay = splitName(name);
+        const emailValue = result.user.email ?? userInfo.user?.email ?? "";
+        const firstName =
+          fromGivenFamily.firstName || fromDisplay.firstName || fallbackNameFromEmail(emailValue);
+        const lastName = fromGivenFamily.lastName || fromDisplay.lastName;
+
+        await setDoc(parentRef, {
+          firstName,
+          lastName,
+          email: emailValue,
+          createdAt: new Date().toISOString(),
         });
       }
 
-      const parentDoc = await getDoc(doc(db, "parents", result.user.uid));
-      if (parentDoc.exists()) {
-        console.log("Logged in Parent Data (Google Login):", parentDoc.data());
+      const refreshedParentDoc = await getDoc(parentRef);
+      if (refreshedParentDoc.exists()) {
+        console.log("Logged in Parent Data (Google Login):", refreshedParentDoc.data());
       } else {
         console.warn("Parent document not found after Google login.");
       }
