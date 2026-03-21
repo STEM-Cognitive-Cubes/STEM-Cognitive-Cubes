@@ -17,7 +17,33 @@ const insightController = {
       }
       
       const insights = insightsSnapshot.docs.map(doc => doc.data());
-      return res.status(200).json(insights);
+      
+      // Group by day and average
+      const dailyAverages = {};
+      insights.forEach(insight => {
+        const day = new Date(insight.createdAt).toISOString().split('T')[0];
+        if (!dailyAverages[day]) {
+          dailyAverages[day] = { count: 0, cognitive: 0, problemSolving: 0, creativity: 0, overall: 0 };
+        }
+        dailyAverages[day].count += 1;
+        dailyAverages[day].cognitive += insight.cognitive;
+        dailyAverages[day].problemSolving += insight.problemSolving;
+        dailyAverages[day].creativity += insight.creativity;
+        dailyAverages[day].overall += insight.overall;
+      });
+
+      const result = Object.keys(dailyAverages).map(day => {
+        const data = dailyAverages[day];
+        return {
+          date: day,
+          cognitive: parseFloat((data.cognitive / data.count).toFixed(2)),
+          problemSolving: parseFloat((data.problemSolving / data.count).toFixed(2)),
+          creativity: parseFloat((data.creativity / data.count).toFixed(2)),
+          overall: parseFloat((data.overall / data.count).toFixed(2))
+        };
+      });
+
+      return res.status(200).json(result.sort((a, b) => new Date(a.date) - new Date(b.date)));
     } catch (error) {
       console.error('Error fetching weekly insights:', error);
       return res.status(500).json({ error: 'Failed to fetch weekly insights' });
