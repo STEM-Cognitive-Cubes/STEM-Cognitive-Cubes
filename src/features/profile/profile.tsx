@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Switch } from 'react-native';
 import { doc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { auth, db } from '../../services/firebase';
@@ -16,16 +16,22 @@ interface Child {
 const CARD_COLORS = ['#FDE047', '#BBF7D0', '#BFDBFE', '#FED7AA'];
 const AVATAR_COLORS = ['#F97316', '#16A34A', '#3B82F6', '#EA580C'];
 
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+};
+
 export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const [children, setChildren] = useState<Child[]>([]);
   const [parentName, setParentName] = useState("Guest User");
   const [parentEmail, setParentEmail] = useState("");
-  const [parentInitials, setParentInitials] = useState("DJ");
+  const [parentInitials, setParentInitials] = useState("U");
 
   // Get the parent stack navigator (since Profile is inside a Tab navigator)
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<any>();
 
   useEffect(() => {
     if (!auth.currentUser?.uid) return;
@@ -34,21 +40,30 @@ export default function ProfileScreen() {
     const unsubscribeParent = onSnapshot(
       doc(db, "parents", auth.currentUser!.uid),
       (parentDoc) => {
-        if (parentDoc.exists()) {
-          const data = parentDoc.data();
-          console.log("ProfileScreen Parent Data:", data);
-          const fName = data.firstName || "";
-          const lName = data.lastName || "";
-          
-          setParentName(`${fName} ${lName}`.trim() || auth.currentUser!.uid);
-          setParentEmail(data.email || "");
-          
-          let inits = "";
-          if (fName) inits += fName.charAt(0).toUpperCase();
-          if (lName) inits += lName.charAt(0).toUpperCase();
-          if (!inits) inits = "U";
-          setParentInitials(inits);
+        const authUser = auth.currentUser;
+        const fallbackName =
+          authUser?.displayName?.trim() ||
+          authUser?.email?.split("@")[0] ||
+          "Guest User";
+        const fallbackEmail = authUser?.email || "";
+
+        if (!parentDoc.exists()) {
+          setParentName(fallbackName);
+          setParentEmail(fallbackEmail);
+          setParentInitials(getInitials(fallbackName));
+          return;
         }
+
+        const data = parentDoc.data();
+        console.log("ProfileScreen Parent Data:", data);
+        const fName = typeof data.firstName === "string" ? data.firstName.trim() : "";
+        const lName = typeof data.lastName === "string" ? data.lastName.trim() : "";
+        const fullName = typeof data.fullName === "string" ? data.fullName.trim() : "";
+        const resolvedName = fullName || `${fName} ${lName}`.trim() || fallbackName;
+
+        setParentName(resolvedName);
+        setParentEmail(typeof data.email === "string" ? data.email : fallbackEmail);
+        setParentInitials(getInitials(resolvedName));
       },
       (error) => console.error("ProfileScreen Parent onSnapshot error:", error)
     );
