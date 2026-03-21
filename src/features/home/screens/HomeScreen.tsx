@@ -13,6 +13,18 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigation/types";
 
+const getDisplayFirstName = () => {
+  const displayName = auth.currentUser?.displayName?.trim();
+  if (displayName) {
+    return displayName.split(/\s+/)[0];
+  }
+  const email = auth.currentUser?.email?.trim();
+  if (email) {
+    return email.split("@")[0];
+  }
+  return "User";
+};
+
 export default function HomeScreen() {
   const fabOpacity = useRef(new Animated.Value(1)).current;
   const fabTranslateY = useRef(new Animated.Value(0)).current;
@@ -23,25 +35,40 @@ export default function HomeScreen() {
   const lastScrollY = useRef(0);
   const isHidden = useRef(false);
 
-  const [parentName, setParentName] = useState("User");
+  const [parentName, setParentName] = useState(getDisplayFirstName());
 
   useEffect(() => {
     const uid = auth.currentUser?.uid;
-    if (!uid) return;
+    if (!uid) {
+      setParentName(getDisplayFirstName());
+      return;
+    }
 
     const unsubscribe = onSnapshot(
       doc(db, "parents", uid),
       (parentDoc) => {
-        if (parentDoc.exists()) {
-          const data = parentDoc.data();
-          console.log("HomeScreen Parent Data:", data);
-          if (data.firstName) {
-            setParentName(data.firstName);
-          }
+        if (!parentDoc.exists()) {
+          setParentName(getDisplayFirstName());
+          return;
         }
+
+        const data = parentDoc.data();
+        console.log("HomeScreen Parent Data:", data);
+        const firstName = typeof data.firstName === "string" ? data.firstName.trim() : "";
+        const fullName = typeof data.fullName === "string" ? data.fullName.trim() : "";
+        if (firstName) {
+          setParentName(firstName);
+          return;
+        }
+        if (fullName) {
+          setParentName(fullName.split(/\s+/)[0]);
+          return;
+        }
+        setParentName(getDisplayFirstName());
       },
       (error) => {
         console.error("HomeScreen onSnapshot error:", error);
+        setParentName(getDisplayFirstName());
       }
     );
 
