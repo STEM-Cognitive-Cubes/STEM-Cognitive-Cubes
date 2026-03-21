@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
@@ -19,10 +19,12 @@ export default function SessionDetailScreen({
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5002' : 'http://localhost:5002';
+
   useEffect(() => {
     async function fetchSession() {
       try {
-        const response = await fetch(`http://localhost:5002/api/history/session/${sessionId}`);
+        const response = await fetch(`${API_URL}/api/history/session/${sessionId}`);
         if (response.ok) {
           const data = await response.json();
           setDetail(data);

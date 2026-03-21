@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
@@ -14,10 +14,12 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
   const [weeksData, setWeeksData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5002' : 'http://localhost:5002';
+
   useEffect(() => {
     async function fetchWeeks() {
       try {
-        const response = await fetch("http://localhost:5002/api/insights/historic-weeks/child123");
+        const response = await fetch(`${API_URL}/api/insights/historic-weeks/child123`);
         if (response.ok) {
           const data = await response.json();
           setWeeksData(data);
