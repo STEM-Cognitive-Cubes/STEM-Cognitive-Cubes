@@ -11,3 +11,7 @@ const PORT = process.env.PORT || 5002;
 app.get('/', (req, res) => {
   res.send('Insight Engine Backend API is running');
 });
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
