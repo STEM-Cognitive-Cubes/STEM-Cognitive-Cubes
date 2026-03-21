@@ -15,4 +15,8 @@ router.get("/summary/:childId", verifyToken, insightController.getInsightSummary
 // Generates a downloadable PDF report of the latest insights
 router.get("/report/:childId", verifyToken, insightController.generateReport);
 
+// GET /api/insights/historic-weeks/:childId
+// Returns sessions grouped by week for the weekly history UI
+router.get("/historic-weeks/:childId", verifyToken, insightController.getHistoricWeeks);
+
 module.exports = router;
