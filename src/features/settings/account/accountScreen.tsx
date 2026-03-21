@@ -7,18 +7,21 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  Image,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../navigation/types';
 
-type RootStackParamList = {
-  Settings: undefined;
-  EditProfile: undefined;
-  ChangePassword: undefined;
-  DeleteAccount: undefined;
+type AccountScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Account'
+>;
+
+type AccountScreenProps = {
+  navigation?: AccountScreenNavigationProp;
 };
-const AccountScreen = ({ navigation }) => {
+
+const AccountScreen = ({ navigation }: AccountScreenProps) => {
   // Dummy data for now until we connect the backend
   const [userData] = useState({
     name: 'Example User',
