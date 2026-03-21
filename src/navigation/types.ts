@@ -3,6 +3,8 @@ export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   MainTabs: undefined;
+  Home: undefined;
+  Profile: undefined;
   // Settings feature
   Settings: undefined;
   Account: undefined;
@@ -19,10 +21,10 @@ export type RootStackParamList = {
   CommunityScreen: undefined;
   EmailScreen: undefined;
   ChatScreen: undefined;
-  AppFeatures: undefined;
+  UserGuideScreen: undefined;
+  ProductIntroScreen: undefined;
+  AppFeaturesScreen: undefined;
   OperateScreen: undefined;
-  ProductIntro: undefined;
-  UserGuide: undefined;
   Logout: undefined;
   FAQsScreen: undefined;
   ContactSupportScreen: undefined;
@@ -37,6 +39,5 @@ export type RootStackParamList = {
   Insights: undefined;
   Recommendations: { category: string };
   // Profile feature
-  AddChild: undefined; // this line for the AddChild screen
-
+  AddChild: undefined;
 };

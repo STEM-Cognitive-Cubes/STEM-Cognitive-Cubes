@@ -1,69 +1,33 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, TouchableWithoutFeedback, Keyboard, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { auth, db } from '../../../services/firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-
+import { db } from '../../../services/firebase';
 
 export default function AddChildScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const [childName, setChildName] = React.useState('');
-  const [childBirthday, setChildBirthday] = React.useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const formattedBirthday = childBirthday ? childBirthday.toISOString().split('T')[0] : '';
-
-  const handleBirthdayChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-
-    if (event.type === 'set' && selectedDate) {
-      setChildBirthday(selectedDate);
-    }
-  };
+  const [childAge, setChildAge] = React.useState('');
 
   const handleCreateProfile = async () => {
-    if (!childName.trim() || !childBirthday) {
-      Alert.alert('Missing Information', 'Please enter both name and birthday');
+    if (!childName.trim() || !childAge.trim()) {
+      Alert.alert('Missing fields', 'Please enter both name and age.');
       return;
     }
-    
-    if (!auth.currentUser?.uid) {
-      Alert.alert('Authentication Error', 'You must be logged in to add a child.');
-      return;
-    }
-
-    setIsLoading(true);
-
     try {
-      await addDoc(collection(db, "parents", auth.currentUser.uid, "children"), {
+      await addDoc(collection(db, 'children'), {
         name: childName.trim(),
-        birthday: formattedBirthday,
-        createdAt: new Date().toISOString()
+        age: childAge.trim(),
+        createdAt: new Date().toISOString(),
       });
-
-      setIsLoading(false);
-      Alert.alert('Success', `Profile created for ${childName.trim()}!`, [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.goBack();
-          },
-        },
-      ]);
+      navigation.goBack();
     } catch (error) {
-      console.error("Error adding child:", error);
-      setIsLoading(false);
-      Alert.alert("Error", "Could not save the child profile.");
+      Alert.alert('Error', 'Failed to create profile. Please try again.');
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -84,40 +48,21 @@ export default function AddChildScreen() {
       <View style={styles.formCard}>
         <Text style={styles.label}>CHILD'S NAME</Text>
         <View style={styles.inputContainer}>
-          <Ionicons name="person" size={20} color="#64748B" />
+          <Ionicons name="person" size={20} color="black" />
           <TextInput style={styles.input} placeholder="E.g. Nehara Fernando" onChangeText={(text) => setChildName(text)} />
         </View>
 
-        <Text style={styles.label}>BIRTHDAY</Text>
-        <Pressable style={styles.inputContainer} onPress={() => setShowDatePicker(true)}>
-          <Ionicons name="calendar" size={20} color="#64748B" />
-          <Text style={[styles.dateText, !formattedBirthday && styles.datePlaceholder]}>
-            {formattedBirthday || 'Select birthday'}
-          </Text>
-        </Pressable>
-
-        {showDatePicker && (
-          <DateTimePicker
-            value={childBirthday ?? new Date()}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            maximumDate={new Date()}
-            onChange={handleBirthdayChange}
-          />
-        )}
+        <Text style={styles.label}>AGE (YEARS)</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="calendar" size={20} color="black" />
+          <TextInput style={styles.input} placeholder="birthday" onChangeText={(text) => setChildAge(text)} />
+        </View>
 
         <Pressable style={styles.createButton} onPress={handleCreateProfile}>
           <Text style={styles.createButtonText}>Create Profile</Text>
         </Pressable>
       </View>
-
-      {isLoading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#A855F7" />
-        </View>
-      )}
-      </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 }
 
@@ -132,11 +77,11 @@ const styles = StyleSheet.create({
   avatarSection: { alignItems: 'center', marginTop: -50 },
   avatarCircle: {
     width: 120, height: 120, borderRadius: 60, backgroundColor: '#F1F5F9',
-    justifyContent: 'center', alignItems: 'center', borderWidth: 5, borderColor: 'white'
+    justifyContent: 'center', alignItems: 'center', borderWidth: 4, borderColor: 'white'
   },
   plusBadge: {
     position: 'absolute', bottom: 5, right: 5,
-    backgroundColor: '#A855F7', borderRadius: 20, padding: 6
+    backgroundColor: '#A855F7', borderRadius: 20, padding: 5
   },
   formCard: {
     backgroundColor: '#F59E0B', margin: 25, borderRadius: 25, padding: 25, marginTop: 40
@@ -147,17 +92,8 @@ const styles = StyleSheet.create({
     borderRadius: 15, paddingHorizontal: 15, height: 50, marginBottom: 20
   },
   input: { flex: 1, marginLeft: 10 },
-  dateText: { flex: 1, marginLeft: 10, color: '#0F172A' },
-  datePlaceholder: { color: '#94A3B8' },
   createButton: {
     backgroundColor: '#5A67D8', padding: 15, borderRadius: 15, alignItems: 'center', marginTop: 10
   },
-  createButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  }
+  createButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
 });
