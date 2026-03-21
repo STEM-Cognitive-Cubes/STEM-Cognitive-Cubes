@@ -12,6 +12,9 @@ android/app/debug.keystore
 .android/
 ios/Pods/
 
-# Firebase credentials — never commit these
+# Ignore root-level Firebase config copies.
+# Keep native Android/iOS Firebase config files tracked for team EAS builds.
 google-services.json
 GoogleService-Info.plist
+!android/app/google-services.json
+!ios/STEMCognitiveCubes/GoogleService-Info.plist

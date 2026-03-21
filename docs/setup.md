@@ -61,10 +61,20 @@ powershell -ExecutionPolicy Bypass -Command "eas login"
 ```
 
 5) Firebase config files (shared project)
-This repo already includes the Android config file:
-- google-services.json
+This project has native `android/` + `ios/` folders, so Gradle/Xcode read Firebase files from native paths.
 
-Do NOT edit it unless Firebase config changes. If it changes, update the file in the repo.
+Required Android path:
+- `android/app/google-services.json`
+
+If you downloaded a fresh file from Firebase, place it there before building.
+PowerShell example:
+```powershell
+Copy-Item "C:\path\to\google-services.json" "android\app\google-services.json" -Force
+```
+
+Team-friendly approach:
+- Keep `android/app/google-services.json` tracked in this private repo so EAS remote builds always work for everyone.
+- If Firebase Android app config changes, replace this file and commit it.
 
 6) Build the Android dev client (APK)
 ```
@@ -97,11 +107,19 @@ IOS SETUP (macOS only)
 Prereqs
 - macOS + Xcode
 - Apple Developer account
-- GoogleService-Info.plist in project root (already added; do not change unless Firebase config changes)
+- `ios/STEMCognitiveCubes/GoogleService-Info.plist`
 
 1) Add iOS Firebase config file
-Place this file in project root:
-- GoogleService-Info.plist
+Place this file at:
+- `ios/STEMCognitiveCubes/GoogleService-Info.plist`
+
+If you downloaded a fresh file from Firebase:
+```bash
+cp /path/to/GoogleService-Info.plist ios/STEMCognitiveCubes/GoogleService-Info.plist
+```
+
+Team-friendly approach:
+- Keep this file tracked in the repo for consistent team/EAS builds.
 
 2) Build the iOS dev client
 ```
