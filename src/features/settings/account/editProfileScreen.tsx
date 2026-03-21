@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,31 +9,36 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type RootStackParamList = {
-  Account: undefined;
-};
+import type { RootStackParamList } from '../../../navigation/types';
+import { saveAccountProfile, useAccountProfile } from './accountService';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
 
-interface EditProfileScreenProps {
-  navigation?: NavigationProp;
-}
-
-const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => {
-  const [fullName, setFullName] = useState('John Doe');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [phone, setPhone] = useState('+1 (555) 123-4567');
+const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const { profile, loading } = useAccountProfile();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCancel = () => {
-    navigation?.goBack();
-  };
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+
+    setFullName(profile.fullName);
+    setEmail(profile.email);
+    setPhone(profile.phone);
+    setDateOfBirth(profile.dateOfBirth);
+  }, [profile]);
+
   const handleSaveChanges = async () => {
-    // Validation
     if (!fullName.trim()) {
       Alert.alert('Error', 'Full name is required');
       return;
@@ -46,127 +51,167 @@ const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => 
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await saveAccountProfile({
+        fullName,
+        email,
+        phone,
+        dateOfBirth,
+      });
+
+      Alert.alert('Success', 'Profile updated successfully.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
       Alert.alert(
-        'Success',
-        'Profile updated successfully.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              console.log('Profile updated');
-              navigation?.goBack();
-            },
-          },
-        ]
+        'Unable to save profile',
+        error instanceof Error ? error.message : 'Please try again.'
       );
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
   };
- return (
+
+  return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation?.goBack()}
+          onPress={() => navigation.goBack()}
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Profile</Text>
-        <View style={{ width: 40 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Avatar Section */}
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>DJ</Text>
+            <Text style={styles.avatarText}>{profile?.initials ?? '??'}</Text>
           </View>
           <TouchableOpacity style={styles.editAvatarButton} activeOpacity={0.8}>
             <Ionicons name="camera" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
-  {/* Form Section */}
-        <View style={styles.formContainer}>
-          {/* Full Name */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name</Text>
-            <View style={styles.inputContainer}>
-              <Ionicons name="person-outline" size={20} color="#6B7280" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                value={fullName}
-                onChangeText={setFullName}
-                placeholder="Enter your full name"
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
+        {loading && !profile ? (
+          <View style={styles.loadingState}>
+            <ActivityIndicator size="small" color="#9333EA" />
+            <Text style={styles.loadingText}>Loading profile...</Text>
           </View>
+        ) : (
+          <>
+            <View style={styles.formContainer}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Full Name</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons
+                    name="person-outline"
+                    size={20}
+                    color="#6B7280"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={fullName}
+                    onChangeText={setFullName}
+                    placeholder="Enter your full name"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
+              </View>
 
-          {/* Email */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <View style={styles.inputContainer}>
-              <MaterialIcons name="email" size={20} color="#6B7280" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email</Text>
+                <View style={styles.inputContainer}>
+                  <MaterialIcons
+                    name="email"
+                    size={20}
+                    color="#6B7280"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Phone</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons
+                    name="call-outline"
+                    size={20}
+                    color="#6B7280"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setPhone}
+                    placeholder="Enter your phone number"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="phone-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Date of Birth</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons
+                    name="calendar-outline"
+                    size={20}
+                    color="#6B7280"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={dateOfBirth}
+                    onChangeText={setDateOfBirth}
+                    placeholder="DD/MM/YYYY"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
+              </View>
             </View>
-          </View>
 
-          {/* Phone */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Phone</Text>
-            <View style={styles.inputContainer}>
-              <Ionicons name="call-outline" size={20} color="#6B7280" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="Enter your phone number"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="phone-pad"
-              />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleSaveChanges}
+                activeOpacity={0.8}
+                disabled={isLoading}
+              >
+                <Text style={styles.saveButtonText}>
+                  {isLoading ? 'Saving...' : 'Save Changes'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.7}
+                disabled={isLoading}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-        </View>
-
-{/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSaveChanges}
-            activeOpacity={0.8}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Text style={styles.saveButtonText}>Saving...</Text>
-            ) : (
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={handleCancel}
-            activeOpacity={0.7}
-            disabled={isLoading}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -200,6 +245,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  headerSpacer: {
+    width: 40,
   },
   content: {
     flex: 1,
@@ -241,11 +289,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 3,
     borderColor: '#FFFFFF',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+  },
+  loadingState: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 8,
+    color: '#6B7280',
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -293,11 +344,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
-    elevation: 3,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
   },
   saveButtonText: {
     fontSize: 16,

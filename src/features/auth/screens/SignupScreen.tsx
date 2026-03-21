@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
@@ -13,6 +13,7 @@ import AuthSuccessModal from "../components/AuthSuccessModal";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../navigation/types";
 import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
+import { ensureAccountProfile } from "../../settings/account/accountService";
 
 type SignupScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
@@ -37,11 +38,12 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       return;
     }
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(result.user, { displayName: fullName.trim() });
+      await ensureAccountProfile(result.user, { fullName });
       setIsSuccessOpen(true);
     } catch (error) {
       setAuthError(getFirebaseAuthErrorMessage(error, "Sign up failed. Try again."));
-      // eslint-disable-next-line no-console
       console.warn("Email signup failed:", error);
     }
   };

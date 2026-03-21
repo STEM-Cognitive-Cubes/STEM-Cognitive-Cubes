@@ -7,9 +7,12 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { useSupportOverview } from './helpSupportService';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -26,6 +29,8 @@ interface HelpSupportScreenProps {
 }
 
 const HelpSupportScreen: React.FC<HelpSupportScreenProps> = ({ navigation }) => {
+  const { openTickets, latestTicket, loading, error } = useSupportOverview();
+
   const helpOptions = [
     {
       id: '1',
@@ -76,7 +81,6 @@ const HelpSupportScreen: React.FC<HelpSupportScreenProps> = ({ navigation }) => 
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
 
-      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
@@ -89,22 +93,42 @@ const HelpSupportScreen: React.FC<HelpSupportScreenProps> = ({ navigation }) => 
         <View style={styles.placeholder} />
       </View>
 
-      {/* Content */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Welcome Message */}
         <View style={styles.welcomeCard}>
           <Ionicons name="help-circle" size={48} color="#9333EA" />
           <Text style={styles.welcomeTitle}>Hello! How can we help?</Text>
           <Text style={styles.welcomeSubtitle}>
-            We're here to help you get the most out of your STEM Cognitive Cubes experience
+            We&apos;re here to help you get the most out of your STEM Cognitive Cubes experience
           </Text>
         </View>
 
-        {/* Self Service Section */}
+        <View style={styles.statusCard}>
+          {loading ? (
+            <View style={styles.statusLoading}>
+              <ActivityIndicator size="small" color="#9333EA" />
+              <Text style={styles.statusText}>Loading support activity...</Text>
+            </View>
+          ) : error ? (
+            <Text style={styles.statusError}>{error}</Text>
+          ) : (
+            <>
+              <Text style={styles.statusTitle}>Support Activity</Text>
+              <Text style={styles.statusValue}>
+                {openTickets} open {openTickets === 1 ? 'request' : 'requests'}
+              </Text>
+              <Text style={styles.statusText}>
+                {latestTicket
+                  ? `Latest request: ${latestTicket.subject} (${latestTicket.createdAtLabel})`
+                  : 'No support requests yet. Chat or email us any time.'}
+              </Text>
+            </>
+          )}
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>SELF SERVICE</Text>
 
@@ -124,7 +148,6 @@ const HelpSupportScreen: React.FC<HelpSupportScreenProps> = ({ navigation }) => 
           </TouchableOpacity>
         </View>
 
-        {/* Contact Us Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CONTACT US</Text>
 
@@ -197,7 +220,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -216,6 +239,39 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  statusCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+  },
+  statusLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#6B7280',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  statusValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 6,
+  },
+  statusText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginLeft: 8,
+    lineHeight: 20,
+  },
+  statusError: {
+    color: '#B91C1C',
+    fontSize: 14,
   },
   section: {
     marginBottom: 24,
@@ -261,24 +317,6 @@ const styles = StyleSheet.create({
   optionSubtitle: {
     fontSize: 13,
     color: '#6B7280',
-  },
-  quickLinksContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  quickLinkCard: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
   },
 });
 

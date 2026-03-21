@@ -18,6 +18,7 @@ import type { RootStackParamList } from "../../../navigation/types";
 import { auth } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
 import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
+import { ensureAccountProfile } from "../../settings/account/accountService";
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -64,8 +65,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           "Login failed. Check your email and password."
         )
       );
-      // Keep a console trail for debugging (device logs / Metro).
-      // eslint-disable-next-line no-console
       console.warn("Email login failed:", error);
     }
   };
@@ -86,6 +85,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       }
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
+      await ensureAccountProfile(result.user, {
+        fullName: result.user.displayName ?? userInfo.user?.name ?? undefined,
+      });
       setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
       setIsLoginSuccess(true);
     } catch (rawError) {

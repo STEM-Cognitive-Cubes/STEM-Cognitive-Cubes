@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { logoutCurrentUser } from './account/accountService';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -174,7 +175,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
 
 const handleNavigation = (screen: keyof RootStackParamList) => {
   if (screen === 'Logout') {
-    // Show logout confirmation
     Alert.alert(
       'Log Out?',
       'Are you sure you want to sign out? You will need to login again to access your session history.',
@@ -186,27 +186,26 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
         {
           text: 'Yes, log Out',
           style: 'destructive',
-          onPress: () => {
-            // Perform logout
-            console.log('User logged out');
-
-            // Show success message
-            Alert.alert(
-              'Logged Out Successfully',
-              '',
-              [
+          onPress: async () => {
+            try {
+              await logoutCurrentUser();
+              Alert.alert('Logged Out Successfully', '', [
                 {
                   text: 'Close',
                   onPress: () => {
-                    // Navigate to login screen or home
                     navigation?.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
+                      index: 0,
+                      routes: [{ name: 'Login' }],
                     });
                   },
                 },
-              ]
-            );
+              ]);
+            } catch (error) {
+              Alert.alert(
+                'Unable to log out',
+                error instanceof Error ? error.message : 'Please try again.'
+              );
+            }
           },
         },
       ]
@@ -215,14 +214,6 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
     console.log(`Navigate to ${screen}`);
     navigation?.navigate(screen);
   }
-};
-
-const handleBottomNavigation = (screen: keyof RootStackParamList) => {
-  if (screen === 'Settings') {
-    // Already on settings -> do nothing
-    return;
-  }
-  navigation?.navigate(screen);
 };
 
 const renderIcon = (iconType: 'Ionicons' | 'MaterialIcons', iconName: string, color: string) => {
@@ -457,8 +448,6 @@ const styles = StyleSheet.create({
 });
 
 export default SettingsScreen;
-
-
 
 
 
