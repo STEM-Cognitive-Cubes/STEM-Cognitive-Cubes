@@ -45,6 +45,10 @@ import SummaryDetailScreen from './src/features/summary/SummaryDetailScreen';
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
 import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
 
+// History screens
+import SessionHistoryScreen from './src/features/history/screens/SessionHistoryScreen';
+import SessionDetailScreen from './src/features/history/screens/SessionDetailScreen';
+
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
@@ -158,6 +162,8 @@ export default function App() {
               name="SummaryDetail"
               component={SummaryDetailScreen}
             />
+            <Stack.Screen name="SessionHistory" component={SessionHistoryScreen} />
+            <Stack.Screen name="SessionDetail" component={SessionDetailScreen} />
             <Stack.Screen name="AddChild" component={AddChildScreen} />
             <Stack.Screen
               name="NotificationPreferencesScreen"
