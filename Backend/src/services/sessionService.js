@@ -16,7 +16,17 @@ const sessionService = {
     // Calculate insights automatically
     const insights = calculateInsights(sessionData);
     
-    return { id: sessionRef.id, ...sessionDoc, insights };
+    // Save insights to Firestore
+    const insightRef = db.collection('insights').doc();
+    const insightDoc = {
+      childId,
+      sessionId: sessionRef.id,
+      ...insights,
+      createdAt: new Date().toISOString()
+    };
+    await insightRef.set(insightDoc);
+    
+    return { session: { id: sessionRef.id, ...sessionDoc }, insight: { id: insightRef.id, ...insightDoc } };
   }
 };
 
