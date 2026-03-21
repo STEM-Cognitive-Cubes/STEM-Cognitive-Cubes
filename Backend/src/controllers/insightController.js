@@ -50,7 +50,43 @@ const insightController = {
     }
   },
   getInsightSummary: async (req, res) => {
-    // pending
+    try {
+      const { childId } = req.params;
+      
+      const insightsSnapshot = await db.collection('insights')
+        .where('childId', '==', childId)
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get();
+        
+      if (insightsSnapshot.empty) {
+        return res.status(200).json({ message: 'No insights available yet' });
+      }
+      
+      const insights = insightsSnapshot.docs.map(doc => doc.data());
+      
+      const totals = insights.reduce((acc, curr) => ({
+        cognitive: acc.cognitive + curr.cognitive,
+        problemSolving: acc.problemSolving + curr.problemSolving,
+        creativity: acc.creativity + curr.creativity,
+        overall: acc.overall + curr.overall
+      }), { cognitive: 0, problemSolving: 0, creativity: 0, overall: 0 });
+      
+      const count = insights.length;
+      const averageSummary = {
+        cognitive: parseFloat((totals.cognitive / count).toFixed(2)),
+        problemSolving: parseFloat((totals.problemSolving / count).toFixed(2)),
+        creativity: parseFloat((totals.creativity / count).toFixed(2)),
+        overall: parseFloat((totals.overall / count).toFixed(2)),
+        sessionCount: count,
+        latestSummary: insights[0].summary
+      };
+
+      return res.status(200).json(averageSummary);
+    } catch (error) {
+      console.error('Error fetching insight summary:', error);
+      return res.status(500).json({ error: 'Failed to fetch insight summary' });
+    }
   }
 };
 
