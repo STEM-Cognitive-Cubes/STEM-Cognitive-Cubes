@@ -1,5 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Animated, Pressable, Text, StyleSheet, View, Image } from "react-native";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../../../services/firebase";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
@@ -11,6 +13,18 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigation/types";
 
+const getDisplayFirstName = () => {
+  const displayName = auth.currentUser?.displayName?.trim();
+  if (displayName) {
+    return displayName.split(/\s+/)[0];
+  }
+  const email = auth.currentUser?.email?.trim();
+  if (email) {
+    return email.split("@")[0];
+  }
+  return "User";
+};
+
 export default function HomeScreen() {
   const fabOpacity = useRef(new Animated.Value(1)).current;
   const fabTranslateY = useRef(new Animated.Value(0)).current;
@@ -20,6 +34,46 @@ export default function HomeScreen() {
 
   const lastScrollY = useRef(0);
   const isHidden = useRef(false);
+
+  const [parentName, setParentName] = useState(getDisplayFirstName());
+
+  useEffect(() => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      setParentName(getDisplayFirstName());
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      doc(db, "parents", uid),
+      (parentDoc) => {
+        if (!parentDoc.exists()) {
+          setParentName(getDisplayFirstName());
+          return;
+        }
+
+        const data = parentDoc.data();
+        console.log("HomeScreen Parent Data:", data);
+        const firstName = typeof data.firstName === "string" ? data.firstName.trim() : "";
+        const fullName = typeof data.fullName === "string" ? data.fullName.trim() : "";
+        if (firstName) {
+          setParentName(firstName);
+          return;
+        }
+        if (fullName) {
+          setParentName(fullName.split(/\s+/)[0]);
+          return;
+        }
+        setParentName(getDisplayFirstName());
+      },
+      (error) => {
+        console.error("HomeScreen onSnapshot error:", error);
+        setParentName(getDisplayFirstName());
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const hideFab = () => {
     if (isHidden.current) return;
@@ -96,7 +150,7 @@ export default function HomeScreen() {
             <View style={styles.headerRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.helloText}>
-                  Hello, <Text style={styles.nameText}>User!</Text>
+                  Hello, <Text style={styles.nameText}>{parentName}!</Text>
                 </Text>
                 <Text style={styles.welcomeText}>Ready to track creativity?</Text>
               </View>
