@@ -53,9 +53,28 @@ API_BASE_URL=http://localhost:5001/blokc-13a99/us-central1
 For a physical Android device, `localhost` will not work. Use your machine IP instead.
 
 ## Deployment
-- Deploy the chatbot function:
-  `npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory`
-- Then set `API_BASE_URL` in your app environment to the deployed function base URL.
+- Deploy all functions:
+  `npx firebase-tools deploy --only functions`
+- The hosted function base URL is:
+
+```text
+https://us-central1-blokc-13a99.cloudfunctions.net
+```
+
+- Build the app against that hosted backend:
+
+```powershell
+$env:API_BASE_URL="https://us-central1-blokc-13a99.cloudfunctions.net"
+npx eas-cli build -p android --profile development
+```
+
+- Android EAS builds also require the real Firebase config file at:
+
+```text
+android/app/google-services.json
+```
+
+- Do not use `google-services.json.example` for builds.
 
 ## Seed content included
 - Hive connectivity

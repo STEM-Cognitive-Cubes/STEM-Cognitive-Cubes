@@ -1,42 +1,30 @@
 # Chatbot Teammate Setup
 
-This guide is for teammates who pull `feature/bot-screen-finalized` and need to run the chatbot locally.
+This guide is for teammates who pull `feature/bot-screen-finalized` and need to run or rebuild the chatbot safely.
 
-## What this setup gives you
-- The existing mobile chatbot UI in the app
-- A local Firebase Functions backend
-- Firestore-backed chatbot history and product knowledge
+## What this branch includes
+- The in-app chatbot UI
+- Firebase Functions backend for `chatbot` and `chatbotHistory`
+- Firestore-backed chat history and product knowledge
 - Gemini as the model provider
+- Hosted Firebase deployment support for phone testing through EAS
 
 ## Prerequisites
-- Node.js 20 is recommended
+- Node.js 20
 - `npm`
-- A Firebase login that can access project `blokc-13a99`
-- A Google / Gemini API key with the Generative Language API enabled
-- Phone and laptop on the same Wi-Fi if testing on a physical device
+- Access to Firebase project `blokc-13a99`
+- Access to the Gemini key or permission to reuse the existing Firebase secret
+- If building Android natively, the real Firebase Android config file for `com.blokc.app`
 
 ## Branch
-Checkout the chatbot branch:
-
 ```powershell
 git fetch origin
 git switch feature/bot-screen-finalized
-```
-
-## Install dependencies
-Project root:
-
-```powershell
 npm install
-```
-
-Functions dependencies:
-
-```powershell
 npm run functions:install
 ```
 
-## Firebase login
+## Firebase and Gemini setup
 If Firebase CLI is not installed globally, use `npx firebase-tools ...`.
 
 Login if needed:
@@ -45,74 +33,61 @@ Login if needed:
 npx firebase-tools login
 ```
 
-## Gemini key setup
-1. Open Vertex AI Studio / Google AI Studio.
-2. Create or copy a Gemini API key.
-3. Make sure `Generative Language API` is enabled for the Google project being used.
-
-Store the key in Firebase Secret Manager:
+Set the Gemini key only if it does not already exist in project `blokc-13a99`:
 
 ```powershell
 npx firebase-tools functions:secrets:set GEMINI_API_KEY
-```
-
-Set the model too:
-
-```powershell
 npx firebase-tools functions:secrets:set GEMINI_MODEL
 ```
 
-Suggested value:
+Suggested model:
 
 ```text
 gemini-2.5-flash
 ```
 
-## Seed chatbot knowledge
-Run:
+Quick check:
+
+```powershell
+npx firebase-tools functions:secrets:access GEMINI_MODEL
+```
+
+## Firestore seed data
+Seed the chatbot knowledge documents once:
 
 ```powershell
 npm run functions:seed-knowledge
 ```
 
-This creates the base `botKnowledge` documents in Firestore.
+## Option 1: Local backend testing
+Use this when testing from a laptop or a phone on the same Wi-Fi.
 
-## Start the backend
-Run the Firebase Functions emulator:
+Start the backend:
 
 ```powershell
 npx firebase-tools emulators:start --only functions
 ```
 
-Keep this terminal running.
+Then start Expo in a second terminal.
 
-## Start the app
-Open a second terminal.
-
-### If using Android emulator or local machine testing
-Set:
+Local machine or Android emulator:
 
 ```powershell
 $env:API_BASE_URL="http://localhost:5001/blokc-13a99/us-central1"
-```
-
-Then run:
-
-```powershell
 npx expo start --clear
 ```
 
-### If using a physical phone
-Find your laptop IP:
+Physical phone:
 
 ```powershell
 ipconfig
 ```
 
-Use the Wi-Fi IPv4 address and set:
+Use the Wi-Fi IPv4 address:
 
 ```powershell
 $env:API_BASE_URL="http://YOUR_LOCAL_IP:5001/blokc-13a99/us-central1"
+npx expo start --clear
 ```
 
 Example:
@@ -121,50 +96,74 @@ Example:
 $env:API_BASE_URL="http://192.168.1.251:5001/blokc-13a99/us-central1"
 ```
 
-Then run:
+## Option 2: Hosted backend plus EAS build
+Use this for a proper phone build without keeping the Firebase emulator running.
 
+### Deploy Firebase Functions
 ```powershell
-npx expo start --clear
+npx firebase-tools deploy --only functions
 ```
 
-## Important notes for phone testing
-- The phone must be on the same Wi-Fi as the laptop.
-- The Firebase emulator must still be running.
-- Android local testing uses plain HTTP to the emulator.
-- If native Android changes were pulled and not already built into the installed app, rebuild the Android app.
+Hosted base URL:
+
+```text
+https://us-central1-blokc-13a99.cloudfunctions.net
+```
+
+### Android Firebase config file
+The Android build needs the real Firebase config file, not the example file.
+
+Download `google-services.json` from Firebase Console for Android package:
+
+```text
+com.blokc.app
+```
+
+Place it here:
+
+```text
+android/app/google-services.json
+```
+
+### Build with EAS
+```powershell
+$env:API_BASE_URL="https://us-central1-blokc-13a99.cloudfunctions.net"
+npx eas-cli build -p android --profile development
+```
+
+Install the generated APK or dev build on the phone and test. The chatbot should work without the local Firebase emulator.
+
+## Important Android build notes
+- `android/gradle.properties` uses `newArchEnabled=false` on this branch for EAS build compatibility.
+- `.easignore` excludes local Android build artifacts and `.merge-test-worktree/` from EAS uploads.
+- Do not use `google-services.json.example` for builds. It is only a placeholder.
 
 ## Expected working flow
 1. Open the app.
 2. Go to the home screen.
 3. Tap the floating bot.
 4. Skip or complete the intro if shown.
-5. Send a message like:
-
-```text
-How do I connect to Hive?
-```
-
-6. The bot should respond with a Gemini-generated answer.
+5. Send a message like `How do I connect to Hive?`
+6. The bot should return a Gemini-generated answer.
 
 ## Common issues
 
 ### `The assistant server is not reachable from this device`
 - Check `API_BASE_URL`
-- Check phone/laptop Wi-Fi
-- Check that the emulator is running
-- Check that Firebase Functions is listening on `0.0.0.0:5001`
+- Check phone and laptop Wi-Fi
+- If using local backend, make sure Firebase Functions emulator is running
 
 ### `The assistant is unavailable right now`
-- Check the Firebase emulator terminal
+- Check Firebase Functions logs
 - Usually this means the provider request failed
 
 ### `Generative Language API ... is disabled`
-- Enable it here:
+- Enable:
   `https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=897405902939`
 
-### `insufficient_quota` or billing errors
-- The Gemini / Google project billing or quota is the blocker
-- Fix that in Google Cloud before retesting
+### `File google-services.json is missing`
+- Download the real Android Firebase config from Firebase Console
+- Put it in `android/app/google-services.json`
 
 ### `firebase is not recognized`
 - Use:
