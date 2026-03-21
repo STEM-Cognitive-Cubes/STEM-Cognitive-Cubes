@@ -8,6 +8,10 @@ app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 5002;
 
+// Routes
+const sessionRoutes = require('./src/routes/sessionRoutes');
+app.use('/api/session', sessionRoutes);
+
 app.get('/', (req, res) => {
   res.send('Insight Engine Backend API is running');
 });
