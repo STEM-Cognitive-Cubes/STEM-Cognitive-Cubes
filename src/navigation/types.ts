@@ -34,7 +34,7 @@ export type RootStackParamList = {
   SessionDetail: { sessionId: string };
   // Summary feature
   WeeklySummary: undefined;
-  SummaryDetail: { sessionId: string };
+  SummaryDetail: { weekData: any };
   // Insights feature
   Insights: undefined;
   Recommendations: { category: string };
