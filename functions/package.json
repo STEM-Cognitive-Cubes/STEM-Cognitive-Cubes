@@ -1,0 +1,17 @@
+{
+  "name": "stem-cognitive-cubes-functions",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "serve": "npx firebase-tools emulators:start --only functions",
+    "deploy": "npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory",
+    "seed:knowledge": "node seedKnowledge.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.0.1"
+  }
+}

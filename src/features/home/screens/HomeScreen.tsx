@@ -297,7 +297,7 @@ export default function HomeScreen() {
         >
           <BotBubbleFab
             size={66}
-            onPress={() => console.log("Bot tapped")}
+            onPress={() => navigation.navigate("Bot")}
           />
         </Animated.View>
       </View>
