@@ -38,8 +38,8 @@ export type RootStackParamList = {
   EmailScreen: undefined;
   ChatScreen: undefined;
   UserGuideScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
   Logout: undefined;
   FAQsScreen: undefined;
