@@ -143,6 +143,98 @@ const insightController = {
       console.error('Error generating report:', error);
       return res.status(500).json({ error: 'Failed to generate report' });
     }
+  },
+
+  getHistoricWeeks: async (req, res) => {
+    try {
+      const { childId } = req.params;
+      
+      const [sessionsSnapshot, insightsSnapshot] = await Promise.all([
+        db.collection('playSessions').where('childId', '==', childId).get(),
+        db.collection('insights').where('childId', '==', childId).get()
+      ]);
+      
+      if (sessionsSnapshot.empty) return res.status(200).json([]);
+      
+      const insightsMap = {};
+      insightsSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        insightsMap[data.sessionId] = data;
+      });
+
+      const sessions = sessionsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return { id: doc.id, ...data, insight: insightsMap[doc.id] };
+      }).filter(s => s.insight);
+
+      const getWeekNumber = (d) => {
+        const date = new Date(d);
+        date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
+        const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+        return Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+      };
+
+      const weeksMap = {};
+      sessions.forEach(session => {
+        const date = new Date(session.createdAt);
+        const viewWeekStr = `Week ${getWeekNumber(date)}, ${date.getFullYear()}`;
+        if (!weeksMap[viewWeekStr]) {
+          weeksMap[viewWeekStr] = {
+            id: viewWeekStr, title: viewWeekStr, startDate: date, sessions: []
+          };
+        }
+        weeksMap[viewWeekStr].sessions.push(session);
+        if (date < weeksMap[viewWeekStr].startDate) {
+          weeksMap[viewWeekStr].startDate = date;
+        }
+      });
+
+      const weeksArray = Object.values(weeksMap).sort((a,b) => b.startDate - a.startDate);
+
+      const result = weeksArray.map(week => {
+        let totalDuration = 0, totalBlocks = 0, sumScore = 0, sumFocus = 0;
+        const focusData = [];
+        const blocksUsedMap = {};
+
+        week.sessions.forEach(s => {
+          totalDuration += s.duration || 0;
+          totalBlocks += s.cubesConnected ? s.cubesConnected.length : 0;
+          sumFocus += s.insight.problemSolving || 0;
+          sumScore += s.insight.overall || 0;
+          
+          const dayName = new Date(s.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
+          focusData.push({ day: dayName, value: s.insight.problemSolving || 0 });
+
+          if (s.cubesConnected) {
+            s.cubesConnected.forEach(c => {
+              if (!blocksUsedMap[c]) blocksUsedMap[c] = 0;
+              blocksUsedMap[c]++;
+            });
+          }
+        });
+
+        const count = week.sessions.length;
+        const blocksUsedArray = Object.keys(blocksUsedMap).map(k => ({
+          id: k, name: `Cube ${k}`, count: blocksUsedMap[k], color: '#B860FF'
+        }));
+
+        let avgFocus = sumFocus / count;
+        let focusLevel = avgFocus > 8 ? "High" : avgFocus > 5 ? "Med" : "Low";
+        let mainInsight = count > 0 ? week.sessions[week.sessions.length - 1].insight.summary : "No insight computed.";
+
+        return {
+          id: week.id, title: week.title, dateLabel: `${week.startDate.toLocaleDateString()}`,
+          durationMinutes: Math.floor(totalDuration / 60) + "m", blocks: totalBlocks,
+          focusLevel, score: (sumScore / count).toFixed(1), aiInsight: mainInsight,
+          focusData, blocksUsed: blocksUsedArray
+        };
+      });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error('Error fetching historic weeks:', error);
+      return res.status(500).json({ error: 'Failed to fetch historic weeks' });
+    }
   }
 };
 
