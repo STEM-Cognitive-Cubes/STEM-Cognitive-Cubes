@@ -313,16 +313,29 @@ export default function HomeScreen() {
                   style={[
                     styles.overlayIcon,
                     {
-                      width: isCompactPhone ? 54 : 64,
-                      height: isCompactPhone ? 54 : 64,
+                      width: isCompactPhone ? 50 : 64,
+                      height: isCompactPhone ? 50 : 64,
+                      top: isCompactPhone ? 4 : 8,
                       left: isCompactPhone ? 10 : 16,
                     },
                   ]}
                   resizeMode="contain"
                 />
-                <View style={styles.cardTextBlock}>
-                  <Text style={[styles.cardTitle, { fontSize: isCompactPhone ? 18 : 25 }]}>History</Text>
-                  <Text style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 14 : 16 }]}>View past builds</Text>
+                <View
+                  style={[
+                    styles.cardTextBlock,
+                    {
+                      paddingTop: isCompactPhone ? 20 : 16,
+                      transform: [{ translateY: isCompactPhone ? 10 : 0 }],
+                    },
+                  ]}
+                >
+                  <Text numberOfLines={1} style={[styles.cardTitle, { fontSize: isCompactPhone ? 16 : 25 }]}>
+                    History
+                  </Text>
+                  <Text numberOfLines={2} style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 12 : 16, lineHeight: isCompactPhone ? 16 : 20 }]}>
+                    View past builds
+                  </Text>
                 </View>
               </View>
             </Pressable>
@@ -339,17 +352,29 @@ export default function HomeScreen() {
                   style={[
                     styles.overlayIconLarge,
                     {
-                      width: isCompactPhone ? 76 : 102,
-                      height: isCompactPhone ? 76 : 102,
-                      top: isCompactPhone ? -4 : -14,
+                      width: isCompactPhone ? 60 : 102,
+                      height: isCompactPhone ? 60 : 102,
+                      top: isCompactPhone ? -2 : -14,
                       left: isCompactPhone ? 10 : 14,
                     },
                   ]}
                   resizeMode="contain"
                 />
-                <View style={styles.cardTextBlock}>
-                  <Text style={[styles.cardTitle, { fontSize: isCompactPhone ? 18 : 25 }]}>Insights</Text>
-                  <Text style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 14 : 16 }]}>New suggestions</Text>
+                <View
+                  style={[
+                    styles.cardTextBlock,
+                    {
+                      paddingTop: isCompactPhone ? 20 : 16,
+                      transform: [{ translateY: isCompactPhone ? 10 : 0 }],
+                    },
+                  ]}
+                >
+                  <Text numberOfLines={1} style={[styles.cardTitle, { fontSize: isCompactPhone ? 16 : 25 }]}>
+                    Insights
+                  </Text>
+                  <Text numberOfLines={2} style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 12 : 16, lineHeight: isCompactPhone ? 16 : 20 }]}>
+                    New suggestions
+                  </Text>
                 </View>
               </View>
             </Pressable>
@@ -431,10 +456,10 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 25, fontWeight: "900", color: "#FFFFFF" },
   cardSubtitle: { marginTop: 2, fontSize: 16, fontWeight: "700", color: "rgba(255,255,255,0.85)" },
   svgCardWrap: { flex: 1, height: 140 },
-  cardOverlay: { position: "absolute", inset: 0, padding: 20, justifyContent: "space-between" },
+  cardOverlay: { position: "absolute", inset: 0, padding: 20, justifyContent: "flex-end" },
   overlayIcon: { width: 64, height: 64, opacity: 0.95, position: "absolute", top: 8, left: 16 },
   overlayIconLarge: { width: 102, height: 102, opacity: 0.95, position: "absolute", top: -14, left: 14 },
-  cardTextBlock: { marginTop: "auto", maxWidth: "88%" },
+  cardTextBlock: { marginTop: "auto", width: "100%", paddingRight: 6 },
   sessionCard: { marginTop: -16, marginHorizontal: 20, borderRadius: 22, backgroundColor: "#7E89B8", padding: 24, overflow: "hidden", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   statusPill: { alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(255,255,255,0.25)", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999 },
   statusDot: { width: 12, height: 12, borderRadius: 99, backgroundColor: "#35E06F" },
