@@ -1,5 +1,7 @@
 node_modules/
 .expo/
+.firebase-config/
+.firebase/
 .env
 .env.*
 !.env.example
@@ -12,6 +14,7 @@ android/app/debug.keystore
 .android/
 ios/Pods/
 firebase-debug.log
+firestore-debug.log
 
 # Firebase credentials — never commit these
 google-services.json
