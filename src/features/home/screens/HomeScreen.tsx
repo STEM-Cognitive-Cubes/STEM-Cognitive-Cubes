@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Animated, Pressable, Text, StyleSheet, View, Image } from "react-native";
+import { Animated, Pressable, Text, StyleSheet, View, Image, useWindowDimensions } from "react-native";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../../../services/firebase";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -26,6 +26,9 @@ const getDisplayFirstName = () => {
 };
 
 export default function HomeScreen() {
+  const { width, height } = useWindowDimensions();
+  const isCompactPhone = width <= 390;
+  const isSmallPhone = width <= 360 || height <= 760;
   const fabOpacity = useRef(new Animated.Value(1)).current;
   const fabTranslateY = useRef(new Animated.Value(0)).current;
 
@@ -145,7 +148,13 @@ export default function HomeScreen() {
           {/*Hero Section with Gradient */}
           <LinearGradient
             colors={["#cf92fe", "#A24BFF", "#B860FF"]}
-            style={styles.hero}
+            style={[
+              styles.hero,
+              {
+                height: isSmallPhone ? 392 : 420,
+                paddingTop: isSmallPhone ? 58 : 66,
+              },
+            ]}
           >
             <View style={styles.headerRow}>
               <View style={{ flex: 1 }}>
@@ -161,12 +170,25 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <View style={styles.heroContentRow}>
+            <View
+              style={[
+                styles.heroContentRow,
+                { marginTop: isSmallPhone ? 16 : 22 },
+              ]}
+            >
               {/* Mascot Asset */}
               <View style={styles.mascotContainer}>
                 <Image
                   source={require("../../../assets/mascot/Home_Mascot.png")}
-                  style={styles.mascotImg}
+                  style={[
+                    styles.mascotImg,
+                    {
+                      width: isSmallPhone ? 300 : 340,
+                      height: isSmallPhone ? 300 : 340,
+                      marginTop: isSmallPhone ? 44 : 60,
+                      marginLeft: isSmallPhone ? -88 : -99,
+                    },
+                  ]}
                   resizeMode="contain"
                 />
               </View>
@@ -178,13 +200,44 @@ export default function HomeScreen() {
               </View>
 
               {/* AI Insight Bubble */}
-              <View style={styles.bubbleWrapper}>
+              <View
+                style={[
+                  styles.bubbleWrapper,
+                  { marginTop: isSmallPhone ? 14 : 22 },
+                ]}
+              >
                 <View style={styles.bubbleGlow} />
-                <View style={styles.bubble}>
-                  <Text style={[styles.bubbleText, styles.bubbleHeadline]}>
+                <View
+                  style={[
+                    styles.bubble,
+                    {
+                      paddingVertical: isSmallPhone ? 14 : 18,
+                      paddingHorizontal: isSmallPhone ? 14 : 18,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.bubbleText,
+                      styles.bubbleHeadline,
+                      {
+                        fontSize: isSmallPhone ? 16 : 18,
+                        lineHeight: isSmallPhone ? 22 : 26,
+                      },
+                    ]}
+                  >
                     Your child enjoys complex builds.
                   </Text>
-                  <Text style={[styles.bubbleText, styles.bubbleBody]}>
+                  <Text
+                    style={[
+                      styles.bubbleText,
+                      styles.bubbleBody,
+                      {
+                        fontSize: isSmallPhone ? 14 : 15,
+                        lineHeight: isSmallPhone ? 19 : 20,
+                      },
+                    ]}
+                  >
                     Encourage this with drawing play.
                   </Text>
                 </View>
@@ -222,46 +275,88 @@ export default function HomeScreen() {
             </View>
           </LinearGradient>
 
-          <View style={styles.content}>
-            <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+          <View
+            style={[
+              styles.content,
+              { paddingTop: isSmallPhone ? 12 : 16 },
+            ]}
+          >
+            <Text
+              style={[
+                styles.quickActionsTitle,
+                { fontSize: isSmallPhone ? 22 : 25 },
+              ]}
+            >
+              Quick Actions
+            </Text>
           </View>
 
-          <View style={styles.quickRow}>
+          <View
+            style={[
+              styles.quickRow,
+              {
+                gap: isCompactPhone ? 14 : 25,
+                marginLeft: isCompactPhone ? 14 : 20,
+                marginRight: isCompactPhone ? 14 : 20,
+              },
+            ]}
+          >
             {/* History Card with SVG */}
-            <Pressable style={styles.svgCardWrap} onPress={() => navigation.navigate('History')}>
+            <Pressable
+              style={[styles.svgCardWrap, { height: isSmallPhone ? 126 : 140 }]}
+              onPress={() => navigation.navigate('History')}
+            >
               <HistoryCardSvg width="100%" height="100%" />
-              <View style={styles.cardOverlay}>
+              <View style={[styles.cardOverlay, { padding: isCompactPhone ? 14 : 20 }]}>
                 <Image
                   source={require("../../../assets/icons/history.png")}
-                  style={styles.overlayIcon}
+                  style={[
+                    styles.overlayIcon,
+                    {
+                      width: isCompactPhone ? 54 : 64,
+                      height: isCompactPhone ? 54 : 64,
+                      left: isCompactPhone ? 10 : 16,
+                    },
+                  ]}
                   resizeMode="contain"
                 />
                 <View style={styles.cardTextBlock}>
-                  <Text style={styles.cardTitle}>History</Text>
-                  <Text style={styles.cardSubtitle}>View past builds</Text>
+                  <Text style={[styles.cardTitle, { fontSize: isCompactPhone ? 18 : 25 }]}>History</Text>
+                  <Text style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 14 : 16 }]}>View past builds</Text>
                 </View>
               </View>
             </Pressable>
 
             {/* Insights Card with SVG */}
-            <Pressable style={styles.svgCardWrap} onPress={() => navigation.navigate('Insights')}>
+            <Pressable
+              style={[styles.svgCardWrap, { height: isSmallPhone ? 126 : 140 }]}
+              onPress={() => navigation.navigate('Insights')}
+            >
               <InsightsCardSvg width="100%" height="100%" />
-              <View style={styles.cardOverlay}>
+              <View style={[styles.cardOverlay, { padding: isCompactPhone ? 14 : 20 }]}>
                 <Image
                   source={require("../../../assets/icons/insights.png")}
-                  style={styles.overlayIconLarge}
+                  style={[
+                    styles.overlayIconLarge,
+                    {
+                      width: isCompactPhone ? 76 : 102,
+                      height: isCompactPhone ? 76 : 102,
+                      top: isCompactPhone ? -4 : -14,
+                      left: isCompactPhone ? 10 : 14,
+                    },
+                  ]}
                   resizeMode="contain"
                 />
                 <View style={styles.cardTextBlock}>
-                  <Text style={styles.cardTitle}>Insights</Text>
-                  <Text style={styles.cardSubtitle}>New suggestions</Text>
+                  <Text style={[styles.cardTitle, { fontSize: isCompactPhone ? 18 : 25 }]}>Insights</Text>
+                  <Text style={[styles.cardSubtitle, { fontSize: isCompactPhone ? 14 : 16 }]}>New suggestions</Text>
                 </View>
               </View>
             </Pressable>
           </View>
 
           {/* Start Session Integrated Card */}
-          <View style={styles.sessionCard}>
+          <View style={[styles.sessionCard, { marginTop: isSmallPhone ? -6 : -16 }]}>
             <View style={styles.statusPill}>
               <View style={styles.statusDot} />
               <Text style={styles.statusText}>Hive active</Text>
@@ -317,7 +412,7 @@ const styles = StyleSheet.create({
   bellButton: { width: 42, height: 42, backgroundColor: "#fff", borderRadius: 12, alignItems: "center", justifyContent: "center", position: "relative" },
   notificationDot: { width: 8, height: 8, borderRadius: 99, backgroundColor: "#FF2D55", position: "absolute", right: 8, top: 8 },
   content: { backgroundColor: "#fff", paddingHorizontal: 18, paddingTop: 16 },
-  quickActionsTitle: { fontSize: 25, fontWeight: "900", color: "#5064AC", marginTop: -30, marginBottom: 10, zIndex: 5 },
+  quickActionsTitle: { fontSize: 25, fontWeight: "900", color: "#5064AC", marginTop: 0, marginBottom: 10 },
   mascotImg: { width: 340, height: 340, marginTop: 60, marginLeft: -99 },
   heroContentRow: { flexDirection: "row", alignItems: "center", marginTop: 22, zIndex: 2 },
   mascotContainer: { width: 110, height: 110, justifyContent: "center", alignItems: "flex-start", overflow: "visible" },
@@ -339,7 +434,7 @@ const styles = StyleSheet.create({
   cardOverlay: { position: "absolute", inset: 0, padding: 20, justifyContent: "space-between" },
   overlayIcon: { width: 64, height: 64, opacity: 0.95, position: "absolute", top: 8, left: 16 },
   overlayIconLarge: { width: 102, height: 102, opacity: 0.95, position: "absolute", top: -14, left: 14 },
-  cardTextBlock: { marginTop: "auto" },
+  cardTextBlock: { marginTop: "auto", maxWidth: "88%" },
   sessionCard: { marginTop: -16, marginHorizontal: 20, borderRadius: 22, backgroundColor: "#7E89B8", padding: 24, overflow: "hidden", shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   statusPill: { alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(255,255,255,0.25)", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999 },
   statusDot: { width: 12, height: 12, borderRadius: 99, backgroundColor: "#35E06F" },
