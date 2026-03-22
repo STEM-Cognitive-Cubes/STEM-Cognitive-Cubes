@@ -1,15 +1,28 @@
+const { auth } = require('../config/firebase');
+
 const authMiddleware = {
-  verifyToken: (req, res, next) => {
-    // Basic mock for token verification
+  verifyToken: async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
     
-    // In a real app we would use admin.auth().verifyIdToken()
-    // For now we just pass through
-    req.user = { id: 'mock-user-id' };
-    next();
+    const token = authHeader.split(' ')[1];
+
+    // Development bypass for local emulator testing
+    if (process.env.NODE_ENV !== 'production' && token === 'mock-token-123') {
+      req.user = { id: 'mock-user-id' };
+      return next();
+    }
+
+    try {
+      const decodedToken = await auth.verifyIdToken(token);
+      req.user = decodedToken;
+      next();
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
   }
 };
 
