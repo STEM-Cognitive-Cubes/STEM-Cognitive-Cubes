@@ -12,7 +12,6 @@ type SessionDetailScreenProps = {
 };
 
 export default function SessionDetailScreen({
-  navigation,
   route,
 }: SessionDetailScreenProps) {
   const { sessionId } = route.params;
