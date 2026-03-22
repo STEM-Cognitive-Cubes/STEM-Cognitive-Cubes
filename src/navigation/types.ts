@@ -31,7 +31,6 @@ export type RootStackParamList = {
   StartSession: undefined;
   LiveSession: undefined;
   NotificationPreferencesScreen: undefined;
-  PrivacyControlsScreen: undefined;
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   CommunityScreen: undefined;
