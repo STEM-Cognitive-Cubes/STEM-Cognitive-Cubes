@@ -7,7 +7,7 @@
   },
   "scripts": {
     "serve": "npx firebase-tools emulators:start --only functions",
-    "deploy": "npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory",
+    "deploy": "npx firebase-tools deploy --only functions:chatbot,functions:chatbotHistory,functions:finalizeSession",
     "seed:knowledge": "node seedKnowledge.js"
   },
   "dependencies": {

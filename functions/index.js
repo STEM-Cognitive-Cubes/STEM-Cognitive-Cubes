@@ -450,3 +450,277 @@ exports.chatbot = onRequest(
     }
   }
 );
+
+function toFiniteNumber(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+}
+
+function toFiniteInteger(value, fallback = null) {
+  const numeric = toFiniteNumber(value);
+  if (numeric === null) {
+    return fallback;
+  }
+  return Math.trunc(numeric);
+}
+
+function normalizeEdgeEvent(rawEvent) {
+  const raw = rawEvent || {};
+  const type = cleanText(raw.type || raw.event).toLowerCase();
+  const t = toFiniteNumber(raw.t ?? raw.ts);
+  const cubeA = cleanText(raw.cubeA || raw.a);
+  const cubeB = cleanText(raw.cubeB || raw.b);
+  const faceA = toFiniteInteger(raw.faceA ?? raw.fa, 0);
+  const faceB = toFiniteInteger(raw.faceB ?? raw.fb, 0);
+
+  if (!type || (type !== "connect" && type !== "disconnect")) {
+    return null;
+  }
+
+  if (t === null || t < 0) {
+    return null;
+  }
+
+  if (!cubeA || !cubeB) {
+    return null;
+  }
+
+  return {
+    t,
+    type,
+    cubeA,
+    faceA: Math.max(0, faceA || 0),
+    cubeB,
+    faceB: Math.max(0, faceB || 0),
+  };
+}
+
+function normalizeEdgeEvents(rawEvents) {
+  const source = Array.isArray(rawEvents) ? rawEvents : [];
+  const normalized = [];
+  let invalidCount = 0;
+
+  for (const rawEvent of source) {
+    const event = normalizeEdgeEvent(rawEvent);
+    if (!event) {
+      invalidCount += 1;
+      continue;
+    }
+    normalized.push(event);
+  }
+
+  normalized.sort((a, b) => a.t - b.t);
+
+  return {
+    events: normalized,
+    invalidCount,
+  };
+}
+
+function buildPlaybackArtifact(sessionId, events) {
+  const durationMs = events.length ? events[events.length - 1].t : 0;
+
+  return {
+    sessionId,
+    generatedAt: new Date().toISOString(),
+    durationMs,
+    eventCount: events.length,
+    events,
+  };
+}
+
+async function persistManualEdgeEvents(sessionRef, events) {
+  if (!events.length) {
+    return;
+  }
+
+  const existingEvents = await sessionRef.collection("edgeEvents").limit(1).get();
+  if (!existingEvents.empty) {
+    return;
+  }
+
+  const batch = db.batch();
+  events.forEach((event, index) => {
+    const eventRef = sessionRef.collection("edgeEvents").doc(`${String(index).padStart(6, "0")}`);
+    batch.set(eventRef, {
+      session_id: sessionRef.id,
+      ts: event.t,
+      event: event.type,
+      a: event.cubeA,
+      fa: event.faceA,
+      b: event.cubeB,
+      fb: event.faceB,
+      source: "manual_finalize_payload",
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  });
+  await batch.commit();
+}
+
+async function writePlaybackArtifact(sessionId, artifact) {
+  const bucket = admin.storage().bucket();
+  const filePath = `sessions/${sessionId}/session.json`;
+  const file = bucket.file(filePath);
+
+  await file.save(JSON.stringify(artifact, null, 2), {
+    contentType: "application/json",
+    resumable: false,
+    metadata: {
+      cacheControl: "private,max-age=0,no-cache",
+    },
+  });
+
+  return filePath;
+}
+
+exports.finalizeSession = onRequest(
+  {
+    region: "us-central1",
+    cors: false,
+  },
+  async (req, res) => {
+    setCors(res);
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    try {
+      const decodedToken = await verifyUser(req);
+      const sessionId = cleanText(req.body?.sessionId);
+      const childId = cleanText(req.body?.childId);
+      const requestedDurationSeconds = toFiniteInteger(req.body?.durationSeconds, null);
+
+      if (!sessionId) {
+        res.status(400).json({ error: "sessionId is required" });
+        return;
+      }
+
+      const sessionRef = db.collection("playSessions").doc(sessionId);
+      const sessionSnapshot = await sessionRef.get();
+      const existingSession = sessionSnapshot.exists ? sessionSnapshot.data() || {} : {};
+
+      if (
+        sessionSnapshot.exists &&
+        cleanText(existingSession.parentId) &&
+        cleanText(existingSession.parentId) !== decodedToken.uid
+      ) {
+        res.status(403).json({ error: "Forbidden" });
+        return;
+      }
+
+      const edgeEventsSnapshot = await sessionRef
+        .collection("edgeEvents")
+        .orderBy("ts", "asc")
+        .get();
+
+      let rawEvents = [];
+      let source = "request_payload";
+      if (!edgeEventsSnapshot.empty) {
+        rawEvents = edgeEventsSnapshot.docs.map((doc) => doc.data());
+        source = "firestore_edge_events";
+      } else if (Array.isArray(req.body?.events)) {
+        rawEvents = req.body.events;
+      }
+
+      const { events, invalidCount } = normalizeEdgeEvents(rawEvents);
+      await persistManualEdgeEvents(sessionRef, events);
+
+      const artifact = buildPlaybackArtifact(sessionId, events);
+      const playbackJsonPath = await writePlaybackArtifact(sessionId, artifact);
+
+      const durationSeconds =
+        requestedDurationSeconds !== null && requestedDurationSeconds >= 0
+          ? requestedDurationSeconds
+          : Math.ceil(artifact.durationMs / 1000);
+
+      const sessionUpdate = {
+        parentId: decodedToken.uid,
+        status: "ended",
+        source: cleanText(existingSession.source) || "manual_finalize",
+        updatedAt: FieldValue.serverTimestamp(),
+        endedAt: FieldValue.serverTimestamp(),
+        durationSeconds,
+        eventCount: artifact.eventCount,
+        playbackDurationMs: artifact.durationMs,
+        playbackJsonPath,
+        playbackSchemaVersion: 1,
+      };
+
+      if (childId) {
+        sessionUpdate.childId = childId;
+      } else if (cleanText(existingSession.childId)) {
+        sessionUpdate.childId = cleanText(existingSession.childId);
+      }
+
+      if (!existingSession.startedAt) {
+        sessionUpdate.startedAt = FieldValue.serverTimestamp();
+      }
+
+      const latestEvent = artifact.events[artifact.events.length - 1];
+      if (latestEvent) {
+        sessionUpdate.preview = {
+          lastEventType: latestEvent.type,
+          lastPair: `${latestEvent.cubeA}-${latestEvent.cubeB}`,
+          blocksTouched: Array.from(
+            new Set(artifact.events.flatMap((event) => [event.cubeA, event.cubeB]))
+          ).length,
+        };
+      }
+
+      await sessionRef.set(sessionUpdate, { merge: true });
+
+      const latestEndedSessionRef = db
+        .collection("parents")
+        .doc(decodedToken.uid)
+        .collection("sessionMeta")
+        .doc("latestEndedSession");
+
+      await latestEndedSessionRef.set(
+        {
+          sessionId,
+          childId: sessionUpdate.childId || null,
+          status: "ended",
+          endedAt: FieldValue.serverTimestamp(),
+          durationSeconds,
+          eventCount: artifact.eventCount,
+          playbackDurationMs: artifact.durationMs,
+          playbackJsonPath,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      res.status(200).json({
+        sessionId,
+        source,
+        eventCount: artifact.eventCount,
+        invalidEventCount: invalidCount,
+        durationMs: artifact.durationMs,
+        playbackJsonPath,
+      });
+    } catch (error) {
+      logger.error("finalizeSession function failed", error);
+      const message =
+        error instanceof Error ? error.message : "Unknown server error";
+      const status = message === "Missing bearer token" ? 401 : 500;
+      res.status(status).json({ error: getRequestErrorMessage(status) });
+    }
+  }
+);

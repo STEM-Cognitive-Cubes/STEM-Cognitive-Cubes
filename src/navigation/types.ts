@@ -28,8 +28,12 @@ export type RootStackParamList = {
 
   AppearanceScreen: undefined;
   PrivacyControlsScreen: undefined;
-  StartSession: undefined;
-  LiveSession: undefined;
+  StartSession: { replaySessionId?: string } | undefined;
+  LiveSession: {
+    sessionId: string;
+    mode?: "live" | "replay";
+    playbackJsonPath?: string;
+  };
   NotificationPreferencesScreen: undefined;
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
