@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import SummaryCard from "./SummaryCard";
+import { useAuth } from "../../hooks/useAuth";
 
 type SummaryScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "WeeklySummary">;
@@ -13,14 +14,15 @@ type SummaryScreenProps = {
 export default function SummaryScreen({ navigation }: SummaryScreenProps) {
   const [weeksData, setWeeksData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { childId, token } = useAuth();
 
   const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5002' : 'http://localhost:5002';
 
   useEffect(() => {
     async function fetchWeeks() {
       try {
-        const response = await fetch(`${API_URL}/api/insights/historic-weeks/child123`, {
-          headers: { Authorization: "Bearer mock-token-123" }
+        const response = await fetch(`${API_URL}/api/insights/historic-weeks/${childId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
