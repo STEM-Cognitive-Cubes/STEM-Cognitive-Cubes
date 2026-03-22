@@ -1,15 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Switch } from 'react-native';
+import { doc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import { auth, db } from '../../services/firebase';
+
+interface Child {
+  id: string;
+  name: string;
+  birthday: string;
+}
+
+const CARD_COLORS = ['#FDE047', '#BBF7D0', '#BFDBFE', '#FED7AA'];
+const AVATAR_COLORS = ['#F97316', '#16A34A', '#3B82F6', '#EA580C'];
+
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+};
 
 export default function ProfileScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [parentName, setParentName] = useState("Guest User");
+  const [parentEmail, setParentEmail] = useState("");
+  const [parentInitials, setParentInitials] = useState("U");
 
   // Get the parent stack navigator (since Profile is inside a Tab navigator)
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  useEffect(() => {
+    if (!auth.currentUser?.uid) return;
+    
+    // Fetch parent profile fields
+    const unsubscribeParent = onSnapshot(
+      doc(db, "parents", auth.currentUser!.uid),
+      (parentDoc) => {
+        const authUser = auth.currentUser;
+        const fallbackName =
+          authUser?.displayName?.trim() ||
+          authUser?.email?.split("@")[0] ||
+          "Guest User";
+        const fallbackEmail = authUser?.email || "";
+
+        if (!parentDoc.exists()) {
+          setParentName(fallbackName);
+          setParentEmail(fallbackEmail);
+          setParentInitials(getInitials(fallbackName));
+          return;
+        }
+
+        const data = parentDoc.data();
+        console.log("ProfileScreen Parent Data:", data);
+        const fName = typeof data.firstName === "string" ? data.firstName.trim() : "";
+        const lName = typeof data.lastName === "string" ? data.lastName.trim() : "";
+        const fullName = typeof data.fullName === "string" ? data.fullName.trim() : "";
+        const resolvedName = fullName || `${fName} ${lName}`.trim() || fallbackName;
+
+        setParentName(resolvedName);
+        setParentEmail(typeof data.email === "string" ? data.email : fallbackEmail);
+        setParentInitials(getInitials(resolvedName));
+      },
+      (error) => console.error("ProfileScreen Parent onSnapshot error:", error)
+    );
+    
+    // Subscribe to children subcollection
+    const q = query(collection(db, "parents", auth.currentUser.uid, "children"), orderBy("createdAt", "asc"));
+    const unsubscribeChildren = onSnapshot(q, (snapshot) => {
+      const loadedChildren: Child[] = [];
+      snapshot.forEach((subDoc) => {
+        const data = subDoc.data();
+        loadedChildren.push({
+          id: subDoc.id,
+          name: data.name || "Unknown",
+          birthday: data.birthday || "Unknown",
+        });
+      });
+      setChildren(loadedChildren);
+    }, (error) => console.error("ProfileScreen Children onSnapshot error:", error));
+
+    return () => {
+      unsubscribeParent();
+      unsubscribeChildren();
+    };
+  }, []);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -17,10 +95,10 @@ export default function ProfileScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>DJ</Text>
+          <Text style={styles.avatarText}>{parentInitials}</Text>
         </View>
-        <Text style={styles.userName}>Diseni Jayawardhana</Text>
-        <Text style={styles.userEmail}>diseni.jayawardhana@email.com</Text>
+        <Text style={styles.userName}>{parentName}</Text>
+        <Text style={styles.userEmail}>{parentEmail}</Text>
 
         {/* Stats Bar */}
         <View style={styles.statsContainer}>
@@ -43,18 +121,20 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Child Profile</Text>
 
-        <Pressable style={styles.childCard}>
-          <View style={styles.childAvatar}>
-            <Text style={styles.childAvatarText}>S</Text>
-          </View>
-          <View style={styles.childInfo}>
-            <Text style={styles.childName}>Sanuki Jayawardhana</Text>
-            <Text style={styles.childStatus}>Age 5  |  Active</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#A855F7" />
-        </Pressable>
+        {children.map((child, index) => (
+          <Pressable key={child.id} style={[styles.childCard, { backgroundColor: CARD_COLORS[index % CARD_COLORS.length] }]}>
+            <View style={[styles.childAvatar, { backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }]}>
+              <Text style={styles.childAvatarText}>{child.name.charAt(0).toUpperCase()}</Text>
+            </View>
+            <View style={styles.childInfo}>
+              <Text style={styles.childName}>{child.name}</Text>
+              <Text style={styles.childStatus}>Birthday {child.birthday}  |  Active</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A855F7" />
+          </Pressable>
+        ))}
 
-        {/* Updated Button to navigate to Add Child Screen */}
+        {/* Button to navigate to Add Child Screen */}
         <Pressable
           style={styles.addButton}
           onPress={() => navigation.navigate('AddChild')}
@@ -109,12 +189,13 @@ const styles = StyleSheet.create({
   statItem: { alignItems: 'center', flex: 1 },
   statDivider: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
   statValue: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  statLabel: { color: 'white', fontSize: 10, opacity: 0.9 },
+  statLabel: { color: 'white', fontSize: 12, opacity: 0.9 },
   section: { padding: 25 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#334155', marginBottom: 15 },
   childCard: {
     backgroundColor: '#FDE047', flexDirection: 'row', alignItems: 'center',
     padding: 15, borderRadius: 20, marginBottom: 15,
+    shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, elevation: 3,
   },
   childAvatar: {
     width: 50, height: 50, borderRadius: 25,
@@ -125,7 +206,7 @@ const styles = StyleSheet.create({
   childName: { fontSize: 16, fontWeight: 'bold', color: '#F97316' },
   childStatus: { fontSize: 12, color: '#92400E' },
   addButton: {
-    borderWidth: 2, borderStyle: 'dashed', borderColor: '#E2E8F0',
+    borderWidth: 2, borderStyle: 'dashed', borderColor: '#CBD5E1',
     borderRadius: 20, padding: 15, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'
   },
   addButtonText: { color: '#6366F1', fontWeight: 'bold', marginLeft: 10 },

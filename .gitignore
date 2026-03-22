@@ -11,6 +11,7 @@ android/app/debug.keystore
 .gradle/
 .android/
 ios/Pods/
+firebase-debug.log
 
 # Firebase credentials — never commit these
 google-services.json

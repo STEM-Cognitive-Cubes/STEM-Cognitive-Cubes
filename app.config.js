@@ -1,3 +1,8 @@
+import fs from "fs";
+
+const iosGoogleServicesFile = "./GoogleService-Info.plist";
+const androidGoogleServicesFile = "./google-services.json";
+
 export default ({ config }) => ({
   ...config,
   name: config.name ?? "BlokC",
@@ -6,16 +11,21 @@ export default ({ config }) => ({
   plugins: [
     ...(config.plugins ?? []),
     "@react-native-google-signin/google-signin",
+    "@react-native-community/datetimepicker",
   ],
   ios: {
     ...(config.ios ?? {}),
     bundleIdentifier: "com.blokc.app",
-    googleServicesFile: "./GoogleService-Info.plist",
+    ...(fs.existsSync(iosGoogleServicesFile)
+      ? { googleServicesFile: iosGoogleServicesFile }
+      : {}),
   },
   android: {
     ...(config.android ?? {}),
     package: "com.blokc.app",
-    googleServicesFile: "./google-services.json",
+    ...(fs.existsSync(androidGoogleServicesFile)
+      ? { googleServicesFile: androidGoogleServicesFile }
+      : {}),
   },
   extra: {
     eas: {
