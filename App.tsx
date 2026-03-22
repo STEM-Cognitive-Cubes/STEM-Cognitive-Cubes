@@ -48,6 +48,10 @@ import SummaryDetailScreen from './src/features/summary/SummaryDetailScreen';
 import StartSessionScreen from "./src/features/play-session/screens/StartSessionScreen";
 import LiveSessionScreen from "./src/features/play-session/screens/LiveSessionScreen";
 
+// History screens
+import SessionHistoryScreen from './src/features/history/screens/SessionHistoryScreen';
+import SessionDetailScreen from './src/features/history/screens/SessionDetailScreen';
+
 // Navigation Types
 import type { RootStackParamList } from "./src/navigation/types";
 import AppTabs from "@/navigation/AppTabs";
@@ -136,13 +140,17 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="ProductIntro" component={ProductIntroScreen} />
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
-            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />            
-            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen}  />          
-            <Stack.Screen name="AddChild" component={AddChildScreen} />
+            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
+            <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
+            <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
             <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
-            <Stack.Screen name="Recommendations" component={RecommendationsScreen} />           
+            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
+            <Stack.Screen name="Recommendations" component={RecommendationsScreen} />
             <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
             <Stack.Screen name="SummaryDetail" component={SummaryDetailScreen}/>
+            <Stack.Screen name="SessionHistory" component={SessionHistoryScreen} />
+            <Stack.Screen name="SessionDetail" component={SessionDetailScreen} />
+            <Stack.Screen name="AddChild" component={AddChildScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

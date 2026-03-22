@@ -1,3 +1,16 @@
+export interface WeekSummaryData {
+  id: string;
+  title: string;
+  dateLabel: string;
+  durationMinutes: string;
+  blocks: number;
+  focusLevel: string;
+  score: string;
+  aiInsight: string;
+  focusData: Array<{ day: string; value: number }>;
+  blocksUsed: Array<{ id: string; name: string; count: number; color: string }>;
+}
+
 export type RootStackParamList = {
   // Auth
   Login: undefined;
@@ -18,15 +31,14 @@ export type RootStackParamList = {
   StartSession: undefined;
   LiveSession: undefined;
   NotificationPreferencesScreen: undefined;
-  PrivacyControlsScreen: undefined;
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   CommunityScreen: undefined;
   EmailScreen: undefined;
   ChatScreen: undefined;
   UserGuideScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
   Logout: undefined;
   FAQsScreen: undefined;
@@ -37,7 +49,7 @@ export type RootStackParamList = {
   SessionDetail: { sessionId: string };
   // Summary feature
   WeeklySummary: undefined;
-  SummaryDetail: { sessionId: string };
+  SummaryDetail: { weekData: WeekSummaryData };
   // Insights feature
   Insights: undefined;
   Recommendations: { category: string };
