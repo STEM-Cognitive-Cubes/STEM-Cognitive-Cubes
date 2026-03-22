@@ -8,7 +8,7 @@ const PURPLE = "#6D5AAE"; // bar color
 const WHITE = "#FFFFFF";
 const ICON = "#0B0B0B";
 
-function getIcon(routeName: string, focused: boolean) {
+function getIcon(routeName: string) {
   // Match your screenshot vibe: simple black icons.
   // You can swap icons later.
   switch (routeName) {
@@ -58,7 +58,7 @@ export default function BlokCTabBar({ state, navigation }: BottomTabBarProps) {
               )}
 
               <View style={[styles.iconWrap, focused && styles.iconWrapFocused]}>
-                {getIcon(route.name, focused)}
+                {getIcon(route.name)}
               </View>
 
               {/* Only show label for focused tab (like your screenshot shows Home text) */}
