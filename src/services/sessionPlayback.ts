@@ -37,7 +37,8 @@ export type LatestEndedSessionPreview = {
   durationSeconds: number;
   eventCount: number;
   playbackDurationMs: number;
-  playbackJsonPath: string;
+  playbackJsonPath?: string;
+  playbackJsonUrl?: string;
   endedAt?: Date;
 };
 
@@ -55,6 +56,7 @@ export type FinalizeSessionResult = {
   invalidEventCount: number;
   durationMs: number;
   playbackJsonPath: string;
+  playbackJsonUrl?: string;
 };
 
 export type PlaybackBlock = {
@@ -285,7 +287,8 @@ export async function getLatestEndedSessionPreview() {
   const data = latestSnapshot.data() || {};
   const sessionId = clean(data.sessionId);
   const playbackJsonPath = clean(data.playbackJsonPath);
-  if (!sessionId || !playbackJsonPath) {
+  const playbackJsonUrl = clean(data.playbackJsonUrl);
+  if (!sessionId || (!playbackJsonPath && !playbackJsonUrl)) {
     return null;
   }
 
@@ -295,16 +298,16 @@ export async function getLatestEndedSessionPreview() {
     durationSeconds: Math.max(0, toInt(data.durationSeconds, 0)),
     eventCount: Math.max(0, toInt(data.eventCount, 0)),
     playbackDurationMs: Math.max(0, toInt(data.playbackDurationMs, 0)),
-    playbackJsonPath,
+    playbackJsonPath: playbackJsonPath || undefined,
+    playbackJsonUrl: playbackJsonUrl || undefined,
     endedAt: toDate(data.endedAt),
   } as LatestEndedSessionPreview;
 }
 
-export async function loadPlaybackArtifact(playbackJsonPath: string) {
-  const downloadUrl = await getDownloadURL(storageRef(storage, playbackJsonPath));
-  const response = await fetch(downloadUrl);
+async function fetchPlaybackArtifactFromUrl(url: string) {
+  const response = await fetch(url);
   if (!response.ok) {
-    throw new Error("Failed to load playback artifact.");
+    throw new Error(`Failed to load playback artifact (${response.status}).`);
   }
 
   const payload = (await response.json()) as SessionPlaybackArtifact;
@@ -312,6 +315,30 @@ export async function loadPlaybackArtifact(playbackJsonPath: string) {
     ...payload,
     events: normalizePlaybackEvents(payload?.events || []),
   };
+}
+
+export async function loadPlaybackArtifact(options: {
+  playbackJsonPath?: string;
+  playbackJsonUrl?: string;
+}) {
+  const playbackJsonUrl = clean(options.playbackJsonUrl);
+  if (playbackJsonUrl) {
+    return fetchPlaybackArtifactFromUrl(playbackJsonUrl);
+  }
+
+  const playbackJsonPath = clean(options.playbackJsonPath);
+  if (!playbackJsonPath) {
+    throw new Error("Missing playback JSON location.");
+  }
+
+  try {
+    const downloadUrl = await getDownloadURL(storageRef(storage, playbackJsonPath));
+    return fetchPlaybackArtifactFromUrl(downloadUrl);
+  } catch {
+    throw new Error(
+      "Playback JSON is not accessible with current Storage rules. End the session again so finalizeSession can attach a replay URL."
+    );
+  }
 }
 
 function getFaceVector(face: number): Vec3 {

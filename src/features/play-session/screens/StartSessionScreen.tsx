@@ -92,6 +92,7 @@ export default function StartSessionScreen() {
       mode: "replay",
       sessionId: latestEndedSession.sessionId,
       playbackJsonPath: latestEndedSession.playbackJsonPath,
+      playbackJsonUrl: latestEndedSession.playbackJsonUrl,
     });
   };
 

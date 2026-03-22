@@ -43,6 +43,7 @@ export default function LiveSessionScreen() {
   const mode = route.params?.mode ?? "live";
   const sessionId = route.params?.sessionId;
   const routePlaybackJsonPath = route.params?.playbackJsonPath;
+  const routePlaybackJsonUrl = route.params?.playbackJsonUrl;
 
   const [playheadMs, setPlayheadMs] = useState(0);
   const [isActive, setIsActive] = useState(mode === "live");
@@ -77,19 +78,26 @@ export default function LiveSessionScreen() {
 
       try {
         let playbackPath = routePlaybackJsonPath;
-        if (!playbackPath && sessionId) {
+        let playbackUrl = routePlaybackJsonUrl;
+        if (sessionId && (!playbackPath || !playbackUrl)) {
           const sessionSnapshot = await getDoc(doc(db, "playSessions", sessionId));
-          playbackPath =
-            typeof sessionSnapshot.data()?.playbackJsonPath === "string"
-              ? sessionSnapshot.data()?.playbackJsonPath
-              : "";
+          const sessionData = sessionSnapshot.data() || {};
+          if (!playbackPath && typeof sessionData.playbackJsonPath === "string") {
+            playbackPath = sessionData.playbackJsonPath;
+          }
+          if (!playbackUrl && typeof sessionData.playbackJsonUrl === "string") {
+            playbackUrl = sessionData.playbackJsonUrl;
+          }
         }
 
-        if (!playbackPath) {
+        if (!playbackPath && !playbackUrl) {
           throw new Error("This session does not have a playback JSON file.");
         }
 
-        const artifact = await loadPlaybackArtifact(playbackPath);
+        const artifact = await loadPlaybackArtifact({
+          playbackJsonPath: playbackPath,
+          playbackJsonUrl: playbackUrl,
+        });
         if (isCancelled) {
           return;
         }
@@ -114,7 +122,7 @@ export default function LiveSessionScreen() {
     return () => {
       isCancelled = true;
     };
-  }, [mode, routePlaybackJsonPath, sessionId]);
+  }, [mode, routePlaybackJsonPath, routePlaybackJsonUrl, sessionId]);
 
   const snapshot = useMemo(
     () => buildPlaybackSnapshot(events, playheadMs),

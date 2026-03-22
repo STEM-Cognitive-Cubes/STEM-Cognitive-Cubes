@@ -33,6 +33,7 @@ export type RootStackParamList = {
     sessionId: string;
     mode?: "live" | "replay";
     playbackJsonPath?: string;
+    playbackJsonUrl?: string;
   };
   NotificationPreferencesScreen: undefined;
   DataSharingScreen: undefined;

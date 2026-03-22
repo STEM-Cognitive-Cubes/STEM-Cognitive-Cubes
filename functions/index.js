@@ -2,6 +2,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
 const { FieldValue } = require("firebase-admin/firestore");
+const { randomUUID } = require("crypto");
 
 const { fallbackProductContext } = require("./productContext");
 
@@ -571,16 +572,36 @@ async function writePlaybackArtifact(sessionId, artifact) {
   const bucket = admin.storage().bucket();
   const filePath = `sessions/${sessionId}/session.json`;
   const file = bucket.file(filePath);
+  const downloadToken = randomUUID();
 
   await file.save(JSON.stringify(artifact, null, 2), {
     contentType: "application/json",
     resumable: false,
     metadata: {
       cacheControl: "private,max-age=0,no-cache",
+      metadata: {
+        firebaseStorageDownloadTokens: downloadToken,
+      },
     },
   });
 
-  return filePath;
+  const tokenUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filePath)}?alt=media&token=${encodeURIComponent(downloadToken)}`;
+
+  let signedUrl = "";
+  try {
+    const [url] = await file.getSignedUrl({
+      action: "read",
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    });
+    signedUrl = url;
+  } catch (error) {
+    logger.warn("Could not create signed playback URL, falling back to token URL", error);
+  }
+
+  return {
+    filePath,
+    signedUrl: signedUrl || tokenUrl,
+  };
 }
 
 exports.finalizeSession = onRequest(
@@ -643,7 +664,8 @@ exports.finalizeSession = onRequest(
       await persistManualEdgeEvents(sessionRef, events);
 
       const artifact = buildPlaybackArtifact(sessionId, events);
-      const playbackJsonPath = await writePlaybackArtifact(sessionId, artifact);
+      const { filePath: playbackJsonPath, signedUrl: playbackJsonUrl } =
+        await writePlaybackArtifact(sessionId, artifact);
 
       const durationSeconds =
         requestedDurationSeconds !== null && requestedDurationSeconds >= 0
@@ -660,6 +682,7 @@ exports.finalizeSession = onRequest(
         eventCount: artifact.eventCount,
         playbackDurationMs: artifact.durationMs,
         playbackJsonPath,
+        playbackJsonUrl,
         playbackSchemaVersion: 1,
       };
 
@@ -702,6 +725,7 @@ exports.finalizeSession = onRequest(
           eventCount: artifact.eventCount,
           playbackDurationMs: artifact.durationMs,
           playbackJsonPath,
+          playbackJsonUrl,
           updatedAt: FieldValue.serverTimestamp(),
         },
         { merge: true }
@@ -714,6 +738,7 @@ exports.finalizeSession = onRequest(
         invalidEventCount: invalidCount,
         durationMs: artifact.durationMs,
         playbackJsonPath,
+        playbackJsonUrl,
       });
     } catch (error) {
       logger.error("finalizeSession function failed", error);
