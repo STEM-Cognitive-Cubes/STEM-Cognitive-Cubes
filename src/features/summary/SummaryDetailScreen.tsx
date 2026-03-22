@@ -14,7 +14,6 @@ type SummaryDetailScreenProps = {
 };
 
 export default function SummaryDetailScreen({
-  navigation,
   route
 }: SummaryDetailScreenProps) {
   const detail = route.params.weekData;
