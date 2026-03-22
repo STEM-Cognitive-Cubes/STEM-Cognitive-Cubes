@@ -35,7 +35,9 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
       }
     }
     fetchWeeks();
-  }, []);
+    
+  }, [API_URL, childId, token]);
+
 
   return (
     <View style={styles.container}>

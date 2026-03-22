@@ -27,7 +27,7 @@ function getIcon(routeName: string, focused: boolean) {
   }
 }
 
-export default function BlokCTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export default function BlokCTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
