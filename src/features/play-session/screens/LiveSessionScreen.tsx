@@ -18,7 +18,6 @@ import { db } from "@/services/firebase";
 import type { RootStackParamList } from "@/navigation/types";
 import {
   buildPlaybackSnapshot,
-  DEMO_PLAYBACK_TEMPLATE,
   finalizeSession,
   loadPlaybackArtifact,
   playbackEventToContractEvent,
@@ -26,6 +25,21 @@ import {
 } from "@/services/sessionPlayback";
 
 type LiveSessionRoute = RouteProp<RootStackParamList, "LiveSession">;
+type PlaybackThreeCanvasProps = {
+  events: PlaybackEvent[];
+  playheadMs: number;
+};
+
+let PlaybackThreeCanvas:
+  | React.ComponentType<PlaybackThreeCanvasProps>
+  | null = null;
+let playbackThreeLoadError = "";
+try {
+  PlaybackThreeCanvas = require("../components/PlaybackThreeCanvas").default as React.ComponentType<PlaybackThreeCanvasProps>;
+} catch (error) {
+  playbackThreeLoadError =
+    error instanceof Error ? error.message : "3D viewer could not load.";
+}
 
 function formatTime(totalMs: number) {
   const totalSeconds = Math.max(0, Math.floor(totalMs / 1000));
@@ -47,7 +61,6 @@ export default function LiveSessionScreen() {
 
   const [playheadMs, setPlayheadMs] = useState(0);
   const [isActive, setIsActive] = useState(mode === "live");
-  const [templateIndex, setTemplateIndex] = useState(0);
   const [events, setEvents] = useState<PlaybackEvent[]>([]);
   const [isLoadingReplay, setIsLoadingReplay] = useState(mode === "replay");
   const [replayError, setReplayError] = useState<string | null>(null);
@@ -58,11 +71,22 @@ export default function LiveSessionScreen() {
       return;
     }
 
-    const timer = setInterval(() => {
-      setPlayheadMs((prev) => prev + 250);
-    }, 250);
+    let frameId = 0;
+    let lastTs: number | null = null;
 
-    return () => clearInterval(timer);
+    const tick = (ts: number) => {
+      if (lastTs === null) {
+        lastTs = ts;
+      }
+      const deltaMs = Math.max(0, ts - lastTs);
+      lastTs = ts;
+
+      setPlayheadMs((prev) => prev + deltaMs);
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
   }, [isActive]);
 
   useEffect(() => {
@@ -104,7 +128,7 @@ export default function LiveSessionScreen() {
 
         setEvents(artifact.events);
         setPlayheadMs(0);
-        setIsActive(false);
+        setIsActive(true);
       } catch (error) {
         console.error("Failed to load replay artifact", error);
         if (!isCancelled) {
@@ -140,36 +164,8 @@ export default function LiveSessionScreen() {
   }, [mode, playheadMs, snapshot.maxT]);
 
   const handleReset = () => {
-    setIsActive(false);
+    setIsActive(mode === "replay");
     setPlayheadMs(0);
-    if (mode === "live") {
-      setEvents([]);
-      setTemplateIndex(0);
-    }
-  };
-
-  const handleAddNextStep = () => {
-    if (mode === "replay") {
-      const nextEvent = events[snapshot.appliedEvents];
-      if (!nextEvent) {
-        return;
-      }
-      setPlayheadMs(nextEvent.t);
-      return;
-    }
-
-    const template = DEMO_PLAYBACK_TEMPLATE[templateIndex % DEMO_PLAYBACK_TEMPLATE.length];
-    const lastEventTs = events.length ? events[events.length - 1].t : 0;
-    const nextTs = Math.max(lastEventTs + 300, Math.max(playheadMs, 0));
-
-    const nextEvent: PlaybackEvent = {
-      ...template,
-      t: nextTs,
-    };
-
-    setEvents((prev) => [...prev, nextEvent]);
-    setTemplateIndex((prev) => prev + 1);
-    setPlayheadMs(nextTs);
   };
 
   const handleEndSession = async () => {
@@ -216,10 +212,15 @@ export default function LiveSessionScreen() {
 
   const headerTitle = mode === "replay" ? "Session Replay" : "Live Session";
   const endButtonLabel = mode === "replay" ? "Close replay" : "End session";
-  const stepLabel =
+  const ThreeCanvasComponent = PlaybackThreeCanvas;
+  const canRenderThree = Boolean(ThreeCanvasComponent);
+  const progressRatio = snapshot.maxT > 0 ? Math.min(1, playheadMs / snapshot.maxT) : 0;
+  const progressPercent = Math.round(progressRatio * 100);
+  const progressLabel =
     mode === "replay"
-      ? `Next Event (${snapshot.appliedEvents}/${events.length})`
-      : `Next Building Step (${snapshot.appliedEvents}/${Math.max(events.length, 1)})`;
+      ? `Replay Progress ${progressPercent}%`
+      : `Session Progress ${progressPercent}%`;
+  const progressSubLabel = `Events ${snapshot.appliedEvents}/${events.length}`;
 
   return (
     <View style={styles.mainContainer}>
@@ -268,61 +269,52 @@ export default function LiveSessionScreen() {
       <View style={styles.viewportCard}>
         <Text style={styles.viewportTitle}>3D Structure View</Text>
         <View style={styles.blackScreen}>
-          <View style={styles.buildArea}>
-            <View style={styles.gridFloor} />
+          {!isLoadingReplay && !replayError && ThreeCanvasComponent ? (
+            <ThreeCanvasComponent events={events} playheadMs={playheadMs} />
+          ) : null}
 
-            {isLoadingReplay ? (
-              <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="small" color="#FFFFFF" />
-                <Text style={styles.loadingOverlayText}>Loading playback JSON...</Text>
-              </View>
-            ) : replayError ? (
-              <View style={styles.loadingOverlay}>
-                <Text style={styles.errorOverlayText}>{replayError}</Text>
-              </View>
-            ) : snapshot.blocks.length === 0 ? (
-              <View style={styles.loadingOverlay}>
-                <Text style={styles.loadingOverlayText}>
-                  {mode === "live"
-                    ? "Tap Next Building Step to generate edge events."
-                    : "No blocks available for this replay step."}
-                </Text>
-              </View>
-            ) : (
-              snapshot.blocks.map((block) => {
-                const isoX = block.x * 34 + block.z * 14;
-                const isoY = block.y * 28 + block.z * 8;
-
-                return (
-                  <View
-                    key={block.id}
-                    style={[
-                      styles.block,
-                      {
-                        backgroundColor: block.color,
-                        left: "50%",
-                        bottom: 36,
-                        marginLeft: -18 + isoX,
-                        transform: [{ translateY: -isoY }],
-                        zIndex: 100 + block.y * 5 + block.z,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.blockText}>{block.id.replace("Cube_", "")}</Text>
-                  </View>
-                );
-              })
-            )}
-          </View>
+          {isLoadingReplay ? (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="small" color="#FFFFFF" />
+              <Text style={styles.loadingOverlayText}>Loading playback JSON...</Text>
+            </View>
+          ) : replayError ? (
+            <View style={styles.loadingOverlay}>
+              <Text style={styles.errorOverlayText}>{replayError}</Text>
+            </View>
+          ) : !canRenderThree ? (
+            <View style={styles.loadingOverlay}>
+              <Text style={styles.errorOverlayText}>
+                3D module unavailable (ExpoGL missing). Rebuild app with:
+              </Text>
+              <Text style={styles.warningOverlayText}>
+                npx expo run:android
+              </Text>
+              <Text style={styles.warningOverlayText}>
+                npx expo start --dev-client
+              </Text>
+              {__DEV__ && playbackThreeLoadError ? (
+                <Text style={styles.loadingOverlayText}>{playbackThreeLoadError}</Text>
+              ) : null}
+            </View>
+          ) : snapshot.blocks.length === 0 ? (
+            <View style={styles.loadingOverlay}>
+              <Text style={styles.loadingOverlayText}>
+                {mode === "live"
+                  ? "Tap Next Building Step to generate edge events."
+                  : "No blocks available for this replay step."}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
-        <TouchableOpacity
-          style={styles.stepBtn}
-          onPress={handleAddNextStep}
-          disabled={isFinalizing || isLoadingReplay}
-        >
-          <Text style={styles.stepBtnText}>{stepLabel}</Text>
-        </TouchableOpacity>
+        <View style={styles.progressCard}>
+          <Text style={styles.progressLabel}>{progressLabel}</Text>
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          </View>
+          <Text style={styles.progressSubLabel}>{progressSubLabel}</Text>
+        </View>
       </View>
     </View>
   );
@@ -366,14 +358,6 @@ const styles = StyleSheet.create({
   },
   viewportTitle: { fontSize: 18, fontWeight: "bold", color: "#4A4A8E", marginBottom: 15 },
   blackScreen: { height: 240, backgroundColor: "#0A0A10", borderRadius: 25, overflow: "hidden" },
-  buildArea: { flex: 1, position: "relative" },
-  gridFloor: {
-    position: "absolute",
-    bottom: 24,
-    width: "100%",
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.14)",
-  },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
@@ -382,27 +366,34 @@ const styles = StyleSheet.create({
   },
   loadingOverlayText: { marginTop: 10, color: "rgba(255,255,255,0.75)", textAlign: "center" },
   errorOverlayText: { color: "#FCA5A5", textAlign: "center" },
-  block: {
-    position: "absolute",
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.35)",
-    alignItems: "center",
-    justifyContent: "center",
+  warningOverlayText: {
+    marginTop: 6,
+    color: "#E2E8F0",
+    textAlign: "center",
+    fontWeight: "600",
   },
-  blockText: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontWeight: "800",
-  },
-  stepBtn: {
+  progressCard: {
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 15,
     marginTop: 20,
-    alignItems: "center",
   },
-  stepBtnText: { color: "#6D5AAE", fontWeight: "bold" },
+  progressLabel: { color: "#6D5AAE", fontWeight: "800", textAlign: "center", marginBottom: 8 },
+  progressTrack: {
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: "#E2DDF5",
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#6D5AAE",
+    borderRadius: 999,
+  },
+  progressSubLabel: {
+    marginTop: 8,
+    color: "#6D5AAE",
+    textAlign: "center",
+    fontWeight: "700",
+  },
 });
