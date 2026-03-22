@@ -143,7 +143,6 @@ export default function App() {
             <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
             <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
             <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
-            <Stack.Screen name="ContactSupportScreen" component={ContactSupportScreen} />
             <Stack.Screen name="Recommendations" component={RecommendationsScreen} />
             <Stack.Screen name="WeeklySummary" component={SummaryScreen} />
             <Stack.Screen name="SummaryDetail" component={SummaryDetailScreen}/>
