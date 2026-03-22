@@ -13,6 +13,7 @@ type SessionDetailScreenProps = {
 };
 
 export default function SessionDetailScreen({
+  navigation,
   route,
 }: SessionDetailScreenProps) {
   const { sessionId } = route.params;
@@ -39,7 +40,7 @@ export default function SessionDetailScreen({
       }
     }
     fetchSession();
-  }, [sessionId]);
+  }, [sessionId, token, API_URL]);
 
   if (loading) {
     return (
@@ -64,9 +65,6 @@ export default function SessionDetailScreen({
     { label: "Score", value: `${detail.score}`, icon: "star", color: "#B860FF" },
   ];
   
-  // The mockup does not use custom colors for metric texts/icons, mostly dark grey + purple accents, except maybe just plain layout.
-  // Actually, wait, the mockup has purple, blue, green colors? "45m" is bold black, under it "Duration" small. Above it a purple clock.
-  // We'll mimic the mockup exactly: icons are colored.
   const iconColors = ["#B860FF", "#B860FF", "#B860FF", "#B860FF"];
   metrics.forEach((m, i) => m.color = iconColors[i]);
 
@@ -78,7 +76,6 @@ export default function SessionDetailScreen({
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3D Build Preview Card */}
         <View style={styles.previewCard}>
           <Feather name="box" size={50} color="#a0aec0" />
           <Text style={styles.previewTitle}>{detail.title}</Text>
@@ -87,7 +84,6 @@ export default function SessionDetailScreen({
           </Text>
         </View>
 
-        {/* Metric Pills Array wrapped in a border */}
         <View style={styles.metricsWrapper}>
           {metrics.map((m, index) => (
             <View 
@@ -106,14 +102,12 @@ export default function SessionDetailScreen({
           ))}
         </View>
 
-        {/* AI Insight */}
         <Text style={styles.sectionHeader}>AI DEVELOPMENT INSIGHT</Text>
         <View style={styles.insightCard}>
           <View style={styles.insightAccent} />
           <Text style={styles.insightText}>{detail.aiInsight}</Text>
         </View>
 
-        {/* Focus Analysis Bar Chart */}
         <View style={styles.chartOuterCard}>
           <Text style={styles.chartTitle}>Focus Analysis</Text>
           <View style={styles.chartContainer}>
@@ -132,7 +126,6 @@ export default function SessionDetailScreen({
           <Text style={styles.chartSubtitle}>Great steady focus maintained throughout the session</Text>
         </View>
 
-        {/* Blocks Used */}
         <Text style={styles.sectionTitle}>BLOCKS USED</Text>
         <View style={styles.blocksRow}>
           {detail.blocksUsed.map((block: any) => (
@@ -144,13 +137,20 @@ export default function SessionDetailScreen({
           ))}
         </View>
 
-        {/* Export Summary Button */}
         <Pressable
           style={styles.exportButton}
-          onPress={() => console.log('Exporting session summary...')}
+          onPress={() => console.log('Export tracking clicked...')}
         >
           <Feather name="download" size={18} color="white" style={{ marginRight: 8 }} />
           <Text style={styles.exportButtonText}>Export Summary</Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.exportButton, { backgroundColor: "transparent", borderWidth: 1, borderColor: "#4A5EB4", marginTop: 12 }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Feather name="arrow-left" size={18} color="#4A5EB4" style={{ marginRight: 8 }} />
+          <Text style={[styles.exportButtonText, { color: "#4A5EB4" }]}>Go Back</Text>
         </Pressable>
       </ScrollView>
     </View>

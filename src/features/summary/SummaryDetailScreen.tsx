@@ -14,6 +14,7 @@ type SummaryDetailScreenProps = {
 };
 
 export default function SummaryDetailScreen({
+  navigation,
   route
 }: SummaryDetailScreenProps) {
   const detail = route.params.weekData;
@@ -94,10 +95,18 @@ export default function SummaryDetailScreen({
 
         <Pressable
           style={styles.exportButton}
-          onPress={() => console.log('Exporting weekly summary...')}
+          onPress={() => console.log('Export tracking clicked...')}
         >
           <Feather name="download" size={18} color="white" style={{ marginRight: 8 }} />
           <Text style={styles.exportButtonText}>Export Summary</Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.exportButton, { backgroundColor: "transparent", borderWidth: 1, borderColor: "#4A5EB4", marginTop: 12 }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Feather name="arrow-left" size={18} color="#4A5EB4" style={{ marginRight: 8 }} />
+          <Text style={[styles.exportButtonText, { color: "#4A5EB4" }]}>Go Back</Text>
         </Pressable>
       </ScrollView>
     </View>
