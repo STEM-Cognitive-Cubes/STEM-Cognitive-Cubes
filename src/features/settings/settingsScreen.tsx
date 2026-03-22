@@ -28,8 +28,8 @@ type RootStackParamList = {
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   UserGuideScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
   CommunityScreen: undefined;
   EmailScreen: undefined;

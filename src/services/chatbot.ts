@@ -130,7 +130,7 @@ export async function fetchChatHistory(conversationId?: string) {
   const url = new URL(`${getApiBaseUrl()}/chatbotHistory`);
 
   if (conversationId) {
-    url.searchParams.set("conversationId", conversationId);
+    url.searchParams.append("conversationId", conversationId);
   }
 
   try {
