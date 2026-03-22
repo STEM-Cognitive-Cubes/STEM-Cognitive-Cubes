@@ -6,8 +6,9 @@
 
 const calculateInsights = ({ duration, cubesConnected, structureData }) => {
   // Cognitive: based on how many different cubes were engaged
+  const uniqueCubesEngaged = new Set(cubesConnected).size;
   const cognitiveScore = parseFloat(
-    Math.min(10, cubesConnected.length * 1.5).toFixed(2)
+    Math.min(10, uniqueCubesEngaged * 1.5).toFixed(2)
   );
 
   // Problem Solving: based on how long the child stayed focused
