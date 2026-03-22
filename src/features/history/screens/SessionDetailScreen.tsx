@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
 import type { RootStackParamList } from "../../../navigation/types";
 import { fontFamilies } from "../../../config/typography";
+import { useAuth } from "../../../hooks/useAuth";
 
 type SessionDetailScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "SessionDetail">;
@@ -17,6 +18,7 @@ export default function SessionDetailScreen({
   const { sessionId } = route.params;
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5002' : 'http://localhost:5002';
 
@@ -24,7 +26,7 @@ export default function SessionDetailScreen({
     async function fetchSession() {
       try {
         const response = await fetch(`${API_URL}/api/history/session/${sessionId}`, {
-          headers: { Authorization: "Bearer mock-token-123" }
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
