@@ -6,7 +6,7 @@ import type { RouteProp } from "@react-navigation/native";
 import type { RootStackParamList } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import InsightCard from "../history/components/InsightCard";
-import { sessionDetail } from "../history/config/historyData";
+
 
 type SummaryDetailScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "SummaryDetail">;
