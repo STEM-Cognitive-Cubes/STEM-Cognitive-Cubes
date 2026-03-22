@@ -7,6 +7,10 @@ if [[ "${EAS_BUILD_PLATFORM:-}" == "android" ]]; then
   if [[ -n "${GOOGLE_SERVICES_JSON:-}" && -f "${GOOGLE_SERVICES_JSON}" ]]; then
     cp "${GOOGLE_SERVICES_JSON}" android/app/google-services.json
     echo "Copied android/app/google-services.json from EAS file secret."
+  elif [[ -f "google-services.json" ]]; then
+    mkdir -p android/app
+    cp "google-services.json" android/app/google-services.json
+    echo "Copied android/app/google-services.json from project root google-services.json."
   elif [[ -f "android/app/google-services.json" ]]; then
     echo "Using tracked android/app/google-services.json from repository."
   else
@@ -21,6 +25,10 @@ if [[ "${EAS_BUILD_PLATFORM:-}" == "ios" ]]; then
     mkdir -p ios/STEMCognitiveCubes
     cp "${GOOGLE_SERVICE_INFO_PLIST}" ios/STEMCognitiveCubes/GoogleService-Info.plist
     echo "Copied ios/STEMCognitiveCubes/GoogleService-Info.plist from EAS file secret."
+  elif [[ -f "GoogleService-Info.plist" ]]; then
+    mkdir -p ios/STEMCognitiveCubes
+    cp "GoogleService-Info.plist" ios/STEMCognitiveCubes/GoogleService-Info.plist
+    echo "Copied ios/STEMCognitiveCubes/GoogleService-Info.plist from project root GoogleService-Info.plist."
   elif [[ -f "ios/STEMCognitiveCubes/GoogleService-Info.plist" ]]; then
     echo "Using tracked ios/STEMCognitiveCubes/GoogleService-Info.plist from repository."
   else
