@@ -13,7 +13,7 @@ type SessionDetailScreenProps = {
 };
 export default function SessionDetailScreen({
   navigation,
-  route,
+  route: _route,
 }: SessionDetailScreenProps) {
   const detail = sessionDetail; // In production, fetch by route.params.sessionId
   const metrics = [

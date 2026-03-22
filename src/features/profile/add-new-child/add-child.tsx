@@ -22,7 +22,7 @@ export default function AddChildScreen() {
         createdAt: new Date().toISOString(),
       });
       navigation.goBack();
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to create profile. Please try again.');
     }
   };

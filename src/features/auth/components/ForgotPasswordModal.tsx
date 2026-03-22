@@ -24,7 +24,7 @@ export default function ForgotPasswordModal({
     try {
       await sendPasswordResetEmail(auth, email.trim());
       setIsSent(true);
-    } catch (error) {
+    } catch {
       setStatus("Could not send reset link. Check the email.");
     }
   };
