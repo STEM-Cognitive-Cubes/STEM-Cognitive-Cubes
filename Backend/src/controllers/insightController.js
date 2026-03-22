@@ -167,6 +167,8 @@ const insightController = {
         return { id: doc.id, ...data, insight: insightsMap[doc.id] };
       }).filter(s => s.insight);
 
+      // Group by week (ISO week or rough 7-day windows based on the latest session)
+      // Since it's a mock, we group by calendar week
       const getWeekNumber = (d) => {
         const date = new Date(d);
         date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
@@ -180,7 +182,10 @@ const insightController = {
         const viewWeekStr = `Week ${getWeekNumber(date)}, ${date.getFullYear()}`;
         if (!weeksMap[viewWeekStr]) {
           weeksMap[viewWeekStr] = {
-            id: viewWeekStr, title: viewWeekStr, startDate: date, sessions: []
+            id: viewWeekStr,
+            title: viewWeekStr,
+            startDate: date,
+            sessions: []
           };
         }
         weeksMap[viewWeekStr].sessions.push(session);
@@ -192,13 +197,19 @@ const insightController = {
       const weeksArray = Object.values(weeksMap).sort((a,b) => b.startDate - a.startDate);
 
       const result = weeksArray.map(week => {
-        let totalDuration = 0, totalBlocks = 0, sumScore = 0, sumFocus = 0;
+        let totalDuration = 0;
+        let totalBlocks = 0;
+        let sumCognitive = 0;
+        let sumFocus = 0;
+        let sumScore = 0;
         const focusData = [];
         const blocksUsedMap = {};
 
         week.sessions.forEach(s => {
           totalDuration += s.duration || 0;
-          totalBlocks += s.cubesConnected ? s.cubesConnected.length : 0;
+          const blocksCount = s.cubesConnected ? s.cubesConnected.length : 0;
+          totalBlocks += blocksCount;
+          sumCognitive += s.insight.cognitive || 0;
           sumFocus += s.insight.problemSolving || 0;
           sumScore += s.insight.overall || 0;
           
@@ -220,13 +231,20 @@ const insightController = {
 
         let avgFocus = sumFocus / count;
         let focusLevel = avgFocus > 8 ? "High" : avgFocus > 5 ? "Med" : "Low";
+
         let mainInsight = count > 0 ? week.sessions[week.sessions.length - 1].insight.summary : "No insight computed.";
 
         return {
-          id: week.id, title: week.title, dateLabel: `${week.startDate.toLocaleDateString()}`,
-          durationMinutes: Math.floor(totalDuration / 60) + "m", blocks: totalBlocks,
-          focusLevel, score: (sumScore / count).toFixed(1), aiInsight: mainInsight,
-          focusData, blocksUsed: blocksUsedArray
+          id: week.id,
+          title: week.title,
+          dateLabel: `${week.startDate.toLocaleDateString()}`,
+          durationMinutes: Math.floor(totalDuration / 60) + "m",
+          blocks: totalBlocks,
+          focusLevel,
+          score: (sumScore / count).toFixed(1),
+          aiInsight: mainInsight,
+          focusData,
+          blocksUsed: blocksUsedArray
         };
       });
 

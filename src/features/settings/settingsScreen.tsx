@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { signOut } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { auth } from '../../services/firebase';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -186,9 +189,18 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
         {
           text: 'Yes, log Out',
           style: 'destructive',
-          onPress: () => {
-            // Perform logout
-            console.log('User logged out');
+          onPress: async () => {
+            try {
+              await signOut(auth);
+            } catch {
+              Alert.alert('Logout Failed', 'Could not sign you out. Please try again.');
+              return;
+            }
+            try {
+              await GoogleSignin.signOut();
+            } catch {
+              // Ignore Google sign-out errors if no Google session is active.
+            }
 
             // Show success message
             Alert.alert(
@@ -215,14 +227,6 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
     console.log(`Navigate to ${screen}`);
     navigation?.navigate(screen);
   }
-};
-
-const handleBottomNavigation = (screen: keyof RootStackParamList) => {
-  if (screen === 'Settings') {
-    // Already on settings -> do nothing
-    return;
-  }
-  navigation?.navigate(screen);
 };
 
 const renderIcon = (iconType: 'Ionicons' | 'MaterialIcons', iconName: string, color: string) => {

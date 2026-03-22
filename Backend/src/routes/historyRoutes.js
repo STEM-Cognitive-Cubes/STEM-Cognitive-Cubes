@@ -10,4 +10,8 @@ router.get('/:childId', verifyToken, historyController.getHistory);
 // Fetch detailed stats and AI insight for a specific session
 router.get('/session/:sessionId', verifyToken, historyController.getSessionDetails);
 
+// GET /api/history/session/:sessionId
+// Fetch detailed stats and AI insight for a specific session
+router.get('/session/:sessionId', verifyToken, historyController.getSessionDetails);
+
 module.exports = router;
