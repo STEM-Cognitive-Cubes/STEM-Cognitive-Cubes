@@ -2,7 +2,7 @@
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "types": [],
+    "types": ["jest", "node"],
     "allowJs": true,
     "checkJs": false,
     "baseUrl": ".",
@@ -11,6 +11,6 @@
       "@assets/*": ["src/assets/*"]
     }
   },
-  "include": ["App.tsx", "src/**/*"],
+  "include": ["App.tsx", "src/**/*", "tests/**/*", "jest.config.js"],
   "exclude": ["node_modules", "android", "ios"]
 }

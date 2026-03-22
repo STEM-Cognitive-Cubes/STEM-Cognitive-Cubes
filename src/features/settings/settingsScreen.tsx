@@ -13,6 +13,9 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutCurrentUser } from './account/accountService';
+import { signOut } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { auth } from '../../services/firebase';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -26,8 +29,8 @@ type RootStackParamList = {
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   UserGuideScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
   CommunityScreen: undefined;
   EmailScreen: undefined;
@@ -190,6 +193,22 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
             try {
               await logoutCurrentUser();
               Alert.alert('Logged Out Successfully', '', [
+              await signOut(auth);
+            } catch {
+              Alert.alert('Logout Failed', 'Could not sign you out. Please try again.');
+              return;
+            }
+            try {
+              await GoogleSignin.signOut();
+            } catch {
+              // Ignore Google sign-out errors if no Google session is active.
+            }
+
+            // Show success message
+            Alert.alert(
+              'Logged Out Successfully',
+              '',
+              [
                 {
                   text: 'Close',
                   onPress: () => {

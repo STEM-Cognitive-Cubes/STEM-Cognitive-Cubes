@@ -1,13 +1,31 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
+import {
+  Animated,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {
-  onPress: () => void;
+  onPress?: () => void;
   size?: number; // orb size
+
+  // NEW:
+  mode?: "fab" | "inline"; // fab = absolute bottom-right, inline = place anywhere
+  disabled?: boolean;
+  containerStyle?: StyleProp<ViewStyle>; // style for wrapper
 };
 
-export default function BotBubbleFab({ onPress, size = 64 }: Props) {
+export default function BotBubbleFab({
+  onPress,
+  size = 64,
+  mode = "fab",
+  disabled = false,
+  containerStyle,
+}: Props) {
   const floatY = useRef(new Animated.Value(0)).current;
   const mistA = useRef(new Animated.Value(0)).current;
   const mistB = useRef(new Animated.Value(0)).current;
@@ -15,7 +33,7 @@ export default function BotBubbleFab({ onPress, size = 64 }: Props) {
   const blink = useRef(new Animated.Value(1)).current; // 1=open, ~0=closed
   const blinkTimer = useRef<number | null>(null);
 
-  const s = useMemo(() => makeStyles(size), [size]);
+  const s = useMemo(() => makeStyles(size, mode), [size, mode]);
 
   useEffect(() => {
     // gentle floating
@@ -62,12 +80,26 @@ export default function BotBubbleFab({ onPress, size = 64 }: Props) {
   });
 
   return (
-    <Animated.View style={[s.fabWrap, { transform: [{ translateY: floatY }] }]}>
-      <Pressable onPress={onPress} style={s.hit}>
+    <Animated.View
+      style={[
+        s.wrap,
+        containerStyle,
+        { transform: [{ translateY: floatY }] },
+      ]}
+    >
+      <Pressable
+        onPress={onPress}
+        disabled={disabled || !onPress}
+        style={s.hit}
+      >
         <View style={s.orb}>
           {/* Outer glass gradient */}
           <LinearGradient
-            colors={["rgba(255,255,255,0.35)", "rgba(255,255,255,0.08)", "rgba(0,0,0,0.10)"]}
+            colors={[
+              "rgba(255,255,255,0.35)",
+              "rgba(255,255,255,0.08)",
+              "rgba(0,0,0,0.10)",
+            ]}
             start={{ x: 0.15, y: 0.05 }}
             end={{ x: 0.9, y: 1 }}
             style={s.glass}
@@ -84,7 +116,11 @@ export default function BotBubbleFab({ onPress, size = 64 }: Props) {
           {/* Mist layer A */}
           <Animated.View style={[s.mist, { transform: [{ rotate: mistARotate }] }]}>
             <LinearGradient
-              colors={["rgba(255,255,255,0.0)", "rgba(255,255,255,0.26)", "rgba(255,255,255,0.0)"]}
+              colors={[
+                "rgba(255,255,255,0.0)",
+                "rgba(255,255,255,0.26)",
+                "rgba(255,255,255,0.0)",
+              ]}
               start={{ x: 0.1, y: 0.2 }}
               end={{ x: 0.9, y: 0.8 }}
               style={StyleSheet.absoluteFill}
@@ -92,9 +128,15 @@ export default function BotBubbleFab({ onPress, size = 64 }: Props) {
           </Animated.View>
 
           {/* Mist layer B */}
-          <Animated.View style={[s.mist, s.mistB, { transform: [{ rotate: mistBRotate }] }]}>
+          <Animated.View
+            style={[s.mist, s.mistB, { transform: [{ rotate: mistBRotate }] }]}
+          >
             <LinearGradient
-              colors={["rgba(255,255,255,0.0)", "rgba(190,160,255,0.22)", "rgba(255,255,255,0.0)"]}
+              colors={[
+                "rgba(255,255,255,0.0)",
+                "rgba(190,160,255,0.22)",
+                "rgba(255,255,255,0.0)",
+              ]}
               start={{ x: 0.8, y: 0.2 }}
               end={{ x: 0.1, y: 0.85 }}
               style={StyleSheet.absoluteFill}
@@ -118,16 +160,24 @@ export default function BotBubbleFab({ onPress, size = 64 }: Props) {
   );
 }
 
-function makeStyles(size: number) {
+function makeStyles(size: number, mode: "fab" | "inline") {
   const r = size / 2;
 
   return StyleSheet.create({
-    fabWrap: {
-      position: "absolute",
-      right: 18,
-      bottom: 110, // keep above your bottom nav; adjust 90–130 if needed
-      zIndex: 999,
-    },
+    // ✅ wrapper changes depending on mode
+    wrap:
+      mode === "fab"
+        ? {
+            position: "absolute",
+            right: 18,
+            bottom: 110,
+            zIndex: 999,
+          }
+        : {
+            position: "relative",
+            alignItems: "center",
+            justifyContent: "center",
+          },
 
     hit: {
       width: size + 14,
