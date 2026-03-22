@@ -19,7 +19,9 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
   useEffect(() => {
     async function fetchWeeks() {
       try {
-        const response = await fetch(`${API_URL}/api/insights/historic-weeks/child123`);
+        const response = await fetch(`${API_URL}/api/insights/historic-weeks/child123`, {
+          headers: { Authorization: "Bearer mock-token-123" }
+        });
         if (response.ok) {
           const data = await response.json();
           setWeeksData(data);

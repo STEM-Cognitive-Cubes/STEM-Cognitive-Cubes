@@ -24,7 +24,9 @@ export default function SessionDetailScreen({
   useEffect(() => {
     async function fetchSession() {
       try {
-        const response = await fetch(`${API_URL}/api/history/session/${sessionId}`);
+        const response = await fetch(`${API_URL}/api/history/session/${sessionId}`, {
+          headers: { Authorization: "Bearer mock-token-123" }
+        });
         if (response.ok) {
           const data = await response.json();
           setDetail(data);
