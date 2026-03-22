@@ -140,7 +140,6 @@ export default function App() {
             <Stack.Screen name="OperateScreen" component={OperateScreen} />
             <Stack.Screen name="ProductIntro" component={ProductIntroScreen} />
             <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
-            <Stack.Screen name="AppearanceScreen" component={AppearanceScreen} />
             <Stack.Screen name="PrivacyControlsScreen" component={PrivacyControlsScreen} />
             <Stack.Screen name="DataSharingScreen" component={DataSharingScreen} />
             <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
