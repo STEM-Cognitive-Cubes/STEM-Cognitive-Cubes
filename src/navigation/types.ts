@@ -1,3 +1,16 @@
+export interface WeekSummaryData {
+  id: string;
+  title: string;
+  dateLabel: string;
+  durationMinutes: string;
+  blocks: number;
+  focusLevel: string;
+  score: string;
+  aiInsight: string;
+  focusData: Array<{ day: string; value: number }>;
+  blocksUsed: Array<{ id: string; name: string; count: number; color: string }>;
+}
+
 export type RootStackParamList = {
   // Auth
   Login: undefined;
@@ -34,7 +47,7 @@ export type RootStackParamList = {
   SessionDetail: { sessionId: string };
   // Summary feature
   WeeklySummary: undefined;
-  SummaryDetail: { weekData: any };
+  SummaryDetail: { weekData: WeekSummaryData };
   // Insights feature
   Insights: undefined;
   Recommendations: { category: string };
