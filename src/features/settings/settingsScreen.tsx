@@ -13,9 +13,6 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutCurrentUser } from './account/accountService';
-import { signOut } from 'firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { auth } from '../../services/firebase';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -192,8 +189,7 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
           onPress: async () => {
             try {
               await logoutCurrentUser();
-              await signOut(auth);
-              
+
               Alert.alert("Logged Out Successfully", "See you next time!", [
                 {
                   text: "Close",
