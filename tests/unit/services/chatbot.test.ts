@@ -155,7 +155,7 @@ describe("chatbot service", () => {
     );
   });
 
-  it("throws backend-provided history errors when response is not ok", async () => {
+  it("falls back to generic history error when response is not ok", async () => {
     const getIdToken = jest.fn().mockResolvedValue("token-123");
     (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
       {
@@ -170,7 +170,7 @@ describe("chatbot service", () => {
     });
 
     await expect(fetchChatHistory("conv-1")).rejects.toThrow(
-      "History unavailable"
+      "Could not load assistant history right now."
     );
   });
 });
