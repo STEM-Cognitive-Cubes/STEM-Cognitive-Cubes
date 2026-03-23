@@ -10,8 +10,12 @@ const authMiddleware = {
     const token = authHeader.split(' ')[1];
 
     // Development bypass for local emulator testing
-    if (process.env.NODE_ENV !== 'production' && token === 'mock-token-123') {
-      req.user = { id: 'mock-user-id' };
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      process.env.ALLOW_MOCK_AUTH === 'true' &&
+      token === 'mock-token-123'
+    ) {
+      req.user = { uid: 'mock-user-id' };
       return next();
     }
 
