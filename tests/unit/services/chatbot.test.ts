@@ -16,7 +16,7 @@ jest.mock("@/services/firebase", () => ({
 }));
 
 import { auth } from "@/services/firebase";
-import { sendChatMessage } from "@/services/chatbot";
+import { fetchChatHistory, sendChatMessage } from "@/services/chatbot";
 
 describe("chatbot service", () => {
   beforeEach(() => {
@@ -63,6 +63,54 @@ describe("chatbot service", () => {
       reply: "Hello there",
       sources: ["doc-1"],
       model: "gpt-test",
+    });
+  });
+
+  it("normalizes chatbot response when sources/model are missing", async () => {
+    const getIdToken = jest.fn().mockResolvedValue("token-123");
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      {
+        getIdToken,
+      };
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        conversationId: "conv-2",
+        reply: "Fallback fields",
+      }),
+    });
+
+    const result = await sendChatMessage("Hi");
+
+    expect(result).toEqual({
+      conversationId: "conv-2",
+      reply: "Fallback fields",
+      sources: [],
+      model: "unknown",
+    });
+  });
+
+  it("normalizes fetchChatHistory payload when fields are malformed", async () => {
+    const getIdToken = jest.fn().mockResolvedValue("token-123");
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      {
+        getIdToken,
+      };
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        conversationId: 12345,
+        messages: "not-an-array",
+      }),
+    });
+
+    const result = await fetchChatHistory();
+
+    expect(result).toEqual({
+      conversationId: undefined,
+      messages: [],
     });
   });
 });
