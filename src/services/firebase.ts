@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBMP6EbL88-bq5mHRHcw8zRmLCYmsT7W6U",
@@ -16,3 +16,32 @@ const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __blokcFirebaseEmulatorsConnected__: boolean | undefined;
+}
+
+function connectFirebaseEmulatorsIfNeeded() {
+  const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST;
+  const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST;
+
+  if ((!authHost && !firestoreHost) || globalThis.__blokcFirebaseEmulatorsConnected__) {
+    return;
+  }
+
+  if (authHost) {
+    connectAuthEmulator(auth, `http://${authHost}`, {
+      disableWarnings: true,
+    });
+  }
+
+  if (firestoreHost) {
+    const [host, port] = firestoreHost.split(":");
+    connectFirestoreEmulator(db, host, Number(port));
+  }
+
+  globalThis.__blokcFirebaseEmulatorsConnected__ = true;
+}
+
+connectFirebaseEmulatorsIfNeeded();
