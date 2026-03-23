@@ -1,6 +1,6 @@
 import React from "react";
 import { ActivityIndicator } from "react-native";
-import { render } from "@testing-library/react-native";
+import { render, waitFor } from "@testing-library/react-native";
 
 import SummaryScreen from "@/features/summary/SummaryScreen";
 
@@ -35,5 +35,18 @@ describe("SummaryScreen", () => {
 
     expect(getByText("Weekly Summary")).toBeTruthy();
     expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
+  });
+
+  it("renders the empty state when no weekly summaries are returned", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue([]),
+    }) as jest.Mock;
+
+    const { getByText } = render(<SummaryScreen navigation={navigation as never} />);
+
+    await waitFor(() => {
+      expect(getByText("No weekly data found.")).toBeTruthy();
+    });
   });
 });
