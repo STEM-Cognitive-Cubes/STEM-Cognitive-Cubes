@@ -65,3 +65,39 @@ The Stage 7 rules test suite currently verifies:
 - owner can update a play session only if ownership remains the same
 - owner cannot rewrite `parentId` to another user
 - malformed play session creation without required fields is denied
+
+## Security improvement added in this stage
+
+The `playSessions` rules were tightened so that:
+
+- `create` requires valid session data
+- `update` also requires valid session data
+- updates cannot silently rewrite `parentId`
+- malformed writes missing required fields are rejected
+
+This improves protection against unsafe client-side writes.
+
+## What this stage proves
+
+This stage proves that access control is being enforced at the Firestore rules layer.
+
+It demonstrates that:
+
+- users can access their own records
+- users cannot access another user’s protected records
+- support-related user data is private
+- play session ownership is enforced
+- unauthenticated access is blocked for protected paths
+
+## Verification command
+
+Run:
+
+```powershell
+npm run test:rules
+```
+
+## Summary
+
+Stage 7 validates that Firestore rules are protecting user-owned and parent-owned data correctly.  
+This helps ensure that even if the UI or client code is misused, unauthorized users cannot read or modify protected records.
