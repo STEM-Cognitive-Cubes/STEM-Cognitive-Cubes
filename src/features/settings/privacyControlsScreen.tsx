@@ -82,14 +82,7 @@ export default function PrivacyControlsScreen({ navigation }: Props) {
 
     persist(key, value).catch(() => undefined);
   };
-import React from "react";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SettingsPlaceholderScreen from "./common/SettingsPlaceholderScreen";
-import type { RootStackParamList } from "../../navigation/types";
 
-type Props = NativeStackScreenProps<RootStackParamList, "PrivacyControlsScreen">;
-
-export default function PrivacyControlsScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
@@ -139,10 +132,10 @@ export default function PrivacyControlsScreen({ navigation }: Props) {
                   <Text style={styles.optionSubtitle}>{item.subtitle}</Text>
                 </View>
                 <Switch
-                  value={localSettings[item.key]}
+                  value={Boolean(localSettings?.[item.key])}
                   onValueChange={(value) => handleToggle(item.key, value)}
                   trackColor={{ false: "#D1D5DB", true: "#C4B5FD" }}
-                  thumbColor={localSettings[item.key] ? "#9333EA" : "#F3F4F6"}
+                  thumbColor={localSettings?.[item.key] ? "#9333EA" : "#F3F4F6"}
                   ios_backgroundColor="#D1D5DB"
                 />
               </View>
@@ -185,6 +178,74 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  content: {
+    padding: 16,
+    gap: 12,
+  },
+  heroCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 20,
+  },
+  heroTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1F2937",
+    marginBottom: 8,
+  },
+  heroText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#6B7280",
+  },
+  statusText: {
+    fontSize: 13,
+    color: "#6B7280",
+    textAlign: "right",
+  },
+  stateCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+  },
+  stateText: {
+    marginTop: 8,
+    color: "#6B7280",
+  },
+  errorCard: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 20,
+    padding: 16,
+  },
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 14,
+  },
+  optionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 18,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  optionBody: {
+    flex: 1,
+    marginRight: 12,
+  },
+  optionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1F2937",
+    marginBottom: 6,
+  },
+  optionSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#6B7280",
+  },
+});    flex: 1,
   },
   content: {
     padding: 16,
