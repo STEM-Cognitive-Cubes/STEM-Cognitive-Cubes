@@ -157,6 +157,20 @@ describe("Firestore security rules", () => {
     );
   });
 
+  it("blocks unauthenticated reads from protected user support collections", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(
+      getDoc(doc(anonymousDb, "users/alice/supportTickets/ticket-1")),
+    );
+  });
+
   it("allows play session creation and reads only for the owning parent", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
