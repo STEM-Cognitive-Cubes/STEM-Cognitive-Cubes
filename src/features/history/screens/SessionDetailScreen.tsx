@@ -16,7 +16,7 @@ export default function SessionDetailScreen({
   navigation,
   route: _route,
 }: SessionDetailScreenProps) {
-  const { sessionId } = route.params;
+  const { sessionId } = _route.params;
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
