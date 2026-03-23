@@ -23,3 +23,7 @@ The current Stage 8 flow set covers:
 ## What this stage proves
 
 These flows are intended to prove that the app’s main navigation paths connect correctly and that a user can complete the most important journeys without a critical break in the flow.
+
+## How to run
+
+Run individual Maestro flows or execute the smoke suite after setting the required environment variables for test credentials and profile data.
