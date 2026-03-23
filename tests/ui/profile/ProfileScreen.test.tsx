@@ -1,6 +1,5 @@
 import React from "react";
-import { View } from "react-native";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 
 import ProfileScreen from "@/features/profile/profile";
 
@@ -72,5 +71,13 @@ describe("ProfileScreen", () => {
     expect(getByText("Settings")).toBeTruthy();
     expect(getByText("Notifications")).toBeTruthy();
     expect(getByText("Daily insights & updates")).toBeTruthy();
+  });
+
+  it("navigates to AddChild when the add child button is pressed", () => {
+    const { getByText } = render(<ProfileScreen />);
+
+    fireEvent.press(getByText("Add Another Child"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("AddChild");
   });
 });
