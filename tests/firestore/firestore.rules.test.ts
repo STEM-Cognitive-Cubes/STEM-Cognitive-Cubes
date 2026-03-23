@@ -300,4 +300,16 @@ describe("Firestore security rules", () => {
       ),
     );
   });
+
+  it("blocks creating a play session without a status field", async () => {
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    const sessionRef = doc(collection(aliceDb, "playSessions"));
+
+    await assertFails(
+      setDoc(sessionRef, {
+        parentId: "alice",
+        childId: "child-1",
+      }),
+    );
+  });
 });
