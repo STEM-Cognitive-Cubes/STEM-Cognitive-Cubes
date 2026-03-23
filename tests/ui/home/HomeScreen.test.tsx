@@ -81,4 +81,12 @@ describe("HomeScreen", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith("StartSession");
   });
+
+  it("navigates to History from the quick actions section", () => {
+    const { getByText } = render(<HomeScreen />);
+
+    fireEvent.press(getByText("History"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("History");
+  });
 });
