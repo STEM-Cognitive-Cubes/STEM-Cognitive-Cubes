@@ -1,3 +1,5 @@
 appId: com.blokc.app
 ---
 - launchApp
+- assertVisible: "Hi, Welcome to"
+- assertVisible: "Login"
