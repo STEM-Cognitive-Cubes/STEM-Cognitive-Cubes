@@ -197,6 +197,22 @@ describe("Firestore security rules", () => {
     );
   });
 
+  it("allows public reads but blocks public writes", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "public/appAnnouncements"), {
+        message: "Welcome to BlokC",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(getDoc(doc(anonymousDb, "public/appAnnouncements")));
+    await assertFails(
+      setDoc(doc(anonymousDb, "public/newAnnouncement"), {
+        message: "This should be blocked",
+      }),
+    );
+  });
+
   it("allows play session creation and reads only for the owning parent", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
