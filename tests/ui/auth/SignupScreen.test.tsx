@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "react-native";
-import { fireEvent, render } from "@testing-library/react-native";
+import { fireEvent, render, waitFor } from "@testing-library/react-native";
 
 import SignupScreen from "@/features/auth/screens/SignupScreen";
 
@@ -27,7 +27,7 @@ jest.mock("@react-native-google-signin/google-signin", () => ({
 jest.mock("firebase/auth", () => ({
   createUserWithEmailAndPassword: jest.fn(),
   fetchSignInMethodsForEmail: jest.fn(),
-  signOut: jest.fn(),
+  signOut: jest.fn().mockResolvedValue(undefined),
   updateProfile: jest.fn(),
 }));
 jest.mock("firebase/firestore", () => ({
@@ -91,5 +91,15 @@ describe("SignupScreen", () => {
     fireEvent.press(getByText("Sign up"));
 
     expect(getByText("Please enter email and password.")).toBeTruthy();
+  });
+
+  it("navigates to login after logout", async () => {
+    const { getByText } = render(<SignupScreen navigation={navigation as never} />);
+
+    fireEvent.press(getByText("Log out"));
+
+    await waitFor(() => {
+      expect(navigation.navigate).toHaveBeenCalledWith("Login");
+    });
   });
 });
