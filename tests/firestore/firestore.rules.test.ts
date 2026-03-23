@@ -135,6 +135,28 @@ describe("Firestore security rules", () => {
     );
   });
 
+  it("denies another user access to support collections", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      });
+      await setDoc(
+        doc(context.firestore(), "users/alice/supportChatMessages/message-1"),
+        {
+          sender: "You",
+          body: "Need help",
+        },
+      );
+    });
+
+    const bobDb = testEnv.authenticatedContext("bob").firestore();
+    await assertFails(getDoc(doc(bobDb, "users/alice/supportTickets/ticket-1")));
+    await assertFails(
+      getDoc(doc(bobDb, "users/alice/supportChatMessages/message-1")),
+    );
+  });
+
   it("allows play session creation and reads only for the owning parent", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
