@@ -47,4 +47,24 @@ describe("groupSessionsByDay", () => {
     expect(result[1].title).toBe("June 12, 2025");
     expect(result[1].data.map((session) => session.id)).toEqual(["3"]);
   });
+
+  it("preserves first-seen group order and session order inside groups", () => {
+    const sessions = [
+      createSession("1", "June 15, 2025", "Today"),
+      createSession("2", "June 14, 2025", "Yesterday"),
+      createSession("3", "June 15, 2025", "Today"),
+      createSession("4", "June 13, 2025", "Earlier"),
+      createSession("5", "June 14, 2025", "Yesterday"),
+    ];
+
+    const result = groupSessionsByDay(sessions);
+
+    expect(result.map((group) => group.title)).toEqual([
+      "Today",
+      "Yesterday",
+      "Earlier",
+    ]);
+    expect(result[0].data.map((session) => session.id)).toEqual(["1", "3"]);
+    expect(result[1].data.map((session) => session.id)).toEqual(["2", "5"]);
+  });
 });
