@@ -1,7 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
-import { createUserWithEmailAndPassword, signOut, fetchSignInMethodsForEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, updateProfile, fetchSignInMethodsForEmail } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
