@@ -102,7 +102,7 @@ const HelpSupportScreen: React.FC<HelpSupportScreenProps> = ({ navigation }) => 
           <Ionicons name="help-circle" size={48} color="#9333EA" />
           <Text style={styles.welcomeTitle}>Hello! How can we help?</Text>
           <Text style={styles.welcomeSubtitle}>
-            We&apos;re here to help you get the most out of your STEM Cognitive Cubes experience
+            We're here to help you get the most out of your STEM Cognitive Cubes experience
           </Text>
         </View>
 
