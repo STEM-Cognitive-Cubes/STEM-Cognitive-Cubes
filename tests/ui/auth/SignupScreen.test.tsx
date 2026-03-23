@@ -40,6 +40,10 @@ describe("SignupScreen", () => {
     navigate: jest.fn(),
   };
 
+  beforeEach(() => {
+    navigation.navigate.mockClear();
+  });
+
   it("renders the main signup screen content", () => {
     const { getByPlaceholderText, getByText } = render(
       <SignupScreen navigation={navigation as never} />,
@@ -79,5 +83,13 @@ describe("SignupScreen", () => {
     expect(emailInput.props.value).toBe("sam@example.com");
     expect(passwordInput.props.value).toBe("secret123");
     expect(confirmPasswordInput.props.value).toBe("secret123");
+  });
+
+  it("shows an error when email or password is missing", () => {
+    const { getByText } = render(<SignupScreen navigation={navigation as never} />);
+
+    fireEvent.press(getByText("Sign up"));
+
+    expect(getByText("Please enter email and password.")).toBeTruthy();
   });
 });
