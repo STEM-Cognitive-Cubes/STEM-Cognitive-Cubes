@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render, waitFor } from "@testing-library/react-native";
 
 import BotChatScreen from "@/features/bot/screens/BotChatScreen";
 
@@ -35,6 +35,11 @@ describe("BotChatScreen", () => {
       conversationId: undefined,
       messages: [],
     });
+    mockSendChatMessage.mockResolvedValue({
+      conversationId: "conversation-1",
+      reply: "Here is your answer.",
+      sources: [],
+    });
   });
 
   it("renders the main chatbot screen content", async () => {
@@ -53,5 +58,22 @@ describe("BotChatScreen", () => {
     expect(getByPlaceholderText("Ask me anything…")).toBeTruthy();
     expect(await findByText("Send")).toBeTruthy();
     expect(await findByText("Bot Bubble")).toBeTruthy();
+  });
+
+  it("sends a message and renders the bot reply", async () => {
+    const { findByText, getByPlaceholderText, getByText } = render(<BotChatScreen />);
+
+    const input = getByPlaceholderText("Ask me anything…");
+
+    fireEvent.changeText(input, "What can you do?");
+    fireEvent.press(getByText("Send"));
+
+    expect(await findByText("What can you do?")).toBeTruthy();
+
+    await waitFor(() => {
+      expect(mockSendChatMessage).toHaveBeenCalledWith("What can you do?", undefined);
+    });
+
+    expect(await findByText("Here is your answer.")).toBeTruthy();
   });
 });
