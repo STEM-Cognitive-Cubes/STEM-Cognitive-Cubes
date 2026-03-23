@@ -14,6 +14,8 @@
     "test:watch": "jest --watch",
     "test:integration:run": "jest tests/integration --runInBand --forceExit",
     "test:integration": "node ./scripts/run-integration-tests.js",
+    "test:backend:run": "jest tests/backend --runInBand --forceExit --testTimeout=20000",
+    "test:backend": "node ./scripts/run-backend-tests.js",
     "test:rules": "node ./scripts/run-firestore-rules-tests.js",
     "emulators:start": "node ./scripts/firebase-cli.js emulators:start --only auth,firestore,functions",
     "emulators:firestore": "node ./scripts/firebase-cli.js emulators:start --only firestore",
