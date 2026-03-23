@@ -113,4 +113,64 @@ describe("chatbot service", () => {
       messages: [],
     });
   });
+
+  it("throws when current user is missing", async () => {
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      null;
+
+    await expect(sendChatMessage("Hi")).rejects.toThrow(
+      "You must be signed in to use the assistant."
+    );
+  });
+
+  it("maps network failures to a device-reachability message", async () => {
+    const getIdToken = jest.fn().mockResolvedValue("token-123");
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      {
+        getIdToken,
+      };
+
+    (global.fetch as jest.Mock).mockRejectedValue(
+      new Error("Network request failed")
+    );
+
+    await expect(sendChatMessage("Hi")).rejects.toThrow(
+      "The assistant server is not reachable from this device. Check your API_BASE_URL, Wi-Fi, and emulator host settings."
+    );
+  });
+
+  it("maps timeout aborts to the assistant timeout message", async () => {
+    const getIdToken = jest.fn().mockResolvedValue("token-123");
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      {
+        getIdToken,
+      };
+
+    const abortError = new Error("aborted");
+    abortError.name = "AbortError";
+    (global.fetch as jest.Mock).mockRejectedValue(abortError);
+
+    await expect(sendChatMessage("Hi")).rejects.toThrow(
+      "The assistant server did not respond. Check that the Firebase emulator is running and reachable from your phone."
+    );
+  });
+
+  it("throws backend-provided history errors when response is not ok", async () => {
+    const getIdToken = jest.fn().mockResolvedValue("token-123");
+    (auth as { currentUser: { getIdToken: () => Promise<string> } | null }).currentUser =
+      {
+        getIdToken,
+      };
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        error: "History unavailable",
+      }),
+    });
+
+    await expect(fetchChatHistory("conv-1")).rejects.toThrow(
+      "History unavailable"
+    );
+  });
 });
