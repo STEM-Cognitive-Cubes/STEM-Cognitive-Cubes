@@ -14,7 +14,10 @@ jest.mock("@expo/vector-icons", () => ({
   },
 }));
 jest.mock("@/features/auth/components/AuthBackground", () => () => null);
-jest.mock("@/features/auth/components/ForgotPasswordModal", () => () => null);
+jest.mock("@/features/auth/components/ForgotPasswordModal", () => () => {
+  const { Text } = require("react-native");
+  return <Text>Forgot Password Modal</Text>;
+});
 jest.mock("@/features/auth/components/AuthSuccessModal", () => () => null);
 jest.mock("@/features/settings/account/accountService", () => ({
   ensureAccountProfile: jest.fn(),
@@ -84,5 +87,13 @@ describe("LoginScreen", () => {
 
     expect(emailInput.props.value).toBe("parent@example.com");
     expect(passwordInput.props.value).toBe("strong-password");
+  });
+
+  it("opens the forgot password modal", () => {
+    const { getByText } = render(<LoginScreen navigation={navigation as never} />);
+
+    fireEvent.press(getByText("Forgot password?"));
+
+    expect(getByText("Forgot Password Modal")).toBeTruthy();
   });
 });
