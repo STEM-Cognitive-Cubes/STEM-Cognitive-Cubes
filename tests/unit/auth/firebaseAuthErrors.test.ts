@@ -27,4 +27,22 @@ describe("getFirebaseAuthErrorMessage", () => {
       "Login failed. Check your email and password."
     );
   });
+
+  it("returns fallback when the error is not firebase-shaped", () => {
+    expect(
+      getFirebaseAuthErrorMessage(new Error("boom"), fallbackMessage)
+    ).toBe(fallbackMessage);
+    expect(getFirebaseAuthErrorMessage(null, fallbackMessage)).toBe(
+      fallbackMessage
+    );
+  });
+
+  it("appends unknown firebase codes to the fallback message", () => {
+    const result = getFirebaseAuthErrorMessage(
+      { code: "auth/some-new-code" },
+      fallbackMessage
+    );
+
+    expect(result).toBe("Authentication failed (auth/some-new-code)");
+  });
 });
