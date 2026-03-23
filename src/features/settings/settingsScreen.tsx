@@ -192,37 +192,23 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
           onPress: async () => {
             try {
               await logoutCurrentUser();
-              Alert.alert('Logged Out Successfully', '', [
               await signOut(auth);
-            } catch {
-              Alert.alert('Logout Failed', 'Could not sign you out. Please try again.');
-              return;
-            }
-            try {
-              await GoogleSignin.signOut();
-            } catch {
-              // Ignore Google sign-out errors if no Google session is active.
-            }
-
-            // Show success message
-            Alert.alert(
-              'Logged Out Successfully',
-              '',
-              [
+              
+              Alert.alert("Logged Out Successfully", "See you next time!", [
                 {
-                  text: 'Close',
+                  text: "Close",
                   onPress: () => {
                     navigation?.reset({
                       index: 0,
-                      routes: [{ name: 'Login' }],
+                      routes: [{ name: "Login" }],
                     });
                   },
                 },
               ]);
             } catch (error) {
               Alert.alert(
-                'Unable to log out',
-                error instanceof Error ? error.message : 'Please try again.'
+                "Logout Failed",
+                error instanceof Error ? error.message : "Could not sign you out. Please try again."
               );
             }
           },
