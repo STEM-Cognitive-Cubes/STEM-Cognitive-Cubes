@@ -95,6 +95,7 @@ export default function ChatScreen({ navigation }: Props) {
 
         <View style={styles.inputBar}>
           <TextInput
+            testID="support-chat-input"
             value={inputText}
             onChangeText={setInputText}
             placeholder="Type a message"
@@ -102,6 +103,7 @@ export default function ChatScreen({ navigation }: Props) {
             style={styles.input}
           />
           <TouchableOpacity
+            testID="support-chat-send-button"
             style={[
               styles.sendButton,
               (!inputText.trim() || isSending) && styles.sendButtonDisabled,
