@@ -36,8 +36,11 @@ service cloud.firestore {
     match /playSessions/{sessionId} {
       allow create: if isSignedIn()
         && isValidPlaySessionData();
-      allow read, update, delete: if isSignedIn()
+      allow read, delete: if isSignedIn()
         && resource.data.parentId == request.auth.uid;
+      allow update: if isSignedIn()
+        && resource.data.parentId == request.auth.uid
+        && isValidPlaySessionData();
     }
 
     match /public/{document=**} {
