@@ -58,6 +58,17 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "users/alice")));
   });
 
+  it("denies unauthenticated reads to protected user profiles", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice"), {
+        displayName: "Alice",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "users/alice")));
+  });
+
   it("blocks unauthenticated writes to protected data", async () => {
     const anonymousDb = testEnv.unauthenticatedContext().firestore();
     await assertFails(
@@ -112,6 +123,96 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "parents/alice/children/child-1")));
   });
 
+  it("blocks unauthenticated reads from parent profile data", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "parents/alice"), {
+        firstName: "Alice",
+      });
+      await setDoc(doc(context.firestore(), "parents/alice/children/child-1"), {
+        name: "Charlie",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "parents/alice")));
+    await assertFails(getDoc(doc(anonymousDb, "parents/alice/children/child-1")));
+  });
+
+  it("allows a signed-in user to manage their own support collections", async () => {
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+
+    await assertSucceeds(
+      setDoc(doc(aliceDb, "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      }),
+    );
+
+    await assertSucceeds(
+      setDoc(doc(aliceDb, "users/alice/supportChatMessages/message-1"), {
+        sender: "You",
+        body: "Need help",
+      }),
+    );
+
+    await assertSucceeds(getDoc(doc(aliceDb, "users/alice/supportTickets/ticket-1")));
+    await assertSucceeds(
+      getDoc(doc(aliceDb, "users/alice/supportChatMessages/message-1")),
+    );
+  });
+
+  it("denies another user access to support collections", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      });
+      await setDoc(
+        doc(context.firestore(), "users/alice/supportChatMessages/message-1"),
+        {
+          sender: "You",
+          body: "Need help",
+        },
+      );
+    });
+
+    const bobDb = testEnv.authenticatedContext("bob").firestore();
+    await assertFails(getDoc(doc(bobDb, "users/alice/supportTickets/ticket-1")));
+    await assertFails(
+      getDoc(doc(bobDb, "users/alice/supportChatMessages/message-1")),
+    );
+  });
+
+  it("blocks unauthenticated reads from protected user support collections", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(
+      getDoc(doc(anonymousDb, "users/alice/supportTickets/ticket-1")),
+    );
+  });
+
+  it("allows public reads but blocks public writes", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "public/appAnnouncements"), {
+        message: "Welcome to BlokC",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(getDoc(doc(anonymousDb, "public/appAnnouncements")));
+    await assertFails(
+      setDoc(doc(anonymousDb, "public/newAnnouncement"), {
+        message: "This should be blocked",
+      }),
+    );
+  });
+
   it("allows play session creation and reads only for the owning parent", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
@@ -130,6 +231,19 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "playSessions", sessionRef.id)));
   });
 
+  it("blocks unauthenticated reads from play sessions", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "playSessions/session-1")));
+  });
+
   it("blocks creating a play session for a different parent id", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
@@ -138,6 +252,63 @@ describe("Firestore security rules", () => {
       setDoc(sessionRef, {
         parentId: "bob",
         status: "active",
+      }),
+    );
+  });
+
+  it("allows the owning parent to update a play session when ownership stays the same", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    await assertSucceeds(
+      setDoc(
+        doc(aliceDb, "playSessions/session-1"),
+        {
+          parentId: "alice",
+          childId: "child-1",
+          status: "completed",
+        },
+        { merge: true },
+      ),
+    );
+  });
+
+  it("blocks updating a play session to a different parent id", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    await assertFails(
+      setDoc(
+        doc(aliceDb, "playSessions/session-1"),
+        {
+          parentId: "bob",
+          status: "completed",
+        },
+        { merge: true },
+      ),
+    );
+  });
+
+  it("blocks creating a play session without a status field", async () => {
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    const sessionRef = doc(collection(aliceDb, "playSessions"));
+
+    await assertFails(
+      setDoc(sessionRef, {
+        parentId: "alice",
+        childId: "child-1",
       }),
     );
   });
