@@ -9,3 +9,13 @@ This stage validates complete user journeys from the perspective of a real app u
 ## Tool used
 
 This stage uses **Maestro** to describe app flows as reproducible YAML scripts.
+
+## Flows covered
+
+The current Stage 8 flow set covers:
+
+- login to home
+- signup and return to login
+- home to start-session entry
+- profile to add-child entry
+- settings logout
