@@ -1,0 +1,10 @@
+appId: com.blokc.app
+---
+- launchApp
+- assertVisible: "Hi, Welcome to"
+- assertVisible: "Track Now"
+- tapOn: "Track Now"
+- assertVisible: "Start Play Session"
+- assertVisible: "System Status"
+- assertVisible: "Start Session"
+- assertVisible: "Last Ended Session"

@@ -1,0 +1,12 @@
+appId: com.blokc.app
+---
+- launchApp
+- assertVisible: "Hi, Welcome to"
+- assertVisible: "Login"
+- tapOn: "Enter your email"
+- inputText: "${MAESTRO_LOGIN_EMAIL}"
+- tapOn: "Enter your password"
+- inputText: "${MAESTRO_LOGIN_PASSWORD}"
+- tapOn: "Login"
+- assertVisible: "Quick Actions"
+- assertVisible: "Track Now"
