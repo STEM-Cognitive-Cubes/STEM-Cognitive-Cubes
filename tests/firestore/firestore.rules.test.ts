@@ -278,4 +278,26 @@ describe("Firestore security rules", () => {
       ),
     );
   });
+
+  it("blocks updating a play session to a different parent id", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    await assertFails(
+      setDoc(
+        doc(aliceDb, "playSessions/session-1"),
+        {
+          parentId: "bob",
+          status: "completed",
+        },
+        { merge: true },
+      ),
+    );
+  });
 });
