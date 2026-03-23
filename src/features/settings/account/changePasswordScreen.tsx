@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,15 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type RootStackParamList = {
-  Account: undefined;
-};
+import type { RootStackParamList } from '../../../navigation/types';
+import { changeAccountPassword, useAccountProfile } from './accountService';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList, 'ChangePassword'>;
 
-interface ChangePasswordScreenProps {
-  navigation?: NavigationProp;
-}
-
-const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation }) => {
+const ChangePasswordScreen: React.FC<Props> = ({ navigation }) => {
+  const { profile } = useAccountProfile();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,13 +28,12 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Password validation
-  const validatePassword = (password: string) => {
-    const hasMinLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const passwordValidation = useMemo(() => {
+    const hasMinLength = newPassword.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(newPassword);
+    const hasLowerCase = /[a-z]/.test(newPassword);
+    const hasNumber = /\d/.test(newPassword);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
 
     return {
       hasMinLength,
@@ -46,14 +41,16 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation 
       hasLowerCase,
       hasNumber,
       hasSpecialChar,
-      isValid: hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar,
+      isValid:
+        hasMinLength &&
+        hasUpperCase &&
+        hasLowerCase &&
+        hasNumber &&
+        hasSpecialChar,
     };
-  };
+  }, [newPassword]);
 
-  const passwordValidation = validatePassword(newPassword);
-//logic for update password
   const handleUpdatePassword = async () => {
-    // Validation
     if (!currentPassword) {
       Alert.alert('Error', 'Please enter your current password');
       return;
@@ -81,66 +78,70 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ navigation 
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await changeAccountPassword(currentPassword, newPassword);
+      Alert.alert('Success', 'Password updated successfully.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
       Alert.alert(
-        'Success',
-        'Password updated successfully.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              console.log('Password updated');
-              navigation?.goBack();
-            },
-          },
-        ]
+        'Unable to update password',
+        error instanceof Error ? error.message : 'Please try again.'
       );
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCancel = () => {
-    navigation?.goBack();
-  };
-
-return (
+  return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation?.goBack()}
+          onPress={() => navigation.goBack()}
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Change Password</Text>
-        <View style={{ width: 40 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Icon */}
         <View style={styles.iconContainer}>
           <View style={styles.iconCircle}>
             <Ionicons name="shield-checkmark" size={60} color="#9333EA" />
           </View>
         </View>
 
-        {/* Description */}
         <Text style={styles.description}>
           Your new password must be different from{'\n'}previously used passwords.
         </Text>
 
-        {/* Form Section */}
+        {!profile?.hasPasswordProvider ? (
+          <View style={styles.infoBox}>
+            <Text style={styles.infoBoxText}>
+              This account was created with a non-password sign-in provider, so
+              password changes are not available from this screen.
+            </Text>
+          </View>
+        ) : null}
+
         <View style={styles.formContainer}>
-          {/* Current Password */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Current Password</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color="#6B7280"
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 value={currentPassword}
@@ -151,7 +152,7 @@ return (
                 autoCapitalize="none"
               />
               <TouchableOpacity
-                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                onPress={() => setShowCurrentPassword((value) => !value)}
                 style={styles.eyeIcon}
               >
                 <Ionicons
@@ -163,11 +164,15 @@ return (
             </View>
           </View>
 
-          {/* New Password */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>New Password</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color="#6B7280"
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 value={newPassword}
@@ -178,7 +183,7 @@ return (
                 autoCapitalize="none"
               />
               <TouchableOpacity
-                onPress={() => setShowNewPassword(!showNewPassword)}
+                onPress={() => setShowNewPassword((value) => !value)}
                 style={styles.eyeIcon}
               >
                 <Ionicons
@@ -190,11 +195,15 @@ return (
             </View>
           </View>
 
-          {/* Confirm Password */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Confirm Password</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color="#6B7280"
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 value={confirmPassword}
@@ -205,7 +214,7 @@ return (
                 autoCapitalize="none"
               />
               <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                onPress={() => setShowConfirmPassword((value) => !value)}
                 style={styles.eyeIcon}
               >
                 <Ionicons
@@ -217,102 +226,133 @@ return (
             </View>
           </View>
 
-          {/* Password Requirements */}
-          {newPassword.length > 0 && (
+          {newPassword.length > 0 ? (
             <View style={styles.requirementsContainer}>
               <Text style={styles.requirementsTitle}>Password requirements:</Text>
 
               <View style={styles.requirementItem}>
                 <Ionicons
-                  name={passwordValidation.hasMinLength ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    passwordValidation.hasMinLength
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={16}
                   color={passwordValidation.hasMinLength ? '#10B981' : '#EF4444'}
                 />
-                <Text style={[
-                  styles.requirementText,
-                  passwordValidation.hasMinLength && styles.requirementMet
-                ]}>
+                <Text
+                  style={[
+                    styles.requirementText,
+                    passwordValidation.hasMinLength && styles.requirementMet,
+                  ]}
+                >
                   At least 8 characters
                 </Text>
               </View>
 
               <View style={styles.requirementItem}>
                 <Ionicons
-                  name={passwordValidation.hasUpperCase ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    passwordValidation.hasUpperCase
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={16}
                   color={passwordValidation.hasUpperCase ? '#10B981' : '#EF4444'}
                 />
-                <Text style={[
-                  styles.requirementText,
-                  passwordValidation.hasUpperCase && styles.requirementMet
-                ]}>
+                <Text
+                  style={[
+                    styles.requirementText,
+                    passwordValidation.hasUpperCase && styles.requirementMet,
+                  ]}
+                >
                   One uppercase letter
                 </Text>
               </View>
 
               <View style={styles.requirementItem}>
                 <Ionicons
-                  name={passwordValidation.hasLowerCase ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    passwordValidation.hasLowerCase
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={16}
                   color={passwordValidation.hasLowerCase ? '#10B981' : '#EF4444'}
                 />
-                <Text style={[
-                  styles.requirementText,
-                  passwordValidation.hasLowerCase && styles.requirementMet
-                ]}>
+                <Text
+                  style={[
+                    styles.requirementText,
+                    passwordValidation.hasLowerCase && styles.requirementMet,
+                  ]}
+                >
                   One lowercase letter
                 </Text>
               </View>
 
               <View style={styles.requirementItem}>
                 <Ionicons
-                  name={passwordValidation.hasNumber ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    passwordValidation.hasNumber
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={16}
                   color={passwordValidation.hasNumber ? '#10B981' : '#EF4444'}
                 />
-                <Text style={[
-                  styles.requirementText,
-                  passwordValidation.hasNumber && styles.requirementMet
-                ]}>
+                <Text
+                  style={[
+                    styles.requirementText,
+                    passwordValidation.hasNumber && styles.requirementMet,
+                  ]}
+                >
                   One number
                 </Text>
               </View>
 
               <View style={styles.requirementItem}>
                 <Ionicons
-                  name={passwordValidation.hasSpecialChar ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    passwordValidation.hasSpecialChar
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={16}
-                  color={passwordValidation.hasSpecialChar ? '#10B981' : '#EF4444'}
+                  color={
+                    passwordValidation.hasSpecialChar ? '#10B981' : '#EF4444'
+                  }
                 />
-                <Text style={[
-                  styles.requirementText,
-                  passwordValidation.hasSpecialChar && styles.requirementMet
-                ]}>
+                <Text
+                  style={[
+                    styles.requirementText,
+                    passwordValidation.hasSpecialChar && styles.requirementMet,
+                  ]}
+                >
                   One special character
                 </Text>
               </View>
             </View>
-          )}
+          ) : null}
         </View>
 
-        {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.updateButton}
+            style={[
+              styles.updateButton,
+              !profile?.hasPasswordProvider && styles.buttonDisabled,
+            ]}
             onPress={handleUpdatePassword}
             activeOpacity={0.8}
-            disabled={isLoading}
+            disabled={isLoading || !profile?.hasPasswordProvider}
           >
-            {isLoading ? (
-              <Text style={styles.updateButtonText}>Updating...</Text>
-            ) : (
-              <Text style={styles.updateButtonText}>Update Password</Text>
-            )}
+            <Text style={styles.updateButtonText}>
+              {isLoading ? 'Updating...' : 'Update Password'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.cancelButton}
-            onPress={handleCancel}
+            onPress={() => navigation.goBack()}
             activeOpacity={0.7}
             disabled={isLoading}
           >
@@ -323,7 +363,7 @@ return (
     </SafeAreaView>
   );
 };
-//styles
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -353,27 +393,42 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
+  headerSpacer: {
+    width: 40,
+  },
   content: {
     flex: 1,
   },
   iconContainer: {
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingTop: 32,
+    paddingBottom: 20,
   },
   iconCircle: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#EDE9FE',
+    backgroundColor: '#F3F0FF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   description: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-    paddingHorizontal: 40,
     marginBottom: 24,
+    lineHeight: 24,
+  },
+  infoBox: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    marginHorizontal: 20,
+    padding: 16,
+    marginBottom: 20,
+  },
+  infoBoxText: {
+    color: '#92400E',
+    fontSize: 14,
     lineHeight: 20,
   },
   formContainer: {
@@ -396,11 +451,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
   },
   inputIcon: {
     marginRight: 10,
@@ -415,14 +465,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   requirementsContainer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     marginTop: 8,
   },
   requirementsTitle: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#374151',
     marginBottom: 12,
   },
@@ -437,7 +487,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   requirementMet: {
-    color: '#10B981',
+    color: '#047857',
   },
   buttonContainer: {
     paddingHorizontal: 20,
@@ -450,11 +500,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
-    elevation: 3,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   updateButtonText: {
     fontSize: 16,
@@ -477,4 +525,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChangePasswordScreen;
-

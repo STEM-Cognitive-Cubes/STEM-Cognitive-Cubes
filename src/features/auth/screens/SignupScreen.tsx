@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword, signOut, fetchSignInMethodsForEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, updateProfile, fetchSignInMethodsForEmail } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -14,6 +14,7 @@ import AuthSuccessModal from "../components/AuthSuccessModal";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../navigation/types";
 import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
+import { ensureAccountProfile } from "../../settings/account/accountService";
 
 type SignupScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
@@ -39,6 +40,9 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       return;
     }
     try {
+      const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(result.user, { displayName: fullName.trim() });
+      await ensureAccountProfile(result.user, { fullName });
       const methods = await fetchSignInMethodsForEmail(auth, email.trim());
       if (methods.includes("google.com")) {
         setAuthError("An account already exists using Google. Please log in with Google.");
@@ -56,7 +60,6 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       setIsSuccessOpen(true);
     } catch (error) {
       setAuthError(getFirebaseAuthErrorMessage(error, "Sign up failed. Try again."));
-      // eslint-disable-next-line no-console
       console.warn("Email signup failed:", error);
     }
   };

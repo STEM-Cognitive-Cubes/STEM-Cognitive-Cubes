@@ -12,20 +12,40 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+
 import type { RootStackParamList } from "../../../navigation/types";
+import { submitSupportEmail } from "./helpSupportService";
 
 type Props = NativeStackScreenProps<RootStackParamList, "EmailScreen">;
 
 export default function EmailScreen({ navigation }: Props) {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  const handleSend = () => {
-    Alert.alert(
-      "Message queued",
-      "This placeholder confirms the support form is wired correctly.",
-      [{ text: "OK", onPress: () => navigation.goBack() }]
-    );
+  const handleSend = async () => {
+    if (!subject.trim() || !message.trim()) {
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      await submitSupportEmail(subject, message);
+      Alert.alert("Support request sent", "Your message has been saved for the support team.", [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Unable to send message",
+        error instanceof Error ? error.message : "Please try again."
+      );
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -44,7 +64,7 @@ export default function EmailScreen({ navigation }: Props) {
           <Ionicons name="mail-outline" size={32} color="#9333EA" />
           <Text style={styles.infoTitle}>Send a support request</Text>
           <Text style={styles.infoText}>
-            Use this form as the in-app entry point for email-based support.
+            This form now saves support requests to the backend so your issue can be tracked.
           </Text>
         </View>
 
@@ -69,11 +89,14 @@ export default function EmailScreen({ navigation }: Props) {
         />
 
         <TouchableOpacity
-          style={styles.button}
+          style={[
+            styles.button,
+            (!subject.trim() || !message.trim() || isSending) && styles.buttonDisabled,
+          ]}
           onPress={handleSend}
-          disabled={!subject.trim() || !message.trim()}
+          disabled={!subject.trim() || !message.trim() || isSending}
         >
-          <Text style={styles.buttonText}>Send</Text>
+          <Text style={styles.buttonText}>{isSending ? "Sending..." : "Send"}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -156,6 +179,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.55,
   },
   buttonText: {
     color: "#FFFFFF",

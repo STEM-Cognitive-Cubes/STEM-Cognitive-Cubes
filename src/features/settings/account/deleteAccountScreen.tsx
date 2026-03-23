@@ -11,27 +11,28 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type RootStackParamList = {
-  Account: undefined;
-  Login: undefined;
-};
+import type { RootStackParamList } from '../../../navigation/types';
+import { deleteCurrentAccount, useAccountProfile } from './accountService';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList, 'DeleteAccount'>;
 
-interface DeleteAccountScreenProps {
-  navigation?: NavigationProp;
-}
-
-const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation }) => {
+const DeleteAccountScreen: React.FC<Props> = ({ navigation }) => {
+  const { profile } = useAccountProfile();
   const [confirmText, setConfirmText] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePermanentlyDelete = async () => {
-    // Validation
     if (confirmText.toUpperCase() !== 'DELETE') {
       Alert.alert('Error', 'Please type "DELETE" to confirm');
+      return;
+    }
+
+    if (profile?.hasPasswordProvider && !currentPassword) {
+      Alert.alert('Error', 'Please enter your current password');
       return;
     }
 
@@ -49,9 +50,8 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
           onPress: async () => {
             setIsLoading(true);
 
-            // Simulate API call
-            setTimeout(() => {
-              setIsLoading(false);
+            try {
+              await deleteCurrentAccount(currentPassword);
               Alert.alert(
                 'Account Deleted',
                 'Your account has been deleted successfully.',
@@ -59,52 +59,53 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
                   {
                     text: 'OK',
                     onPress: () => {
-                      console.log('Account deleted, navigate to login');
-                      // navigation?.navigate('Login');
+                      navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Login' }],
+                      });
                     },
                   },
                 ]
               );
-            }, 1500);
+            } catch (error) {
+              Alert.alert(
+                'Unable to delete account',
+                error instanceof Error ? error.message : 'Please try again.'
+              );
+            } finally {
+              setIsLoading(false);
+            }
           },
         },
       ]
     );
   };
 
-  const handleCancel = () => {
-    navigation?.goBack();
-  };
- return (
+  return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9333EA" />
 
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation?.goBack()}
+          onPress={() => navigation.goBack()}
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Delete Account</Text>
-        <View style={{ width: 40 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Warning image */}
         <View style={styles.iconContainer}>
           <View style={styles.warningCircle}>
             <Ionicons name="warning" size={60} color="#EF4444" />
           </View>
         </View>
 
-        {/* Warning header */}
         <Text style={styles.warningTitle}>Warning! Permanent Action</Text>
 
-        {/* Warning Message */}
         <View style={styles.warningBox}>
           <Text style={styles.warningBoxTitle}>What you will lose:</Text>
           <View style={styles.warningItem}>
@@ -121,7 +122,41 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
           </View>
         </View>
 
-        {/* Confirmation Section */}
+        {profile?.hasPasswordProvider ? (
+          <View style={styles.confirmSection}>
+            <Text style={styles.confirmTitle}>Current Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+                placeholder="Enter your current password"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                style={styles.eyeButton}
+                onPress={() => setShowPassword((value) => !value)}
+              >
+                <Ionicons
+                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#6B7280"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.infoBox}>
+            <Text style={styles.infoBoxText}>
+              This account does not use an email/password login. If Firebase asks
+              you to log in again before deletion, please sign in again with your
+              original provider and retry.
+            </Text>
+          </View>
+        )}
+
         <View style={styles.confirmSection}>
           <Text style={styles.confirmTitle}>Type "DELETE" to confirm</Text>
           <TextInput
@@ -134,7 +169,6 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
           />
         </View>
 
-        {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[
@@ -145,16 +179,14 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
             activeOpacity={0.8}
             disabled={isLoading || confirmText.toUpperCase() !== 'DELETE'}
           >
-            {isLoading ? (
-              <Text style={styles.deleteButtonText}>Deleting...</Text>
-            ) : (
-              <Text style={styles.deleteButtonText}>Yes, Delete Permanently</Text>
-            )}
+            <Text style={styles.deleteButtonText}>
+              {isLoading ? 'Deleting...' : 'Yes, Delete Permanently'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.cancelButton}
-            onPress={handleCancel}
+            onPress={() => navigation.goBack()}
             activeOpacity={0.7}
             disabled={isLoading}
           >
@@ -162,7 +194,6 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
           </TouchableOpacity>
         </View>
 
-        {/* Additional Info */}
         <Text style={styles.footerText}>
           This action is irreversible. Once deleted, your account cannot be recovered.
         </Text>
@@ -171,7 +202,6 @@ const DeleteAccountScreen: React.FC<DeleteAccountScreenProps> = ({ navigation })
   );
 };
 
-//styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -200,6 +230,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  headerSpacer: {
+    width: 40,
   },
   content: {
     flex: 1,
@@ -250,6 +283,18 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
+  infoBox: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    marginHorizontal: 20,
+    padding: 16,
+    marginBottom: 24,
+  },
+  infoBoxText: {
+    color: '#92400E',
+    fontSize: 14,
+    lineHeight: 20,
+  },
   confirmSection: {
     paddingHorizontal: 20,
     marginBottom: 24,
@@ -271,6 +316,25 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     fontWeight: '600',
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    paddingHorizontal: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: '#1F2937',
+    fontWeight: '600',
+  },
+  eyeButton: {
+    paddingLeft: 12,
+  },
   buttonContainer: {
     paddingHorizontal: 20,
     marginBottom: 16,
@@ -281,11 +345,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
-    elevation: 3,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
   },
   deleteButtonDisabled: {
     backgroundColor: '#FCA5A5',
