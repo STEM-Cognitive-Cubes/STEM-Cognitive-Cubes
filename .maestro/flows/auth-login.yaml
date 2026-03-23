@@ -8,3 +8,5 @@ appId: com.blokc.app
 - tapOn: "Enter your password"
 - inputText: "${MAESTRO_LOGIN_PASSWORD}"
 - tapOn: "Login"
+- assertVisible: "Quick Actions"
+- assertVisible: "Track Now"
