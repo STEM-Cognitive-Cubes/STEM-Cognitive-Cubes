@@ -58,6 +58,17 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "users/alice")));
   });
 
+  it("denies unauthenticated reads to protected user profiles", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "users/alice"), {
+        displayName: "Alice",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "users/alice")));
+  });
+
   it("blocks unauthenticated writes to protected data", async () => {
     const anonymousDb = testEnv.unauthenticatedContext().firestore();
     await assertFails(
