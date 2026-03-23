@@ -1,3 +1,6 @@
 appId: com.blokc.app
 ---
 - launchApp
+- assertVisible: "Create an account"
+- tapOn: "Create an account"
+- assertVisible: "Create Account"
