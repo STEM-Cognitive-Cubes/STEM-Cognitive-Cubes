@@ -255,4 +255,27 @@ describe("Firestore security rules", () => {
       }),
     );
   });
+
+  it("allows the owning parent to update a play session when ownership stays the same", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+    await assertSucceeds(
+      setDoc(
+        doc(aliceDb, "playSessions/session-1"),
+        {
+          parentId: "alice",
+          childId: "child-1",
+          status: "completed",
+        },
+        { merge: true },
+      ),
+    );
+  });
 });
