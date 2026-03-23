@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 
 import LoginScreen from "@/features/auth/screens/LoginScreen";
 
@@ -69,5 +69,20 @@ describe("LoginScreen", () => {
     expect(getByText("Login")).toBeTruthy();
     expect(getByText("Login with Google")).toBeTruthy();
     expect(getByText("Create an account")).toBeTruthy();
+  });
+
+  it("updates the email and password inputs", () => {
+    const { getByPlaceholderText } = render(
+      <LoginScreen navigation={navigation as never} />,
+    );
+
+    const emailInput = getByPlaceholderText("Enter your email");
+    const passwordInput = getByPlaceholderText("Enter your password");
+
+    fireEvent.changeText(emailInput, "parent@example.com");
+    fireEvent.changeText(passwordInput, "strong-password");
+
+    expect(emailInput.props.value).toBe("parent@example.com");
+    expect(passwordInput.props.value).toBe("strong-password");
   });
 });
