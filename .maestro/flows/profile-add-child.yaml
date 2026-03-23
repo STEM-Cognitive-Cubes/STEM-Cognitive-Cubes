@@ -1,5 +1,6 @@
 appId: com.blokc.app
 ---
 - launchApp
+- tapOn: "Profile"
 - assertVisible: "Profile"
 - assertVisible: "Add Another Child"
