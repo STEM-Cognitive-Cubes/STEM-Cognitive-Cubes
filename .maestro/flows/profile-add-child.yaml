@@ -4,3 +4,6 @@ appId: com.blokc.app
 - tapOn: "Profile"
 - assertVisible: "Profile"
 - assertVisible: "Add Another Child"
+- tapOn: "Add Another Child"
+- assertVisible: "Add Child"
+- assertVisible: "Create Profile"
