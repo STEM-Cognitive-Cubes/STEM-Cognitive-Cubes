@@ -59,6 +59,12 @@ describe("LoginScreen", () => {
     replace: jest.fn(),
   };
 
+  beforeEach(() => {
+    navigation.goBack.mockClear();
+    navigation.navigate.mockClear();
+    navigation.replace.mockClear();
+  });
+
   it("renders the main login screen content", () => {
     const { getByPlaceholderText, getByText } = render(
       <LoginScreen navigation={navigation as never} />,
@@ -95,5 +101,13 @@ describe("LoginScreen", () => {
     fireEvent.press(getByText("Forgot password?"));
 
     expect(getByText("Forgot Password Modal")).toBeTruthy();
+  });
+
+  it("navigates to signup from the footer link", () => {
+    const { getByText } = render(<LoginScreen navigation={navigation as never} />);
+
+    fireEvent.press(getByText("Create an account"));
+
+    expect(navigation.navigate).toHaveBeenCalledWith("Signup");
   });
 });
