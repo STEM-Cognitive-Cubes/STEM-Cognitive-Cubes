@@ -10,7 +10,23 @@ jest.mock("expo-linear-gradient", () => ({
     return <View>{children}</View>;
   },
 }));
-jest.mock("@/features/summary/SummaryCard", () => () => null);
+jest.mock("@/features/summary/SummaryCard", () => {
+  return function MockSummaryCard({
+    dayLabel,
+    date,
+  }: {
+    dayLabel: string;
+    date: string;
+  }) {
+    const { Text, View } = require("react-native");
+    return (
+      <View>
+        <Text>{dayLabel}</Text>
+        <Text>{date}</Text>
+      </View>
+    );
+  };
+});
 jest.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
     childId: "child-123",
@@ -47,6 +63,29 @@ describe("SummaryScreen", () => {
 
     await waitFor(() => {
       expect(getByText("No weekly data found.")).toBeTruthy();
+    });
+  });
+
+  it("renders summary cards when weekly data is returned", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue([
+        {
+          id: "week-1",
+          title: "Week 1",
+          dateLabel: "Jan 1 - Jan 7",
+        },
+      ]),
+    }) as jest.Mock;
+
+    const { getByText, queryByText } = render(
+      <SummaryScreen navigation={navigation as never} />,
+    );
+
+    await waitFor(() => {
+      expect(getByText("Week 1")).toBeTruthy();
+      expect(getByText("Jan 1 - Jan 7")).toBeTruthy();
+      expect(queryByText("No weekly data found.")).toBeNull();
     });
   });
 });
