@@ -6,3 +6,5 @@ appId: com.blokc.app
 - tapOn: "Track Now"
 - assertVisible: "Start Play Session"
 - assertVisible: "System Status"
+- assertVisible: "Start Session"
+- assertVisible: "Last Ended Session"
