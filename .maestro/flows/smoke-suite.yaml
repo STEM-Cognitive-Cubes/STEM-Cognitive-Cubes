@@ -1,3 +1,5 @@
 appId: com.blokc.app
 ---
 - launchApp
+- runFlow: auth-login.yaml
+- runFlow: home-start-session.yaml
