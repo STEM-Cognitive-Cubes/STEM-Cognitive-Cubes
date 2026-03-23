@@ -30,8 +30,13 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
   const handleSignup = async () => {
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+    const trimmedEmail = email.trim();
+    const fullName = `${trimmedFirstName} ${trimmedLastName}`.trim();
+
     setAuthError("");
-    if (!email.trim() || !password) {
+    if (!trimmedEmail || !password) {
       setAuthError("Please enter email and password.");
       return;
     }
@@ -40,20 +45,20 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       return;
     }
     try {
-      const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      await updateProfile(result.user, { displayName: fullName.trim() });
-      await ensureAccountProfile(result.user, { fullName });
-      const methods = await fetchSignInMethodsForEmail(auth, email.trim());
+      const methods = await fetchSignInMethodsForEmail(auth, trimmedEmail);
       if (methods.includes("google.com")) {
         setAuthError("An account already exists using Google. Please log in with Google.");
         return;
       }
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      await setDoc(doc(db, "parents", userCredential.user.uid), {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: email.trim(),
+
+      const result = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
+      await updateProfile(result.user, { displayName: fullName.trim() });
+      await ensureAccountProfile(result.user, { fullName });
+
+      await setDoc(doc(db, "parents", result.user.uid), {
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        email: trimmedEmail,
         createdAt: new Date().toISOString()
       });
       
