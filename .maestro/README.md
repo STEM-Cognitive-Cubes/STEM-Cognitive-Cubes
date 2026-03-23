@@ -7,3 +7,5 @@ Recommended first flows:
 - `dashboard-smoke.yaml`
 - `profile-edit.yaml`
 - `chatbot-message.yaml`
+
+Stage 8 in this repo uses focused critical-path flows rather than trying to automate every screen.
