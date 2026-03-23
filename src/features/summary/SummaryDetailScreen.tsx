@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
@@ -18,6 +18,13 @@ export default function SummaryDetailScreen({
   route
 }: SummaryDetailScreenProps) {
   const detail = route.params.weekData;
+
+  const handleExportSummary = () => {
+    Alert.alert(
+      "Export Unavailable",
+      "Summary export is not available yet in this screen."
+    );
+  };
 
   const metrics = [
     { label: "Duration", value: detail.durationMinutes, icon: "clock", color: "#B860FF" },
@@ -95,7 +102,7 @@ export default function SummaryDetailScreen({
 
         <Pressable
           style={styles.exportButton}
-          onPress={() => console.log('Export tracking clicked...')}
+          onPress={handleExportSummary}
         >
           <Feather name="download" size={18} color="white" style={{ marginRight: 8 }} />
           <Text style={styles.exportButtonText}>Export Summary</Text>
