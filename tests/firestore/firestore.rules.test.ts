@@ -231,6 +231,19 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "playSessions", sessionRef.id)));
   });
 
+  it("blocks unauthenticated reads from play sessions", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "playSessions/session-1"), {
+        parentId: "alice",
+        childId: "child-1",
+        status: "active",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "playSessions/session-1")));
+  });
+
   it("blocks creating a play session for a different parent id", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
