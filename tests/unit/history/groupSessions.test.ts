@@ -67,4 +67,20 @@ describe("groupSessionsByDay", () => {
     expect(result[0].data.map((session) => session.id)).toEqual(["1", "3"]);
     expect(result[1].data.map((session) => session.id)).toEqual(["2", "5"]);
   });
+
+  it("returns an empty array for empty input", () => {
+    expect(groupSessionsByDay([])).toEqual([]);
+  });
+
+  it("does not mutate the original session array", () => {
+    const sessions = [
+      createSession("1", "June 15, 2025", "Today"),
+      createSession("2", "June 14, 2025", "Yesterday"),
+    ];
+    const snapshot = sessions.map((session) => ({ ...session }));
+
+    groupSessionsByDay(sessions);
+
+    expect(sessions).toEqual(snapshot);
+  });
 });
