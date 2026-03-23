@@ -1,0 +1,12 @@
+appId: com.blokc.app
+---
+- launchApp
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- assertVisible: "Logout"
+- tapOn: "Logout"
+- assertVisible: "Log Out?"
+- tapOn: "Yes, log Out"
+- assertVisible: "Logged Out Successfully"
+- tapOn: "Close"
+- assertVisible: "Login"

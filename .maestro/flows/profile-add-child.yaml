@@ -1,0 +1,12 @@
+appId: com.blokc.app
+---
+- launchApp
+- tapOn: "Profile"
+- assertVisible: "Profile"
+- assertVisible: "Add Another Child"
+- tapOn: "Add Another Child"
+- assertVisible: "Add Child"
+- assertVisible: "Create Profile"
+- tapOn: "E.g. Nehara Fernando"
+- inputText: "${MAESTRO_CHILD_NAME}"
+- assertVisible: "Select birthday"

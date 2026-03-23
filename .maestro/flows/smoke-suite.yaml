@@ -1,0 +1,7 @@
+appId: com.blokc.app
+---
+- launchApp
+- runFlow: auth-login.yaml
+- runFlow: home-start-session.yaml
+- runFlow: profile-add-child.yaml
+- runFlow: settings-logout.yaml
