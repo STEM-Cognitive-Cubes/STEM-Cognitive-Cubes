@@ -14,3 +14,7 @@ appId: com.blokc.app
 - inputText: "${MAESTRO_SIGNUP_PASSWORD}"
 - tapOn: "Confirm password"
 - inputText: "${MAESTRO_SIGNUP_PASSWORD}"
+- tapOn: "Sign up"
+- assertVisible: "Welcome to BlokC!"
+- tapOn: "Continue to login"
+- assertVisible: "Login"
