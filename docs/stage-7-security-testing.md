@@ -21,3 +21,15 @@ This project uses:
 - Firebase Local Emulator Suite
 - `@firebase/rules-unit-testing`
 - Jest
+
+## Protected Firestore areas in this project
+
+The current app and backend use these important Firestore paths:
+
+- `users/{uid}`
+- `users/{uid}/supportTickets`
+- `users/{uid}/supportChatMessages`
+- `parents/{uid}`
+- `parents/{uid}/children`
+- `parents/{uid}/sessionMeta`
+- `playSessions/{sessionId}`
