@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Replay artifacts written by finalizeSession:
+    // sessions/{sessionId}/session.json
+    match /sessions/{sessionId}/{allPaths=**} {
+      allow read: if request.auth != null
+        && firestore.exists(/databases/(default)/documents/playSessions/$(sessionId))
+        && firestore.get(/databases/(default)/documents/playSessions/$(sessionId)).data.parentId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

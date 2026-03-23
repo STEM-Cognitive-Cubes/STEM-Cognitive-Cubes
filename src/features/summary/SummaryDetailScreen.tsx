@@ -1,12 +1,12 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
-import type { RootStackParamList } from "../../navigation/types";
+import type { RootStackParamList, WeekSummaryData } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import InsightCard from "../history/components/InsightCard";
-import { sessionDetail } from "../history/config/historyData";
+
 
 type SummaryDetailScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "SummaryDetail">;
@@ -15,15 +15,25 @@ type SummaryDetailScreenProps = {
 
 export default function SummaryDetailScreen({
   navigation,
+  route
 }: SummaryDetailScreenProps) {
-  const detail = sessionDetail;
+  const detail: WeekSummaryData = route.params.weekData;
+
+  const handleExportSummary = () => {
+    Alert.alert(
+      "Export Unavailable",
+      "Summary export is not available yet in this screen."
+    );
+  };
+
   const metrics = [
-    { label: "Duration", value: detail.duration, icon: "clock", color: "#B860FF" },
+    { label: "Duration", value: detail.durationMinutes, icon: "clock", color: "#B860FF" },
     { label: "Blocks", value: `${detail.blocks}`, icon: "box", color: "#FF9F43" },
     { label: "Focus", value: detail.focusLevel, icon: "target", color: "#1DBE5F" },
     { label: "Score", value: `${detail.score}`, icon: "star", color: "#FFD54F" },
   ];
-  const maxFocus = Math.max(...detail.focusData.map((item) => item.value));
+  
+  const maxFocus = Math.max(...detail.focusData.map((item) => item.value), 10);
 
   return (
     <View style={styles.container}>
@@ -33,8 +43,8 @@ export default function SummaryDetailScreen({
       >
         <View style={styles.previewCard}>
           <Feather name="box" size={40} color="#B860FF" />
-          <Text style={styles.previewTitle}>Summary Preview</Text>
-          <Text style={styles.previewDate}>{detail.date} | {detail.time}</Text>
+          <Text style={styles.previewTitle}>Weekly Summary</Text>
+          <Text style={styles.previewDate}>{detail.title} | {detail.dateLabel}</Text>
         </View>
 
         <View style={styles.metricsRow}>
@@ -92,9 +102,18 @@ export default function SummaryDetailScreen({
 
         <Pressable
           style={styles.exportButton}
+          onPress={handleExportSummary}
+        >
+          <Feather name="download" size={18} color="white" style={{ marginRight: 8 }} />
+          <Text style={styles.exportButtonText}>Export Summary</Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.exportButton, { backgroundColor: "transparent", borderWidth: 1, borderColor: "#4A5EB4", marginTop: 12 }]}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.exportButtonText}>Back to Summary</Text>
+          <Feather name="arrow-left" size={18} color="#4A5EB4" style={{ marginRight: 8 }} />
+          <Text style={[styles.exportButtonText, { color: "#4A5EB4" }]}>Go Back</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -231,14 +250,16 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.bold,
   },
   exportButton: {
-    backgroundColor: "#FFD54F",
+    backgroundColor: "#4A5EB4",
+    flexDirection: "row",
     borderRadius: 24,
     paddingVertical: 14,
     alignItems: "center",
+    justifyContent: "center",
   },
   exportButtonText: {
     fontSize: 14,
     fontFamily: fontFamilies.semiBold,
-    color: "black",
+    color: "white",
   },
 });

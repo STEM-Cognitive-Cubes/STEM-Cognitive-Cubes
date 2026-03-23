@@ -1,26 +1,44 @@
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../navigation/types";
+import type { RootStackParamList, WeekSummaryData } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import SummaryCard from "./SummaryCard";
+import { useAuth } from "../../hooks/useAuth";
 
 type SummaryScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "WeeklySummary">;
 };
 
-const weeklySessions = [
-  { id: "1", dayLabel: "Monday", date: "June 10, 2025" },
-  { id: "2", dayLabel: "Tuesday", date: "June 11, 2025" },
-  { id: "3", dayLabel: "Wednesday", date: "June 12, 2025" },
-  { id: "4", dayLabel: "Thursday", date: "June 13, 2025" },
-  { id: "5", dayLabel: "Friday", date: "June 14, 2025" },
-  { id: "6", dayLabel: "Saturday", date: "June 15, 2025" },
-  { id: "7", dayLabel: "Sunday", date: "June 16, 2025" },
-];
-
 export default function SummaryScreen({ navigation }: SummaryScreenProps) {
+  const [weeksData, setWeeksData] = useState<WeekSummaryData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { childId, token } = useAuth();
+
+  const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5002' : 'http://localhost:5002';
+
+  useEffect(() => {
+    async function fetchWeeks() {
+      try {
+        const response = await fetch(`${API_URL}/api/insights/historic-weeks/${childId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setWeeksData(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch historic weeks", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWeeks();
+    
+  }, [API_URL, childId, token]);
+
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -30,21 +48,30 @@ export default function SummaryScreen({ navigation }: SummaryScreenProps) {
         <Text style={styles.headerTitle}>Weekly Summary</Text>
       </LinearGradient>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {weeklySessions.map((session) => (
-          <SummaryCard
-            key={session.id}
-            dayLabel={session.dayLabel}
-            date={session.date}
-            onPress={() =>
-              navigation.navigate("SummaryDetail", { sessionId: session.id })
-            }
-          />
-        ))}
-      </ScrollView>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#B860FF" />
+        </View>
+      ) : (
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {weeksData.map((weekData) => (
+            <SummaryCard
+              key={weekData.id}
+              dayLabel={weekData.title}
+              date={weekData.dateLabel}
+              onPress={() =>
+                navigation.navigate("SummaryDetail", { weekData })
+              }
+            />
+          ))}
+          {weeksData.length === 0 && (
+             <Text style={{ textAlign: "center", marginTop: 20 }}>No weekly data found.</Text>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }

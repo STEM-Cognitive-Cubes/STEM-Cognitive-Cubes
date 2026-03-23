@@ -6,7 +6,9 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
   signInWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 import { colors } from "../../../config/theme";
@@ -15,12 +17,30 @@ import AuthBackground from "../components/AuthBackground";
 import AuthTextInput from "../components/AuthTextInput";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import type { RootStackParamList } from "../../../navigation/types";
-import { auth } from "../../../services/firebase";
+import { auth, db } from "../../../services/firebase";
 import AuthSuccessModal from "../components/AuthSuccessModal";
 import { getFirebaseAuthErrorMessage } from "../utils/firebaseAuthErrors";
+import { ensureAccountProfile } from "../../settings/account/accountService";
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+};
+
+const splitName = (fullName?: string | null) => {
+  const safeName = fullName?.trim() ?? "";
+  if (!safeName) {
+    return { firstName: "", lastName: "" };
+  }
+  const parts = safeName.split(/\s+/);
+  return {
+    firstName: parts[0] ?? "",
+    lastName: parts.slice(1).join(" "),
+  };
+};
+
+const fallbackNameFromEmail = (email?: string | null) => {
+  if (!email) return "User";
+  return email.split("@")[0] || "User";
 };
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
@@ -31,6 +51,24 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [authError, setAuthError] = useState("");
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const [googleName, setGoogleName] = useState<string | null>(null);
+
+  const logAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.log(...args);
+    }
+  };
+
+  const warnAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.warn(...args);
+    }
+  };
+
+  const errorAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.error(...args);
+    }
+  };
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -55,7 +93,27 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const handleLogin = async () => {
     setAuthError("");
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const parentRef = doc(db, "parents", userCredential.user.uid);
+      const parentDoc = await getDoc(parentRef);
+      if (!parentDoc.exists()) {
+        const { firstName, lastName } = splitName(userCredential.user.displayName);
+        const emailValue = userCredential.user.email ?? email.trim();
+        await setDoc(parentRef, {
+          firstName: firstName || fallbackNameFromEmail(emailValue),
+          lastName,
+          email: emailValue,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      const refreshedParentDoc = await getDoc(parentRef);
+      if (refreshedParentDoc.exists()) {
+        logAuthDebug("Parent profile found after manual login.");
+      } else {
+        warnAuthDebug("Parent document not found after manual login.");
+      }
+      
       setIsLoginSuccess(true);
     } catch (error) {
       setAuthError(
@@ -64,32 +122,93 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           "Login failed. Check your email and password."
         )
       );
-      // Keep a console trail for debugging (device logs / Metro).
-      // eslint-disable-next-line no-console
-      console.warn("Email login failed:", error);
+      warnAuthDebug("Email login failed:", error);
     }
   };
 
   const handleGoogleLogin = async () => {
+    logAuthDebug("handleGoogleLogin pressed");
     setAuthError("");
     try {
+      logAuthDebug("Checking play services");
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      try {
+        await GoogleSignin.signOut();
+      } catch {
+        // Safe to ignore if they weren't signed in initially
+      }
+      logAuthDebug("Calling signIn");
       const userInfo = (await GoogleSignin.signIn()) as unknown as {
         idToken?: string | null;
-        user?: { name?: string | null } | null;
+        user?: { 
+          name?: string | null; 
+          email?: string | null;
+          givenName?: string | null;
+          familyName?: string | null;
+        } | null;
       };
+      logAuthDebug("signIn completed:", !!userInfo);
       const tokens = await GoogleSignin.getTokens();
       const idToken = userInfo.idToken ?? tokens.idToken;
       if (!idToken) {
         setAuthError("Google sign-in failed. Missing token.");
         return;
       }
+      
+      const emailToCheck = userInfo.user?.email ?? "";
+      if (emailToCheck) {
+        const methods = await fetchSignInMethodsForEmail(auth, emailToCheck);
+        if (methods.includes("password")) {
+          setAuthError("An account already exists using email/password. Please log in with your password.");
+          await GoogleSignin.signOut();
+          return;
+        }
+      }
+
       const credential = GoogleAuthProvider.credential(idToken);
+      logAuthDebug("signInWithCredential...");
       const result = await signInWithCredential(auth, credential);
+      await ensureAccountProfile(result.user, {
+        fullName: result.user.displayName ?? userInfo.user?.name ?? undefined,
+      });
       setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
+      logAuthDebug("signInWithCredential completed.");
+      const name = result.user.displayName ?? userInfo.user?.name ?? "User";
+
+      const parentRef = doc(db, "parents", result.user.uid);
+      const parentDoc = await getDoc(parentRef);
+      if (!parentDoc.exists()) {
+        const fromGivenFamily = {
+          firstName: userInfo.user?.givenName?.trim() ?? "",
+          lastName: userInfo.user?.familyName?.trim() ?? "",
+        };
+        const fromDisplay = splitName(name);
+        const emailValue = result.user.email ?? userInfo.user?.email ?? "";
+        const firstName =
+          fromGivenFamily.firstName || fromDisplay.firstName || fallbackNameFromEmail(emailValue);
+        const lastName = fromGivenFamily.lastName || fromDisplay.lastName;
+
+        await setDoc(parentRef, {
+          firstName,
+          lastName,
+          email: emailValue,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      const refreshedParentDoc = await getDoc(parentRef);
+      if (refreshedParentDoc.exists()) {
+        logAuthDebug("Parent profile found after Google login.");
+      } else {
+        warnAuthDebug("Parent document not found after Google login.");
+      }
+
+      setGoogleName(name);
       setIsLoginSuccess(true);
     } catch (rawError) {
+      errorAuthDebug("GOOGLE LOGIN ERROR:", rawError);
       const error = rawError as { code?: string; message?: string } | undefined;
+
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
         return;
       }

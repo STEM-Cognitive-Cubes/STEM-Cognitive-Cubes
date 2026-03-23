@@ -50,6 +50,14 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                 ))}
               </View>
             </View>
+
+            <Pressable
+              style={styles.weeklyHistoryButton}
+              onPress={() => navigation.navigate("WeeklySummary")}
+            >
+              <Text style={styles.weeklyHistoryButtonText}>View Weekly History</Text>
+            </Pressable>
+
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recent Activities</Text>
               <Pressable onPress={() => navigation.navigate("SessionHistory")}>
@@ -104,6 +112,23 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: "row",
+  },
+  weeklyHistoryButton: {
+    backgroundColor: "#B860FF",
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  weeklyHistoryButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: fontFamilies.bold,
   },
   sectionHeader: {
     flexDirection: "row",

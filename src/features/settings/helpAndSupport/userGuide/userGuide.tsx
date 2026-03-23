@@ -17,8 +17,8 @@ const { width } = Dimensions.get('window');
 
 type RootStackParamList = {
   HelpSupportScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
 };
 
@@ -91,7 +91,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({ navigation }) => {
       subtitle: 'Learn about BlokC',
       icon: 'information-circle',
       iconType: 'Ionicons' as const,
-      screen: 'ProductIntroScreen' as keyof RootStackParamList,
+      screen: 'ProductIntro' as keyof RootStackParamList,
       color: '#f59042',
     },
     {
@@ -100,7 +100,7 @@ const UserGuideScreen: React.FC<UserGuideScreenProps> = ({ navigation }) => {
       subtitle: 'Explore all features',
       icon: 'apps',
       iconType: 'Ionicons' as const,
-      screen: 'AppFeaturesScreen' as keyof RootStackParamList,
+      screen: 'AppFeatures' as keyof RootStackParamList,
       color: '#42bcf5',
     },
     {

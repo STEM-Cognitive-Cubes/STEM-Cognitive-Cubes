@@ -1,6 +1,8 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { connectAuthEmulator, getAuth, initializeAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBMP6EbL88-bq5mHRHcw8zRmLCYmsT7W6U",
@@ -14,6 +16,55 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+function initAuth() {
+  try {
+    const authModule = require("firebase/auth") as {
+      getReactNativePersistence?: (
+        storage: typeof AsyncStorage
+      ) => unknown;
+    };
+    const persistenceFactory = authModule.getReactNativePersistence;
+    if (typeof persistenceFactory !== "function") {
+      return getAuth(app);
+    }
 
+    return initializeAuth(app, {
+      persistence: persistenceFactory(AsyncStorage) as never,
+    });
+  } catch {
+    return getAuth(app);
+  }
+}
+
+export const auth = initAuth();
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __blokcFirebaseEmulatorsConnected__: boolean | undefined;
+}
+
+function connectFirebaseEmulatorsIfNeeded() {
+  const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST;
+  const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST;
+
+  if ((!authHost && !firestoreHost) || globalThis.__blokcFirebaseEmulatorsConnected__) {
+    return;
+  }
+
+  if (authHost) {
+    connectAuthEmulator(auth, `http://${authHost}`, {
+      disableWarnings: true,
+    });
+  }
+
+  if (firestoreHost) {
+    const [host, port] = firestoreHost.split(":");
+    connectFirestoreEmulator(db, host, Number(port));
+  }
+
+  globalThis.__blokcFirebaseEmulatorsConnected__ = true;
+}
+
+connectFirebaseEmulatorsIfNeeded();

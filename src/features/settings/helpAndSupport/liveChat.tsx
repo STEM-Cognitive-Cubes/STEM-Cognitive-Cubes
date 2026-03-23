@@ -10,28 +10,38 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+
 import type { RootStackParamList } from "../../../navigation/types";
+import { sendSupportChatMessage, useSupportChat } from "./helpSupportService";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ChatScreen">;
 
-const starterMessages = [
-  {
-    id: "1",
-    sender: "Support",
-    body: "Hello. Tell us what issue you hit while using the app.",
-  },
-  {
-    id: "2",
-    sender: "You",
-    body: "I need help with a session setup problem.",
-  },
-];
-
 export default function ChatScreen({ navigation }: Props) {
+  const { messages, loading, error } = useSupportChat();
   const [inputText, setInputText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSend = async () => {
+    if (!inputText.trim()) {
+      return;
+    }
+
+    const nextText = inputText;
+    setInputText("");
+    setIsSending(true);
+
+    try {
+      await sendSupportChatMessage(nextText);
+    } catch {
+      setInputText(nextText);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,28 +59,43 @@ export default function ChatScreen({ navigation }: Props) {
         style={styles.flex}
       >
         <ScrollView contentContainerStyle={styles.messages}>
-          {starterMessages.map((message) => {
-            const isUser = message.sender === "You";
-            return (
-              <View
-                key={message.id}
-                style={[styles.messageRow, isUser && styles.messageRowUser]}
-              >
-                <View style={[styles.messageBubble, isUser && styles.messageBubbleUser]}>
-                  <Text style={[styles.messageSender, isUser && styles.messageSenderUser]}>
-                    {message.sender}
-                  </Text>
-                  <Text style={[styles.messageBody, isUser && styles.messageBodyUser]}>
-                    {message.body}
-                  </Text>
+          {loading ? (
+            <View style={styles.loadingWrap}>
+              <ActivityIndicator size="small" color="#9333EA" />
+              <Text style={styles.loadingText}>Loading conversation...</Text>
+            </View>
+          ) : error ? (
+            <View style={styles.errorCard}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : (
+            messages.map((message) => {
+              const isUser = message.sender === "You";
+              return (
+                <View
+                  key={message.id}
+                  style={[styles.messageRow, isUser && styles.messageRowUser]}
+                >
+                  <View style={[styles.messageBubble, isUser && styles.messageBubbleUser]}>
+                    <Text style={[styles.messageSender, isUser && styles.messageSenderUser]}>
+                      {message.sender}
+                    </Text>
+                    <Text style={[styles.messageBody, isUser && styles.messageBodyUser]}>
+                      {message.body}
+                    </Text>
+                    <Text style={[styles.messageTime, isUser && styles.messageTimeUser]}>
+                      {message.createdAtLabel}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </ScrollView>
 
         <View style={styles.inputBar}>
           <TextInput
+            testID="support-chat-input"
             value={inputText}
             onChangeText={setInputText}
             placeholder="Type a message"
@@ -78,8 +103,13 @@ export default function ChatScreen({ navigation }: Props) {
             style={styles.input}
           />
           <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-            disabled={!inputText.trim()}
+            testID="support-chat-send-button"
+            style={[
+              styles.sendButton,
+              (!inputText.trim() || isSending) && styles.sendButtonDisabled,
+            ]}
+            disabled={!inputText.trim() || isSending}
+            onPress={handleSend}
           >
             <Ionicons name="send" size={18} color="#FFFFFF" />
           </TouchableOpacity>
@@ -125,6 +155,23 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
+  loadingWrap: {
+    alignItems: "center",
+    paddingTop: 24,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: "#6B7280",
+  },
+  errorCard: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 16,
+    padding: 16,
+  },
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 14,
+  },
   messageRow: {
     flexDirection: "row",
   },
@@ -156,6 +203,14 @@ const styles = StyleSheet.create({
   },
   messageBodyUser: {
     color: "#FFFFFF",
+  },
+  messageTime: {
+    marginTop: 8,
+    color: "#9CA3AF",
+    fontSize: 11,
+  },
+  messageTimeUser: {
+    color: "#E9D5FF",
   },
   inputBar: {
     flexDirection: "row",

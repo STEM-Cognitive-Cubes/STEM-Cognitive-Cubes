@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { logoutCurrentUser } from './account/accountService';
 
 type RootStackParamList = {
   Settings: undefined;
@@ -25,8 +26,8 @@ type RootStackParamList = {
   DataSharingScreen: undefined;
   HelpSupportScreen: undefined;
   UserGuideScreen: undefined;
-  ProductIntroScreen: undefined;
-  AppFeaturesScreen: undefined;
+  ProductIntro: undefined;
+  AppFeatures: undefined;
   OperateScreen: undefined;
   CommunityScreen: undefined;
   EmailScreen: undefined;
@@ -174,7 +175,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
 
 const handleNavigation = (screen: keyof RootStackParamList) => {
   if (screen === 'Logout') {
-    // Show logout confirmation
     Alert.alert(
       'Log Out?',
       'Are you sure you want to sign out? You will need to login again to access your session history.',
@@ -186,27 +186,27 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
         {
           text: 'Yes, log Out',
           style: 'destructive',
-          onPress: () => {
-            // Perform logout
-            console.log('User logged out');
+          onPress: async () => {
+            try {
+              await logoutCurrentUser();
 
-            // Show success message
-            Alert.alert(
-              'Logged Out Successfully',
-              '',
-              [
+              Alert.alert("Logged Out Successfully", "See you next time!", [
                 {
-                  text: 'Close',
+                  text: "Close",
                   onPress: () => {
-                    // Navigate to login screen or home
                     navigation?.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
+                      index: 0,
+                      routes: [{ name: "Login" }],
                     });
                   },
                 },
-              ]
-            );
+              ]);
+            } catch (error) {
+              Alert.alert(
+                "Logout Failed",
+                error instanceof Error ? error.message : "Could not sign you out. Please try again."
+              );
+            }
           },
         },
       ]
@@ -215,14 +215,6 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
     console.log(`Navigate to ${screen}`);
     navigation?.navigate(screen);
   }
-};
-
-const handleBottomNavigation = (screen: keyof RootStackParamList) => {
-  if (screen === 'Settings') {
-    // Already on settings -> do nothing
-    return;
-  }
-  navigation?.navigate(screen);
 };
 
 const renderIcon = (iconType: 'Ionicons' | 'MaterialIcons', iconName: string, color: string) => {
@@ -457,8 +449,6 @@ const styles = StyleSheet.create({
 });
 
 export default SettingsScreen;
-
-
 
 
 
