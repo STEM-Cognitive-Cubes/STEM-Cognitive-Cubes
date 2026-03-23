@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 
 import HomeScreen from "@/features/home/screens/HomeScreen";
 
@@ -72,5 +72,13 @@ describe("HomeScreen", () => {
     expect(getByText("Start a session")).toBeTruthy();
     expect(getByText("Track Now")).toBeTruthy();
     expect(getByText("Bot Bubble")).toBeTruthy();
+  });
+
+  it("navigates to StartSession when Track Now is pressed", () => {
+    const { getByText } = render(<HomeScreen />);
+
+    fireEvent.press(getByText("Track Now"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("StartSession");
   });
 });
