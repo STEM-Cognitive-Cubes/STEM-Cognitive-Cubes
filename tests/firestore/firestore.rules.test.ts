@@ -123,6 +123,21 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "parents/alice/children/child-1")));
   });
 
+  it("blocks unauthenticated reads from parent profile data", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "parents/alice"), {
+        firstName: "Alice",
+      });
+      await setDoc(doc(context.firestore(), "parents/alice/children/child-1"), {
+        name: "Charlie",
+      });
+    });
+
+    const anonymousDb = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(anonymousDb, "parents/alice")));
+    await assertFails(getDoc(doc(anonymousDb, "parents/alice/children/child-1")));
+  });
+
   it("allows a signed-in user to manage their own support collections", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
 
