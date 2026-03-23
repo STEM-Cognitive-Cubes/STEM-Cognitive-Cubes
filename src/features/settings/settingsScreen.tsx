@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { logoutCurrentUser } from './account/accountService';
 import { signOut } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { auth } from '../../services/firebase';
@@ -177,7 +178,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
 
 const handleNavigation = (screen: keyof RootStackParamList) => {
   if (screen === 'Logout') {
-    // Show logout confirmation
     Alert.alert(
       'Log Out?',
       'Are you sure you want to sign out? You will need to login again to access your session history.',
@@ -191,34 +191,26 @@ const handleNavigation = (screen: keyof RootStackParamList) => {
           style: 'destructive',
           onPress: async () => {
             try {
+              await logoutCurrentUser();
               await signOut(auth);
-            } catch {
-              Alert.alert('Logout Failed', 'Could not sign you out. Please try again.');
-              return;
-            }
-            try {
-              await GoogleSignin.signOut();
-            } catch {
-              // Ignore Google sign-out errors if no Google session is active.
-            }
-
-            // Show success message
-            Alert.alert(
-              'Logged Out Successfully',
-              '',
-              [
+              
+              Alert.alert("Logged Out Successfully", "See you next time!", [
                 {
-                  text: 'Close',
+                  text: "Close",
                   onPress: () => {
-                    // Navigate to login screen or home
                     navigation?.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
+                      index: 0,
+                      routes: [{ name: "Login" }],
                     });
                   },
                 },
-              ]
-            );
+              ]);
+            } catch (error) {
+              Alert.alert(
+                "Logout Failed",
+                error instanceof Error ? error.message : "Could not sign you out. Please try again."
+              );
+            }
           },
         },
       ]
@@ -461,8 +453,6 @@ const styles = StyleSheet.create({
 });
 
 export default SettingsScreen;
-
-
 
 
 

@@ -7,8 +7,6 @@ type Props = {
 };
 
 export function LottieSplash({ onFinish }: Props) {
-  
-
   return (
     <View style={styles.container}>
       <LottieView
@@ -25,6 +23,4 @@ export function LottieSplash({ onFinish }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#B860FF" },
-
-  
 });

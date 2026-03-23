@@ -6,8 +6,6 @@ import InsightsScreen from "@/features/insights/InsightsScreen";
 import SettingsScreen from "@/features/settings/settingsScreen";
 import ProfileScreen from "@/features/profile/profile";
 import BlokCTabBar from "@/navigation/components/BlokCTabBar";
-
-
 const Tab = createBottomTabNavigator();
 
 export default function AppTabs() {
