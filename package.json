@@ -10,6 +10,7 @@
     "lint": "eslint --no-ignore .eslintrc.js jest.config.js jest.rules.config.js scripts tests --ext .js,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest --runInBand",
+    "test:unit": "jest tests/unit --runInBand",
     "test:watch": "jest --watch",
     "test:rules": "node ./scripts/run-firestore-rules-tests.js",
     "emulators:start": "node ./scripts/firebase-cli.js emulators:start --only auth,firestore,functions",
