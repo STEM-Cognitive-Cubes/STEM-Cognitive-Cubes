@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View, Alert } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -52,6 +52,24 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
   const [googleName, setGoogleName] = useState<string | null>(null);
 
+  const logAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.log(...args);
+    }
+  };
+
+  const warnAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.warn(...args);
+    }
+  };
+
+  const errorAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.error(...args);
+    }
+  };
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
@@ -91,9 +109,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
       const refreshedParentDoc = await getDoc(parentRef);
       if (refreshedParentDoc.exists()) {
-        console.log("Logged in Parent Data (Manual Login):", refreshedParentDoc.data());
+        logAuthDebug("Parent profile found after manual login.");
       } else {
-        console.warn("Parent document not found after manual login.");
+        warnAuthDebug("Parent document not found after manual login.");
       }
       
       setIsLoginSuccess(true);
@@ -104,22 +122,22 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           "Login failed. Check your email and password."
         )
       );
-      console.warn("Email login failed:", error);
+      warnAuthDebug("Email login failed:", error);
     }
   };
 
   const handleGoogleLogin = async () => {
-    console.log("handleGoogleLogin pressed");
+    logAuthDebug("handleGoogleLogin pressed");
     setAuthError("");
     try {
-      console.log("Checking play services");
+      logAuthDebug("Checking play services");
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       try {
         await GoogleSignin.signOut();
       } catch {
         // Safe to ignore if they weren't signed in initially
       }
-      console.log("Calling signIn");
+      logAuthDebug("Calling signIn");
       const userInfo = (await GoogleSignin.signIn()) as unknown as {
         idToken?: string | null;
         user?: { 
@@ -129,7 +147,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           familyName?: string | null;
         } | null;
       };
-      console.log("signIn completed:", !!userInfo);
+      logAuthDebug("signIn completed:", !!userInfo);
       const tokens = await GoogleSignin.getTokens();
       const idToken = userInfo.idToken ?? tokens.idToken;
       if (!idToken) {
@@ -148,13 +166,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       }
 
       const credential = GoogleAuthProvider.credential(idToken);
-      console.log("signInWithCredential...");
+      logAuthDebug("signInWithCredential...");
       const result = await signInWithCredential(auth, credential);
       await ensureAccountProfile(result.user, {
         fullName: result.user.displayName ?? userInfo.user?.name ?? undefined,
       });
       setGoogleName(result.user.displayName ?? userInfo.user?.name ?? "User");
-      console.log("signInWithCredential completed. UID:", result.user.uid);
+      logAuthDebug("signInWithCredential completed.");
       const name = result.user.displayName ?? userInfo.user?.name ?? "User";
 
       const parentRef = doc(db, "parents", result.user.uid);
@@ -180,20 +198,16 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
       const refreshedParentDoc = await getDoc(parentRef);
       if (refreshedParentDoc.exists()) {
-        console.log("Logged in Parent Data (Google Login):", refreshedParentDoc.data());
+        logAuthDebug("Parent profile found after Google login.");
       } else {
-        console.warn("Parent document not found after Google login.");
+        warnAuthDebug("Parent document not found after Google login.");
       }
 
       setGoogleName(name);
       setIsLoginSuccess(true);
     } catch (rawError) {
-      console.error("GOOGLE LOGIN ERROR:", rawError);
+      errorAuthDebug("GOOGLE LOGIN ERROR:", rawError);
       const error = rawError as { code?: string; message?: string } | undefined;
-      
-      if (error?.code !== statusCodes.SIGN_IN_CANCELLED) {
-        Alert.alert("Google Login Error", `Code: ${error?.code} Msg: ${error?.message || String(rawError)}`);
-      }
 
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
         return;

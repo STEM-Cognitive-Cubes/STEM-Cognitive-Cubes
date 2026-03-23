@@ -29,6 +29,12 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
   const [authError, setAuthError] = useState("");
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
+  const warnAuthDebug = (...args: unknown[]) => {
+    if (__DEV__) {
+      console.warn(...args);
+    }
+  };
+
   const handleSignup = async () => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
@@ -65,7 +71,7 @@ export default function SignupScreen({ navigation }: SignupScreenProps) {
       setIsSuccessOpen(true);
     } catch (error) {
       setAuthError(getFirebaseAuthErrorMessage(error, "Sign up failed. Try again."));
-      console.warn("Email signup failed:", error);
+      warnAuthDebug("Email signup failed:", error);
     }
   };
 
