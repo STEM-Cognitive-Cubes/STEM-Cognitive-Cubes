@@ -61,7 +61,7 @@ const defaultDataSharingSettings: DataSharingSettings = {
 };
 
 const defaultNotificationSettings: NotificationSettings = {
-  enableAll: true,
+  enableAll: false,
   batteryAlerts: true,
   connectionStatus: false,
   milestoneMoments: true,
