@@ -112,6 +112,29 @@ describe("Firestore security rules", () => {
     await assertFails(getDoc(doc(bobDb, "parents/alice/children/child-1")));
   });
 
+  it("allows a signed-in user to manage their own support collections", async () => {
+    const aliceDb = testEnv.authenticatedContext("alice").firestore();
+
+    await assertSucceeds(
+      setDoc(doc(aliceDb, "users/alice/supportTickets/ticket-1"), {
+        subject: "Login issue",
+        status: "open",
+      }),
+    );
+
+    await assertSucceeds(
+      setDoc(doc(aliceDb, "users/alice/supportChatMessages/message-1"), {
+        sender: "You",
+        body: "Need help",
+      }),
+    );
+
+    await assertSucceeds(getDoc(doc(aliceDb, "users/alice/supportTickets/ticket-1")));
+    await assertSucceeds(
+      getDoc(doc(aliceDb, "users/alice/supportChatMessages/message-1")),
+    );
+  });
+
   it("allows play session creation and reads only for the owning parent", async () => {
     const aliceDb = testEnv.authenticatedContext("alice").firestore();
     const sessionRef = doc(collection(aliceDb, "playSessions"));
