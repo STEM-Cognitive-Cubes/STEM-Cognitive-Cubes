@@ -145,6 +145,7 @@ const NotificationPreferencesScreen: React.FC<
               </View>
 
               <Switch
+                testID="notification-enable-all-switch"
                 value={localSettings.enableAll}
                 onValueChange={handleEnableAll}
                 trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
@@ -171,6 +172,7 @@ const NotificationPreferencesScreen: React.FC<
                 </View>
 
                 <Switch
+                  testID="notification-battery-alerts-switch"
                   value={localSettings.batteryAlerts}
                   onValueChange={(value) => handleToggle('batteryAlerts', value)}
                   trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
@@ -194,6 +196,7 @@ const NotificationPreferencesScreen: React.FC<
                 </View>
 
                 <Switch
+                  testID="notification-connection-status-switch"
                   value={localSettings.connectionStatus}
                   onValueChange={(value) => handleToggle('connectionStatus', value)}
                   trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
@@ -221,6 +224,7 @@ const NotificationPreferencesScreen: React.FC<
                 </View>
 
                 <Switch
+                  testID="notification-milestone-moments-switch"
                   value={localSettings.milestoneMoments}
                   onValueChange={(value) => handleToggle('milestoneMoments', value)}
                   trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
@@ -244,6 +248,7 @@ const NotificationPreferencesScreen: React.FC<
                 </View>
 
                 <Switch
+                  testID="notification-parenting-tips-switch"
                   value={localSettings.parentingTips}
                   onValueChange={(value) => handleToggle('parentingTips', value)}
                   trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}

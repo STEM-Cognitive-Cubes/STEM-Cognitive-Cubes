@@ -12,6 +12,8 @@
     "test": "jest --runInBand",
     "test:unit": "jest tests/unit --runInBand",
     "test:watch": "jest --watch",
+    "test:integration:run": "jest tests/integration --runInBand --forceExit",
+    "test:integration": "node ./scripts/run-integration-tests.js",
     "test:rules": "node ./scripts/run-firestore-rules-tests.js",
     "emulators:start": "node ./scripts/firebase-cli.js emulators:start --only auth,firestore,functions",
     "emulators:firestore": "node ./scripts/firebase-cli.js emulators:start --only firestore",

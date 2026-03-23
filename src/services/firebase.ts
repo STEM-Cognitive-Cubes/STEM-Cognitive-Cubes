@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, initializeAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { connectAuthEmulator, getAuth, initializeAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -39,3 +39,32 @@ function initAuth() {
 export const auth = initAuth();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __blokcFirebaseEmulatorsConnected__: boolean | undefined;
+}
+
+function connectFirebaseEmulatorsIfNeeded() {
+  const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST;
+  const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST;
+
+  if ((!authHost && !firestoreHost) || globalThis.__blokcFirebaseEmulatorsConnected__) {
+    return;
+  }
+
+  if (authHost) {
+    connectAuthEmulator(auth, `http://${authHost}`, {
+      disableWarnings: true,
+    });
+  }
+
+  if (firestoreHost) {
+    const [host, port] = firestoreHost.split(":");
+    connectFirestoreEmulator(db, host, Number(port));
+  }
+
+  globalThis.__blokcFirebaseEmulatorsConnected__ = true;
+}
+
+connectFirebaseEmulatorsIfNeeded();
