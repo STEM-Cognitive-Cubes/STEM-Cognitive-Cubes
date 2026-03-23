@@ -3,7 +3,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { Feather } from "@expo/vector-icons";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
-import type { RootStackParamList } from "../../navigation/types";
+import type { RootStackParamList, WeekSummaryData } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import InsightCard from "../history/components/InsightCard";
 
@@ -17,7 +17,7 @@ export default function SummaryDetailScreen({
   navigation,
   route
 }: SummaryDetailScreenProps) {
-  const detail = route.params.weekData;
+  const detail: WeekSummaryData = route.params.weekData;
 
   const handleExportSummary = () => {
     Alert.alert(
@@ -33,7 +33,7 @@ export default function SummaryDetailScreen({
     { label: "Score", value: `${detail.score}`, icon: "star", color: "#FFD54F" },
   ];
   
-  const maxFocus = Math.max(...detail.focusData.map((item: any) => item.value), 10);
+  const maxFocus = Math.max(...detail.focusData.map((item) => item.value), 10);
 
   return (
     <View style={styles.container}>
@@ -66,7 +66,7 @@ export default function SummaryDetailScreen({
 
         <Text style={styles.sectionTitle}>Focus Analysis</Text>
         <View style={styles.chartContainer}>
-          {detail.focusData.map((item: any) => (
+          {detail.focusData.map((item) => (
             <View key={item.day} style={styles.barColumn}>
               <View style={styles.barTrack}>
                 <View
@@ -86,7 +86,7 @@ export default function SummaryDetailScreen({
 
         <Text style={styles.sectionTitle}>Blocks Used</Text>
         <View style={styles.blocksRow}>
-          {detail.blocksUsed.map((block: any) => (
+          {detail.blocksUsed.map((block) => (
             <View
               key={block.id}
               style={[styles.blockChip, { backgroundColor: `${block.color}15` }]}

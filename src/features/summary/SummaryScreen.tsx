@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../navigation/types";
+import type { RootStackParamList, WeekSummaryData } from "../../navigation/types";
 import { fontFamilies } from "../../config/typography";
 import SummaryCard from "./SummaryCard";
 import { useAuth } from "../../hooks/useAuth";
@@ -12,7 +12,7 @@ type SummaryScreenProps = {
 };
 
 export default function SummaryScreen({ navigation }: SummaryScreenProps) {
-  const [weeksData, setWeeksData] = useState<any[]>([]);
+  const [weeksData, setWeeksData] = useState<WeekSummaryData[]>([]);
   const [loading, setLoading] = useState(true);
   const { childId, token } = useAuth();
 
