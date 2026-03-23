@@ -7,8 +7,14 @@
     "functions:serve": "npm --prefix functions run serve",
     "functions:deploy": "npm --prefix functions run deploy",
     "functions:seed-knowledge": "npm --prefix functions run seed:knowledge",
-    "lint": "eslint src",
+    "lint": "eslint --no-ignore .eslintrc.js jest.config.js jest.rules.config.js scripts tests --ext .js,.ts,.tsx",
     "format": "prettier --write .",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:rules": "node ./scripts/run-firestore-rules-tests.js",
+    "emulators:start": "node ./scripts/firebase-cli.js emulators:start --only auth,firestore,functions",
+    "emulators:firestore": "node ./scripts/firebase-cli.js emulators:start --only firestore",
+    "type-check": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "eas-build-pre-install": "bash ./scripts/eas-prepare-firebase.sh"
   },
@@ -16,11 +22,18 @@
     "node": ">=20 <21"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
     "@react-native/eslint-config": "^0.83.1",
+    "@testing-library/react-native": "^13.3.3",
     "@tsconfig/react-native": "^3.0.9",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.2.10",
     "@types/three": "^0.183.1",
     "eslint": "^8.57.0",
+    "firebase-tools": "^15.11.0",
+    "jest": "^29.7.0",
+    "jest-expo": "^55.0.11",
+    "react-test-renderer": "^19.1.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
