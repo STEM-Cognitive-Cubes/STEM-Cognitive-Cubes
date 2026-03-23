@@ -19,3 +19,7 @@ The current Stage 8 flow set covers:
 - home to start-session entry
 - profile to add-child entry
 - settings logout
+
+## What this stage proves
+
+These flows are intended to prove that the app’s main navigation paths connect correctly and that a user can complete the most important journeys without a critical break in the flow.
