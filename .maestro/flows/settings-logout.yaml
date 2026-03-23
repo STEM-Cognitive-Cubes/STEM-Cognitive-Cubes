@@ -7,3 +7,6 @@ appId: com.blokc.app
 - tapOn: "Logout"
 - assertVisible: "Log Out?"
 - tapOn: "Yes, log Out"
+- assertVisible: "Logged Out Successfully"
+- tapOn: "Close"
+- assertVisible: "Login"
